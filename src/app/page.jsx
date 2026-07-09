@@ -271,7 +271,7 @@ export default function Home() {
     <main>
       <header>
         <a className="brand" href="#">
-          <Image src="/brand/logo-primary.png" alt="VozEterna logo" width={170} height={48} priority />
+          <Image src="/brand/logo-primary.png" alt="VozEterna logo" width={170} height={48} priority  style={{ width: "auto", height: "auto" }} />
         </a>
 
         <nav>
@@ -361,7 +361,7 @@ export default function Home() {
             <h2>{t.familiesTitle}</h2>
             {t.familiesBullets.map((item) => <p key={item}>{item}</p>)}
           </div>
-          <Image src="/images/family-memory.png" alt="Family preserving memories" width={190} height={120} />
+          <img src="/images/family-memory.png" alt="Family preserving memories" className="family-memory-img" />
         </article>
 
         <article className="audience light" id="funeral">
@@ -441,7 +441,7 @@ export default function Home() {
 
       <footer>
         <a className="brand small" href="#">
-          <Image src="/brand/logo-primary.png" alt="VozEterna logo" width={150} height={42} />
+          <Image src="/brand/logo-primary.png" alt="VozEterna logo" width={150} height={42}  style={{ width: "auto", height: "auto" }} />
         </a>
         <div className="footerCols">
           <div><strong>{t.footerCompany}</strong><a href="/about">{t.about}</a><a href="/careers">{t.careers}</a><a href="/press">{t.press}</a></div>
