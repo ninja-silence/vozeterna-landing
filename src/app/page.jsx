@@ -4,8 +4,16 @@
 import Image from "next/image";
 import { useState } from "react";
 
-const FAMILY_FORM = "https://tally.so/r/Xxy6pP";
-const FUNERAL_FORM = "https://tally.so/r/rjW8X2";
+const FORMS = {
+  en: {
+    family: "https://tally.so/r/Xxy6pP",
+    funeral: "https://tally.so/r/rjW8X2",
+  },
+  es: {
+    family: "https://tally.so/r/zxv5d0",
+    funeral: "https://tally.so/r/D4y6bR",
+  },
+};
 
 const prices = {
   USD: ["$9", "$19", "$49"],
@@ -227,10 +235,11 @@ function Icon({ type }) {
   return <svg viewBox="0 0 40 40"><path d="M20 31s-11-6.7-11-15a6 6 0 0 1 11-3.3A6 6 0 0 1 31 16c0 8.3-11 15-11 15z" /></svg>;
 }
 
-function Cta({ children, href = FAMILY_FORM, variant = "primary" }) {
-  const external = href.startsWith("http");
+function Cta({ children, href, variant = "primary" }) {
+  const safeHref = href || "#pricing";
+  const external = safeHref.startsWith("http");
   return (
-    <a className={"btn " + variant} href={href} target={external ? "_blank" : undefined} rel={external ? "noopener noreferrer" : undefined}>
+    <a className={"btn " + variant} href={safeHref} target={external ? "_blank" : undefined} rel={external ? "noopener noreferrer" : undefined}>
       {children}
     </a>
   );
@@ -255,6 +264,8 @@ export default function Home() {
   const [language, setLanguage] = useState("es");
   const [currency, setCurrency] = useState("MXN");
   const t = copy[language];
+  const familyForm = FORMS[language].family;
+  const funeralForm = FORMS[language].funeral;
 
   return (
     <main>
@@ -273,7 +284,7 @@ export default function Home() {
 
         <div className="headerRight">
           <Switchers language={language} setLanguage={setLanguage} currency={currency} setCurrency={setCurrency} />
-          <Cta variant="gold">{t.start}</Cta>
+          <Cta href={familyForm} variant="gold">{t.start}</Cta>
         </div>
       </header>
 
@@ -283,7 +294,7 @@ export default function Home() {
           <h1>{t.heroTitle}</h1>
           <p className="lede">{t.heroText}</p>
           <div className="heroActions">
-            <Cta>{t.primaryCta}</Cta>
+            <Cta href={familyForm}>{t.primaryCta}</Cta>
             <Cta href="#how" variant="secondary">{t.secondaryCta}</Cta>
           </div>
           <p className="trust">{t.trust}</p>
@@ -340,7 +351,7 @@ export default function Home() {
             <div><strong>{t.miniVault}</strong><span>{t.miniVaultMeta}</span></div>
             <div><strong>{t.miniMemorial}</strong><span>{t.miniMemorialMeta}</span></div>
           </div>
-          <a className="howMiniCta" href={FAMILY_FORM} target="_blank" rel="noopener noreferrer">{t.miniCta}</a>
+          <a className="howMiniCta" href={familyForm} target="_blank" rel="noopener noreferrer">{t.miniCta}</a>
         </div>
       </section>
 
@@ -407,7 +418,7 @@ export default function Home() {
               <ul>
                 {items.map((item) => <li key={item}><span className="checkIcon" aria-hidden="true" />{item}</li>)}
               </ul>
-              <Cta href={i === 2 ? FUNERAL_FORM : FAMILY_FORM} variant={i === 1 ? "primary" : "secondary"}>{cta}</Cta>
+              <Cta href={i === 2 ? funeralForm : familyForm} variant={i === 1 ? "primary" : "secondary"}>{cta}</Cta>
             </article>
           ))}
         </div>
@@ -420,7 +431,7 @@ export default function Home() {
           <p>{t.finalText}</p>
         </div>
         <Image src="/images/old-photo.png" alt="Old family photo being preserved" width={280} height={170} />
-        <Cta variant="gold">{t.finalCta}</Cta>
+        <Cta href={familyForm} variant="gold">{t.finalCta}</Cta>
       </section>
 
       <footer>
