@@ -393,13 +393,9 @@ export default function Home() {
           <p>{t.bilingualText}</p>
         </div>
 
-        <Image
-          className="bilingualImage"
-          src="/images/bilingual-family.png"
-          alt="Bilingual family using VozEterna"
-          width={230}
-          height={130}
-        />
+        <div className="bilingualPhoto">
+          <img src="/images/bilingual-family.png" alt="Bilingual family using VozEterna" />
+        </div>
 
         <h3>{t.bilingualSide}</h3>
       </section>
