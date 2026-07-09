@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm install typescript @types/react @types/react-dom @types/node @tailwindcss/postcss tailwindcss postcss && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },

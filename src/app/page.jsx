@@ -41,7 +41,7 @@ function Logo() {
   );
 }
 
-function Cta({ children, href = "#pricing", variant = "primary" }: { children: React.ReactNode; href?: string; variant?: "primary" | "secondary" | "gold" }) {
+function Cta({ children, href = "#pricing", variant = "primary" }) {
   return <a className={`btn ${variant}`} href={href}>{children}</a>;
 }
 
@@ -244,7 +244,7 @@ export default function Home() {
               <h3>{name}</h3>
               <p>{description}</p>
               <div className="price">{price}<span>/mo</span></div>
-              <ul>{(items as string[]).map(item => <li key={item}><span className="checkIcon" aria-hidden="true" />{item}</li>)}</ul>
+              <ul>{items.map(item => <li key={item}><span className="checkIcon" aria-hidden="true" />{item}</li>)}</ul>
               <Cta href={i === 2 ? "https://tally.so/r/rjW8X2" : "https://tally.so/r/Xxy6pP"} variant={i === 1 ? "primary" : "secondary"}>{cta}</Cta>
             </article>
           ))}
