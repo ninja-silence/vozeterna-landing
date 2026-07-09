@@ -1,28 +1,28 @@
 import Image from "next/image";
 
 const features = [
-  { icon: "play", title: "Guided Video & Audio Recording", text: "Easy step-by-step prompts help capture life stories, values, prayers, recipes, and final messages." },
-  { icon: "lock", title: "Private Family Vault", text: "Securely store and organize memories only your family can access." },
-  { icon: "qr", title: "QR Memorial Pages", text: "Beautiful tribute pages to share stories and keep their memory alive." },
-  { icon: "heart", title: "Social Legacy Planner", text: "Plan wishes for social accounts, assets, and special instructions." },
+  { icon: "play", title: "Grabacion Guiada en Video y Audio", text: "Preguntas faciles paso a paso para capturar historias de vida, valores, oraciones, recetas y mensajes finales." },
+  { icon: "lock", title: "Boveda Familiar Privada", text: "Guarda y organiza recuerdos importantes con acceso seguro solo para tu familia." },
+  { icon: "qr", title: "Paginas Memoriales con QR", text: "Hermosas paginas de homenaje para compartir historias y mantener viva la memoria." },
+  { icon: "heart", title: "Planificador de Legado Social", text: "Planea deseos para cuentas sociales, bienes, instrucciones especiales y recuerdos digitales." },
 ];
 
 const steps = [
-  ["1", "Record", "Capture stories, voice messages, photos, and legacy wishes with guided tools."],
-  ["2", "Preserve", "Store everything in a private family vault for future generations."],
-  ["3", "Share", "Share memories through QR pages, family invites, or when the time is right."],
+  ["1", "Grabar", "Capture stories, voice messages, photos, and legacy wishes with guided tools."],
+  ["2", "Preservar", "Store everything in a private family vault for future generations."],
+  ["3", "Compartir", "Compartir memories through QR pages, family invites, or when the time is right."],
 ];
 
 const testimonials = [
-  ["Maria G.", "Austin, TX", "Recording my mom's stories was such a gift. My kids will always hear her voice and know her heart."],
-  ["James R.", "Phoenix, AZ", "VozEterna made it easy to capture our dad's legacy. The QR page brought our family together."],
-  ["Sarah L.", "Funeral Director, CA", "This adds real value. Families love having a beautiful way to remember."],
+  ["Maria G.", "Austin, TX", "Grabar las historias de mi mama fue un regalo. Mis hijos siempre podran escuchar su voz y conocer su corazon."],
+  ["James R.", "Phoenix, AZ", "VozEterna hizo facil capturar el legado de nuestro papa. La pagina con QR acerco a toda la familia."],
+  ["Sarah L.", "Directora Funeraria, CA", "Esto agrega valor real. A las familias les encanta tener una forma hermosa de recordar."],
 ];
 
 const plans = [
-  ["Starter", "$9", "Perfect for individuals getting started.", ["Guided recordings", "Private vault (5GB)", "Basic sharing"], "Get Started"],
-  ["Family Legacy", "$19", "Everything your family needs to preserve and share.", ["Unlimited recordings", "Private vault (50GB)", "QR memorial pages", "Legacy planner"], "Start Your Legacy"],
-  ["Funeral Home Partner", "$49", "Powerful tools to serve more families.", ["Digital tribute packages", "Family upload pages", "White-label branding", "Priority support"], "Partner With Us"],
+  ["Inicial", "$159 MXN", "Perfecto para personas que apenas comienzan.", ["Grabaciones guiadas", "Boveda privada (5GB)", "Compartir basico"], "Comenzar"],
+  ["Legado Familiar", "$349 MXN", "Todo lo que tu familia necesita para preservar y compartir.", ["Grabaciones ilimitadas", "Boveda privada (50GB)", "Paginas memoriales con QR", "Planificador de legado"], "Iniciar Mi Legado"],
+  ["Aliado Funerario", "$899 MXN", "Herramientas para servir mejor a mas familias.", ["Paquetes de homenaje digital", "Paginas de carga familiar", "Marca blanca", "Soporte prioritario"], "Ser Aliado"],
 ];
 
 function Icon({ type }) {
@@ -51,27 +51,27 @@ export default function Home() {
       <header className="nav">
         <Logo />
         <nav>
-          <a href="#how">How It Works</a>
-          <a href="#families">For Families</a>
-          <a href="#funeral-homes">For Funeral Homes</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#about">About</a>
+          <a href="#how">Como Funciona</a>
+          <a href="#families">Para Familias</a>
+          <a href="#funeral-homes">Para Funerarias</a>
+          <a href="#pricing">Precios</a>
+          <a href="#about">Acerca de</a>
         </nav>
-        <Cta variant="gold">Start a Legacy</Cta>
+        <Cta variant="gold">Iniciar un Legado</Cta>
       </header>
 
       <section className="hero">
         <div className="heroCopy">
           <p className="eyebrow">Bilingual legacy & memorial platform</p>
-          <h1>Record their voice. Preserve their story.</h1>
+          <h1>Graba su voz. Conserva su historia.</h1>
                     <p className="lede">
-            VozEterna helps families save video, audio, photos, final messages, and social legacy wishes - before it is too late.
+            VozEterna ayuda a las familias a guardar videos, audio, fotos, mensajes finales y deseos de legado digital antes de que sea demasiado tarde.
           </p>
           <div className="actions">
-            <Cta>Create a Family Legacy</Cta>
-            <Cta href="#how" variant="secondary">See How It Works</Cta>
+            <Cta>Crear un Legado Familiar</Cta>
+            <Cta href="#how" variant="secondary">See Como Funciona</Cta>
           </div>
-          <p className="trust">Private by default - English and Spanish - QR memorial ready</p>
+          <p className="trust">Privado por defecto - Espanol e ingles - Memorial con QR listo</p>
         </div>
 
         <div className="heroMedia">
@@ -91,8 +91,8 @@ export default function Home() {
 
                   <section className="howSection" id="how">
         <div className="howHeader">
-          <p className="eyebrow">How It Works</p>
-          <h2>Three simple steps to preserve a voice forever.</h2>
+          <p className="eyebrow">Como Funciona</p>
+          <h2>Tres pasos sencillos para preservar una voz para siempre.</h2>
           <p>
             VozEterna guides families through recording, organizing, and sharing memories
             in a secure legacy experience built for real people, not complicated software.
@@ -104,7 +104,7 @@ export default function Home() {
             <article className="howStep active">
               <span>01</span>
               <div>
-                <h3>Record</h3>
+                <h3>Grabar</h3>
                 <p>
                   Invite a loved one to answer guided prompts by video or audio.
                   Capture stories, prayers, advice, recipes, and final messages.
@@ -115,7 +115,7 @@ export default function Home() {
             <article className="howStep">
               <span>02</span>
               <div>
-                <h3>Preserve</h3>
+                <h3>Preservar</h3>
                 <p>
                   Store recordings, photos, notes, and social legacy wishes inside
                   a private family vault with simple permissions.
@@ -126,7 +126,7 @@ export default function Home() {
             <article className="howStep">
               <span>03</span>
               <div>
-                <h3>Share</h3>
+                <h3>Compartir</h3>
                 <p>
                   Create a beautiful QR memorial page that can be shared with family,
                   printed on programs, or used by funeral-home partners.
@@ -137,7 +137,7 @@ export default function Home() {
             <article className="howStep">
               <span>04</span>
               <div>
-                <h3>Keep Their Legacy Alive</h3>
+                <h3>Mantener Vivo Su Legado</h3>
                 <p>
                   Families can continue adding memories, guestbook messages, photos,
                   and tributes over time.
@@ -150,7 +150,7 @@ export default function Home() {
             <div className="previewTop">
               <div>
                 <b>VozEterna</b>
-                <small>Family Legacy Flow</small>
+                <small>Flujo de Legado Familiar</small>
               </div>
               <span>Private</span>
             </div>
@@ -161,22 +161,22 @@ export default function Home() {
                 <span></span>
                 <span></span>
               </div>
-              <h4>Recording Memory</h4>
-              <p>"What do you want your grandchildren to remember?"</p>
+              <h4>Grabaring Memory</h4>
+              <p>"Que quieres que recuerden tus nietos?"</p>
             </div>
 
             <div className="flowCards">
               <div>
-                <b>Private Vault</b>
-                <small>12 recordings - 48 photos</small>
+                <b>Boveda Privada</b>
+                <small>12 grabaciones - 48 fotos</small>
               </div>
               <div>
-                <b>QR Memorial</b>
-                <small>Ready to share</small>
+                <b>Memorial QR</b>
+                <small>Listo para compartir</small>
               </div>
             </div>
 
-            <a className="howMiniCta" href="https://tally.so/r/Xxy6pP" target="_blank" rel="noopener noreferrer">Start with the Founder Kit</a>
+            <a className="howMiniCta" href="https://tally.so/r/Xxy6pP" target="_blank" rel="noopener noreferrer">Iniciar con el Kit Fundador</a>
           </div>
         </div>
       </section>
@@ -184,24 +184,24 @@ export default function Home() {
       <section className="audience">
         <article id="families" className="audiencePanel dark">
           <div>
-            <h2>For Families</h2>
-            <p>Preserve what matters most.</p>
+            <h2>Para Familias</h2>
+            <p>Preservar what matters most.</p>
             <ul>
-              <li>Save stories, prayers, recipes, messages, and memories.</li>
-              <li>Create a lasting legacy for children and generations.</li>
-              <li>Peace of mind knowing their voice lives on.</li>
+              <li>Guarda historias, oraciones, recetas, mensajes y recuerdos.</li>
+              <li>Crea un legado duradero para hijos y generaciones.</li>
+              <li>Tranquilidad al saber que su voz sigue viva.</li>
             </ul>
           </div>
           <Image src="/images/family-memory.png" alt="" width={420} height={260} />
         </article>
         <article id="funeral-homes" className="audiencePanel light">
           <div>
-            <h2>For Funeral Homes</h2>
-            <p>Offer more. Serve better.</p>
+            <h2>Para Funerarias</h2>
+            <p>Ofrece mas. Sirve mejor.</p>
             <ul>
-              <li>Offer digital tribute packages families love.</li>
-              <li>QR links, family upload pages, and sharing tools.</li>
-              <li>White-label platform that strengthens your brand.</li>
+              <li>Ofrece paquetes de homenaje digital que las familias valoran.</li>
+              <li>Enlaces QR, paginas de carga familiar y herramientas para compartir.</li>
+              <li>Plataforma de marca blanca que fortalece tu marca.</li>
             </ul>
           </div>
           <Image src="/images/funeral-dashboard.png" alt="" width={420} height={260} />
@@ -223,16 +223,16 @@ export default function Home() {
       <section className="bilingual" id="about">
         <div className="languageBadge"><span>EN</span><span>ES</span></div>
         <div>
-          <h2>Built for families in English & Spanish</h2>
-          <p>Because love and legacy speak every language. Create, capture, and connect in the language that feels like home.</p>
+          <h2>Creado para familias en espanol e ingles</h2>
+          <p>Porque el amor y el legado hablan todos los idiomas. Crea, captura y conecta en el idioma que se siente como casa.</p>
         </div>
         <Image src="/images/bilingual-family.png" alt="" width={340} height={210} />
         <p className="spanish">Porque el amor y el legado hablan todos los idiomas.</p>
       </section>
 
             <section className="betaNotice">
-        <strong>Founder Beta Notice:</strong>
-        VozEterna is currently accepting early customers. Some services are delivered manually while the full platform is being built.
+        <strong>Aviso de Beta Fundador:</strong>
+        VozEterna actualmente acepta clientes tempranos. Algunos servicios se entregan manualmente mientras se construye la plataforma completa.
       </section>
 
       <section className="section" id="pricing">
@@ -240,10 +240,10 @@ export default function Home() {
         <div className="pricing">
           {plans.map(([name, price, description, items, cta], i) => (
             <article className={`priceCard ${i === 1 ? "popular" : ""}`} key={name}>
-              {i === 1 && <div className="badge">Most popular</div>}
+              {i === 1 && <div className="badge">Mas popular</div>}
               <h3>{name}</h3>
               <p>{description}</p>
-              <div className="price">{price}<span>/mo</span></div>
+              <div className="price">{price}<span>/mes</span></div>
               <ul>{items.map(item => <li key={item}><span className="checkIcon" aria-hidden="true" />{item}</li>)}</ul>
               <Cta href={i === 2 ? "https://tally.so/r/rjW8X2" : "https://tally.so/r/Xxy6pP"} variant={i === 1 ? "primary" : "secondary"}>{cta}</Cta>
             </article>
@@ -254,20 +254,20 @@ export default function Home() {
             <section className="finalCta">
         <div>
           <span className="infinityIcon" aria-hidden="true" />
-          <h2>Do not wait until all you have left is photos.</h2>
-          <p>Capture their voice, their story, and their legacy while you still can.</p>
+          <h2>No esperes hasta que lo unico que quede sean fotos.</h2>
+          <p>Captura su voz, su historia y su legado mientras aun puedes.</p>
         </div>
         <Image src="/images/old-photo.png" alt="Old family photo being preserved" width={280} height={170} />
-        <Cta variant="gold">Start Your Legacy Today</Cta>
+        <Cta variant="gold">Inicia Tu Legado Hoy</Cta>
       </section>
 
       <footer>
         <Logo />
         <div className="footerCols">
-          <div><b>Company</b><a>About Us</a><a>Careers</a><a>Press</a></div>
-          <div><b>Support</b><a>Help Center</a><a>Privacy Policy</a><a>Terms</a></div>
-          <div><b>Resources</b><a>Blog</a><a>Guides</a><a>Contact</a></div>
-          <div><b>Contact</b><a>hello@vozeterna.com</a><a>Austin, Texas</a></div>
+          <div><b>Company</b><a>Acerca de Us</a><a>Carreras</a><a>Prensa</a></div>
+          <div><b>Support</b><a>Centro de Ayuda</a><a>Politica de Privacidad</a><a>Terminos</a></div>
+          <div><b>Resources</b><a>Blog</a><a>Guias</a><a>Contacto</a></div>
+          <div><b>Contacto</b><a>hello@vozeterna.com</a><a>Austin, Texas</a></div>
         </div>
       </footer>
     </main>
