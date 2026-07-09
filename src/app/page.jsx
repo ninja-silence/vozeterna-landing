@@ -134,7 +134,7 @@ const copy = {
 
     eyebrow: "PLATAFORMA BILINGUE DE LEGADO Y MEMORIA",
     heroTitle: "Conserva tu voz para las generaciones que aun no te conocen.",
-    heroText: "VozEterna ayuda a las familias a guardar videos, audio, fotos, mensajes finales y deseos de legado digital antes de que sea demasiado tarde.",
+    heroText: "VozEterna ayuda a tu familia a crear una boveda privada de voces, historias y recuerdos para que hijos, nietos y futuras generaciones puedan escuchar, aprender y mantener viva la historia.",
     primaryCta: "Crear un Legado Familiar",
     secondaryCta: "Ver Como Funciona",
     trust: "Privado por defecto - Espanol e ingles - Memorial con QR listo",
