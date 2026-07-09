@@ -387,7 +387,6 @@ export default function Home() {
       </section>
 
       <section className="bilingual" id="about">
-        <div className="languageBadge"><span>ES</span><span>EN</span></div>
         <div>
           <h2>{t.bilingualTitle}</h2>
           <p>{t.bilingualText}</p>
