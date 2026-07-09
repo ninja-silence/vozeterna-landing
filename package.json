@@ -9,16 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
     "next": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "typescript": "latest"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "latest",
-    "@types/node": "^26.1.1",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "tailwindcss": "latest",
-    "typescript": "^7.0.2"
+    "tailwindcss": "latest"
   }
 }
