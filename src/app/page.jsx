@@ -30,7 +30,7 @@ const copy = {
     start: "Start a Legacy",
 
     eyebrow: "BILINGUAL LEGACY & MEMORIAL PLATFORM",
-    heroTitle: "Record their voice. Preserve their story.",
+    heroTitle: "Preserve your voice for the generations who haven't met you yet.",
     heroText: "VozEterna helps families save video, audio, photos, final messages, and social legacy wishes before it is too late.",
     primaryCta: "Create a Family Legacy",
     secondaryCta: "See How It Works",
@@ -133,7 +133,7 @@ const copy = {
     start: "Iniciar un Legado",
 
     eyebrow: "PLATAFORMA BILINGUE DE LEGADO Y MEMORIA",
-    heroTitle: "Graba su voz. Conserva su historia.",
+    heroTitle: "Conserva tu voz para las generaciones que aun no te conocen.",
     heroText: "VozEterna ayuda a las familias a guardar videos, audio, fotos, mensajes finales y deseos de legado digital antes de que sea demasiado tarde.",
     primaryCta: "Crear un Legado Familiar",
     secondaryCta: "Ver Como Funciona",
@@ -453,3 +453,4 @@ export default function Home() {
     </main>
   );
 }
+
