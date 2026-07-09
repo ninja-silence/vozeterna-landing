@@ -7,13 +7,23 @@ import { useState } from "react";
 const FAMILY_FORM = "https://tally.so/r/Xxy6pP";
 const FUNERAL_FORM = "https://tally.so/r/rjW8X2";
 
+const prices = {
+  USD: ["$9", "$19", "$49"],
+  MXN: ["$159 MXN", "$349 MXN", "$899 MXN"],
+};
+
 const copy = {
   en: {
-    nav: ["How It Works", "For Families", "For Funeral Homes", "Pricing", "About"],
+    navHow: "How It Works",
+    navFamilies: "For Families",
+    navFuneral: "For Funeral Homes",
+    navPricing: "Pricing",
+    navAbout: "About",
     start: "Start a Legacy",
+
     eyebrow: "BILINGUAL LEGACY & MEMORIAL PLATFORM",
     heroTitle: "Record their voice. Preserve their story.",
-    heroText: "VozEterna helps families save video, audio, photos, final messages, and social legacy wishes - before it is too late.",
+    heroText: "VozEterna helps families save video, audio, photos, final messages, and social legacy wishes before it is too late.",
     primaryCta: "Create a Family Legacy",
     secondaryCta: "See How It Works",
     trust: "Private by default - English and Spanish - QR memorial ready",
@@ -34,18 +44,17 @@ const copy = {
       ["Share", "Create a beautiful QR memorial page that can be shared with family, printed on programs, or used by funeral-home partners."],
       ["Keep Their Legacy Alive", "Families can continue adding memories, guestbook messages, photos, and tributes over time."],
     ],
-    mini: {
-      title: "VozEterna",
-      subtitle: "Family Legacy Flow",
-      private: "PRIVATE",
-      recording: "Recording Memory",
-      question: "What do you want your grandchildren to remember?",
-      vault: "Private Vault",
-      vaultMeta: "12 recordings - 48 photos",
-      memorial: "QR Memorial",
-      memorialMeta: "Ready to share",
-      cta: "Start with the Founder Kit",
-    },
+
+    miniTitle: "VozEterna",
+    miniSubtitle: "Family Legacy Flow",
+    miniPrivate: "PRIVATE",
+    miniRecording: "Recording Memory",
+    miniQuestion: "What do you want your grandchildren to remember?",
+    miniVault: "Private Vault",
+    miniVaultMeta: "12 recordings - 48 photos",
+    miniMemorial: "QR Memorial",
+    miniMemorialMeta: "Ready to share",
+    miniCta: "Start with the Founder Kit",
 
     familiesTitle: "For Families",
     familiesBullets: [
@@ -54,6 +63,7 @@ const copy = {
       "Create a lasting legacy for children and generations.",
       "Peace of mind knowing their voice lives on.",
     ],
+
     funeralTitle: "For Funeral Homes",
     funeralBullets: [
       "Offer more. Serve better.",
@@ -69,14 +79,15 @@ const copy = {
       ["Sarah L.", "Funeral Director, CA", "This adds real value. Families love having a beautiful way to remember."],
     ],
 
-    bilingualTitle: "Built for families in English & Spanish",
+    bilingualTitle: "Built for families in English and Spanish",
     bilingualText: "Because love and legacy speak every language. Create, capture, and connect in the language that feels like home.",
-    bilingualSide: "Porque el amor y el legado hablan todos los idiomas.",
+    bilingualSide: "Because love and legacy speak all languages.",
 
     betaTitle: "Founder Beta Notice:",
     betaText: "VozEterna is currently accepting early customers. Some services are delivered manually while the full platform is being built.",
 
     pricingEyebrow: "SIMPLE PRICING. LASTING VALUE.",
+    viewPrices: "View prices in:",
     popular: "MOST POPULAR",
     month: "/mo",
     plans: [
@@ -89,26 +100,30 @@ const copy = {
     finalText: "Capture their voice, their story, and their legacy while you still can.",
     finalCta: "Start Your Legacy Today",
 
-    footer: {
-      company: "COMPANY",
-      support: "SUPPORT",
-      resources: "RESOURCES",
-      contact: "CONTACT",
-      about: "About Us",
-      careers: "Careers",
-      press: "Press",
-      help: "Help Center",
-      privacy: "Privacy Policy",
-      terms: "Terms",
-      blog: "Blog",
-      guides: "Guides",
-      contactLink: "Contact",
-    },
+    footerCompany: "COMPANY",
+    footerSupport: "SUPPORT",
+    footerResources: "RESOURCES",
+    footerContact: "CONTACT",
+    about: "About Us",
+    careers: "Careers",
+    press: "Press",
+    help: "Help Center",
+    privacy: "Privacy Policy",
+    terms: "Terms",
+    blog: "Blog",
+    guides: "Guides",
+    contact: "Contact",
+    location: "Austin, Texas",
   },
 
   es: {
-    nav: ["Como Funciona", "Para Familias", "Para Funerarias", "Precios", "Acerca de"],
+    navHow: "Como Funciona",
+    navFamilies: "Para Familias",
+    navFuneral: "Para Funerarias",
+    navPricing: "Precios",
+    navAbout: "Acerca de",
     start: "Iniciar un Legado",
+
     eyebrow: "PLATAFORMA BILINGUE DE LEGADO Y MEMORIA",
     heroTitle: "Graba su voz. Conserva su historia.",
     heroText: "VozEterna ayuda a las familias a guardar videos, audio, fotos, mensajes finales y deseos de legado digital antes de que sea demasiado tarde.",
@@ -132,18 +147,17 @@ const copy = {
       ["Compartir", "Crea una hermosa pagina memorial con QR que se puede compartir con la familia, imprimir en programas o usar con funerarias aliadas."],
       ["Mantener Vivo Su Legado", "Las familias pueden seguir agregando recuerdos, mensajes, fotos y homenajes con el tiempo."],
     ],
-    mini: {
-      title: "VozEterna",
-      subtitle: "Flujo de Legado Familiar",
-      private: "PRIVADO",
-      recording: "Grabando Recuerdo",
-      question: "Que quieres que recuerden tus nietos?",
-      vault: "Boveda Privada",
-      vaultMeta: "12 grabaciones - 48 fotos",
-      memorial: "Memorial QR",
-      memorialMeta: "Listo para compartir",
-      cta: "Iniciar con el Kit Fundador",
-    },
+
+    miniTitle: "VozEterna",
+    miniSubtitle: "Flujo de Legado Familiar",
+    miniPrivate: "PRIVADO",
+    miniRecording: "Grabando Recuerdo",
+    miniQuestion: "Que quieres que recuerden tus nietos?",
+    miniVault: "Boveda Privada",
+    miniVaultMeta: "12 grabaciones - 48 fotos",
+    miniMemorial: "Memorial QR",
+    miniMemorialMeta: "Listo para compartir",
+    miniCta: "Iniciar con el Kit Fundador",
 
     familiesTitle: "Para Familias",
     familiesBullets: [
@@ -152,6 +166,7 @@ const copy = {
       "Crea un legado duradero para hijos y generaciones.",
       "Tranquilidad al saber que su voz sigue viva.",
     ],
+
     funeralTitle: "Para Funerarias",
     funeralBullets: [
       "Ofrece mas. Sirve mejor.",
@@ -175,6 +190,7 @@ const copy = {
     betaText: "VozEterna actualmente acepta clientes tempranos. Algunos servicios se entregan manualmente mientras se construye la plataforma completa.",
 
     pricingEyebrow: "PRECIOS SIMPLES. VALOR DURADERO.",
+    viewPrices: "Ver precios en:",
     popular: "MAS POPULAR",
     month: "/mes",
     plans: [
@@ -187,27 +203,21 @@ const copy = {
     finalText: "Captura su voz, su historia y su legado mientras aun puedes.",
     finalCta: "Inicia Tu Legado Hoy",
 
-    footer: {
-      company: "COMPANIA",
-      support: "SOPORTE",
-      resources: "RECURSOS",
-      contact: "CONTACTO",
-      about: "Acerca de",
-      careers: "Carreras",
-      press: "Prensa",
-      help: "Centro de Ayuda",
-      privacy: "Politica de Privacidad",
-      terms: "Terminos",
-      blog: "Blog",
-      guides: "Guias",
-      contactLink: "Contacto",
-    },
+    footerCompany: "COMPANIA",
+    footerSupport: "SOPORTE",
+    footerResources: "RECURSOS",
+    footerContact: "CONTACTO",
+    about: "Acerca de",
+    careers: "Carreras",
+    press: "Prensa",
+    help: "Centro de Ayuda",
+    privacy: "Politica de Privacidad",
+    terms: "Terminos",
+    blog: "Blog",
+    guides: "Guias",
+    contact: "Contacto",
+    location: "Austin, Texas",
   },
-};
-
-const prices = {
-  USD: ["$9", "$19", "$49"],
-  MXN: ["$159 MXN", "$349 MXN", "$899 MXN"],
 };
 
 function Icon({ type }) {
@@ -226,16 +236,16 @@ function Cta({ children, href = FAMILY_FORM, variant = "primary" }) {
   );
 }
 
-function LanguageCurrencyControls({ language, setLanguage, currency, setCurrency }) {
+function Switchers({ language, setLanguage, currency, setCurrency }) {
   return (
-    <div className="siteControls" aria-label="Language and currency options">
+    <div className="siteControls">
       <div className="segmented">
-        <button className={language === "en" ? "active" : ""} onClick={() => setLanguage("en")} type="button">EN</button>
-        <button className={language === "es" ? "active" : ""} onClick={() => setLanguage("es")} type="button">ES</button>
+        <button type="button" className={language === "es" ? "active" : ""} onClick={() => setLanguage("es")}>ES</button>
+        <button type="button" className={language === "en" ? "active" : ""} onClick={() => setLanguage("en")}>EN</button>
       </div>
       <div className="segmented">
-        <button className={currency === "USD" ? "active" : ""} onClick={() => setCurrency("USD")} type="button">USD</button>
-        <button className={currency === "MXN" ? "active" : ""} onClick={() => setCurrency("MXN")} type="button">MXN</button>
+        <button type="button" className={currency === "USD" ? "active" : ""} onClick={() => setCurrency("USD")}>USD</button>
+        <button type="button" className={currency === "MXN" ? "active" : ""} onClick={() => setCurrency("MXN")}>MXN</button>
       </div>
     </div>
   );
@@ -254,15 +264,15 @@ export default function Home() {
         </a>
 
         <nav>
-          <a href="#how">{t.nav[0]}</a>
-          <a href="#families">{t.nav[1]}</a>
-          <a href="#funeral">{t.nav[2]}</a>
-          <a href="#pricing">{t.nav[3]}</a>
-          <a href="#about">{t.nav[4]}</a>
+          <a href="#how">{t.navHow}</a>
+          <a href="#families">{t.navFamilies}</a>
+          <a href="#funeral">{t.navFuneral}</a>
+          <a href="#pricing">{t.navPricing}</a>
+          <a href="#about">{t.navAbout}</a>
         </nav>
 
         <div className="headerRight">
-          <LanguageCurrencyControls language={language} setLanguage={setLanguage} currency={currency} setCurrency={setCurrency} />
+          <Switchers language={language} setLanguage={setLanguage} currency={currency} setCurrency={setCurrency} />
           <Cta variant="gold">{t.start}</Cta>
         </div>
       </header>
@@ -316,21 +326,21 @@ export default function Home() {
         <div className="howPreview">
           <div className="previewTop">
             <div>
-              <strong>{t.mini.title}</strong>
-              <span>{t.mini.subtitle}</span>
+              <strong>{t.miniTitle}</strong>
+              <span>{t.miniSubtitle}</span>
             </div>
-            <em>{t.mini.private}</em>
+            <em>{t.miniPrivate}</em>
           </div>
           <div className="recordingCard">
             <div className="wave">|||</div>
-            <h3>{t.mini.recording}</h3>
-            <p>{t.mini.question}</p>
+            <h3>{t.miniRecording}</h3>
+            <p>{t.miniQuestion}</p>
           </div>
           <div className="previewGrid">
-            <div><strong>{t.mini.vault}</strong><span>{t.mini.vaultMeta}</span></div>
-            <div><strong>{t.mini.memorial}</strong><span>{t.mini.memorialMeta}</span></div>
+            <div><strong>{t.miniVault}</strong><span>{t.miniVaultMeta}</span></div>
+            <div><strong>{t.miniMemorial}</strong><span>{t.miniMemorialMeta}</span></div>
           </div>
-          <a className="howMiniCta" href={FAMILY_FORM} target="_blank" rel="noopener noreferrer">{t.mini.cta}</a>
+          <a className="howMiniCta" href={FAMILY_FORM} target="_blank" rel="noopener noreferrer">{t.miniCta}</a>
         </div>
       </section>
 
@@ -366,7 +376,7 @@ export default function Home() {
       </section>
 
       <section className="bilingual" id="about">
-        <div className="languageBadge"><span>EN</span><span>ES</span></div>
+        <div className="languageBadge"><span>ES</span><span>EN</span></div>
         <div>
           <h2>{t.bilingualTitle}</h2>
           <p>{t.bilingualText}</p>
@@ -383,8 +393,8 @@ export default function Home() {
         <p className="sectionTitle">{t.pricingEyebrow}</p>
 
         <div className="pricingControls">
-          <span>{language === "es" ? "Ver precios en:" : "View prices in:"}</span>
-          <LanguageCurrencyControls language={language} setLanguage={setLanguage} currency={currency} setCurrency={setCurrency} />
+          <span>{t.viewPrices}</span>
+          <Switchers language={language} setLanguage={setLanguage} currency={currency} setCurrency={setCurrency} />
         </div>
 
         <div className="pricing">
@@ -418,10 +428,10 @@ export default function Home() {
           <Image src="/brand/logo-primary.png" alt="VozEterna logo" width={150} height={42} />
         </a>
         <div className="footerCols">
-          <div><strong>{t.footer.company}</strong><a>{t.footer.about}</a><a>{t.footer.careers}</a><a>{t.footer.press}</a></div>
-          <div><strong>{t.footer.support}</strong><a>{t.footer.help}</a><a>{t.footer.privacy}</a><a>{t.footer.terms}</a></div>
-          <div><strong>{t.footer.resources}</strong><a>{t.footer.blog}</a><a>{t.footer.guides}</a><a>{t.footer.contactLink}</a></div>
-          <div><strong>{t.footer.contact}</strong><a>hello@vozeterna.com</a><a>Austin, Texas</a></div>
+          <div><strong>{t.footerCompany}</strong><a>{t.about}</a><a>{t.careers}</a><a>{t.press}</a></div>
+          <div><strong>{t.footerSupport}</strong><a>{t.help}</a><a>{t.privacy}</a><a>{t.terms}</a></div>
+          <div><strong>{t.footerResources}</strong><a>{t.blog}</a><a>{t.guides}</a><a>{t.contact}</a></div>
+          <div><strong>{t.footerContact}</strong><a>felipe.frias.pcs@gmail.com</a><a>{t.location}</a></div>
         </div>
       </footer>
     </main>
