@@ -7,6 +7,7 @@ import { supabase } from "../../../lib/supabaseClient";
 export default function LovedOnesPage() {
   const [user, setUser] = useState(null);
   const [lovedOnes, setLovedOnes] = useState([]);
+  const [profileImages, setProfileImages] = useState({});
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
@@ -28,10 +29,51 @@ export default function LovedOnesPage() {
 
       if (error) {
         setMessage(error.message);
-      } else {
-        setLovedOnes(data || []);
+        setLoading(false);
+        return;
       }
 
+      const profiles = data || [];
+      setLovedOnes(profiles);
+
+      const imageMap = {};
+
+      for (const profile of profiles) {
+        if (profile.profile_photo_path) {
+          const { data: signedData } = await supabase.storage
+            .from("family-media")
+            .createSignedUrl(profile.profile_photo_path, 60 * 10);
+
+          if (signedData?.signedUrl) {
+            imageMap[profile.id] = signedData.signedUrl;
+            continue;
+          }
+        }
+
+        const { data: mediaData } = await supabase
+          .from("media_assets")
+          .select("file_path, file_type, file_name")
+          .eq("loved_one_id", profile.id)
+          .order("created_at", { ascending: false });
+
+        const firstImage = (mediaData || []).find((item) => {
+          const type = item.file_type || "";
+          const name = item.file_name || "";
+          return type.startsWith("image/") || name.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/);
+        });
+
+        if (firstImage?.file_path) {
+          const { data: signedData } = await supabase.storage
+            .from("family-media")
+            .createSignedUrl(firstImage.file_path, 60 * 10);
+
+          if (signedData?.signedUrl) {
+            imageMap[profile.id] = signedData.signedUrl;
+          }
+        }
+      }
+
+      setProfileImages(imageMap);
       setLoading(false);
     }
 
@@ -105,22 +147,41 @@ export default function LovedOnesPage() {
             </Link>
           </div>
         ) : (
-          <div className="libraryGrid">
+          <div className="profileCardGrid">
             {lovedOnes.map((person) => (
-              <article className="memoryCard" key={person.id}>
-                <div className="memoryInfo">
-                  <p>Legacy Profile</p>
+              <article className="legacyProfileCard" key={person.id}>
+                <div className="legacyProfileImage">
+                  {profileImages[person.id] ? (
+                    <img src={profileImages[person.id]} alt={person.full_name} />
+                  ) : (
+                    <div className="legacyProfilePlaceholder">
+                      {person.full_name
+                        ?.split(" ")
+                        .slice(0, 2)
+                        .map((part) => part[0])
+                        .join("")
+                        .toUpperCase() || "VE"}
+                    </div>
+                  )}
+                </div>
+
+                <div className="legacyProfileContent">
+                  <p className="appEyebrow">Legacy Profile</p>
                   <h2>{person.full_name}</h2>
 
-                  {person.relationship && <p>{person.relationship}</p>}
+                  {person.relationship && <p className="profileRelationshipSmall">{person.relationship}</p>}
 
-                  {person.bio && (
-                    <p className="memoryBio">{person.bio}</p>
-                  )}
+                  {person.bio && <p className="memoryBio">{person.bio}</p>}
 
-                  <Link href="/app/upload" className="textLink">
-                    Upload memories for this profile
-                  </Link>
+                  <div className="profileCardActions">
+                    <Link href={`/app/loved-ones/${person.id}`} className="textLink">
+                      Open legacy profile
+                    </Link>
+
+                    <Link href={`/app/upload?lovedOneId=${person.id}`} className="textLink">
+                      Upload memory
+                    </Link>
+                  </div>
                 </div>
               </article>
             ))}

@@ -9,6 +9,8 @@ export default function UploadPage() {
   const [lovedOnes, setLovedOnes] = useState([]);
   const [selectedLovedOneId, setSelectedLovedOneId] = useState("");
   const [files, setFiles] = useState([]);
+  const [memoryType, setMemoryType] = useState("photo_of_person");
+  const [memoryNote, setMemoryNote] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
@@ -27,9 +29,15 @@ export default function UploadPage() {
         .order("created_at", { ascending: false });
 
       if (!error) {
-        setLovedOnes(data || []);
-        if (data?.length) {
-          setSelectedLovedOneId(data[0].id);
+        const profiles = data || [];
+        setLovedOnes(profiles);
+
+        if (profiles.length) {
+          const params = new URLSearchParams(window.location.search);
+          const requestedLovedOneId = params.get("lovedOneId");
+          const profileExists = profiles.some((profile) => profile.id === requestedLovedOneId);
+
+          setSelectedLovedOneId(profileExists ? requestedLovedOneId : profiles[0].id);
         }
       }
     }
@@ -90,6 +98,8 @@ export default function UploadPage() {
         file_type: file.type || null,
         file_size: file.size,
         title: file.name,
+        memory_type: memoryType,
+        memory_note: memoryNote.trim() || null,
         visibility: "private",
       });
 
@@ -186,6 +196,37 @@ export default function UploadPage() {
                 </option>
               ))}
             </select>
+
+            <label className="fieldLabel" htmlFor="memoryType">
+              What kind of memory is this?
+            </label>
+
+            <select
+              id="memoryType"
+              className="appInput"
+              value={memoryType}
+              onChange={(e) => setMemoryType(e.target.value)}
+            >
+              <option value="photo_of_person">Photo of this person</option>
+              <option value="photo_from_person">Photo from this person</option>
+              <option value="story_about_person">Story about this person</option>
+              <option value="message_from_person">Message from this person</option>
+              <option value="voice_of_person">Voice of this person</option>
+              <option value="family_memory">Family memory connected to this person</option>
+              <option value="document_or_keepsake">Document or keepsake</option>
+            </select>
+
+            <label className="fieldLabel" htmlFor="memoryNote">
+              Optional memory note
+            </label>
+
+            <textarea
+              id="memoryNote"
+              className="appTextarea"
+              value={memoryNote}
+              onChange={(e) => setMemoryNote(e.target.value)}
+              placeholder="Example: Mom at my graduation, Grandma's prayer, Dad's advice, family recipe, or a special memory."
+            />
 
             <label className="uploadDrop">
               <input

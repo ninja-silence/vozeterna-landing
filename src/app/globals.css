@@ -3188,3 +3188,742 @@ img[src="/brand/logo-primary.png"] {
   text-transform: none !important;
   line-height: 1.65;
 }
+
+/* ============================
+   Loved One Detail Page
+   ============================ */
+
+.profileHeroCard {
+  width: min(1080px, 100%);
+  margin: 0 auto 34px;
+  background:
+    radial-gradient(circle at 92% 10%, rgba(208, 146, 47, 0.18), transparent 34%),
+    rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(8, 63, 82, 0.10);
+  border-radius: 28px;
+  padding: 34px;
+  box-shadow: 0 18px 48px rgba(8, 63, 82, 0.08);
+}
+
+.profileHeroCard h1 {
+  color: #083f52;
+  margin: 0;
+  font-size: clamp(3rem, 7vw, 5rem);
+  line-height: 0.94;
+  letter-spacing: -0.055em;
+}
+
+.profileRelationship {
+  color: #c88424;
+  font-weight: 900;
+  font-size: 1.1rem;
+  margin: 14px 0 0;
+}
+
+.profileBio {
+  max-width: 760px;
+  color: #496678;
+  line-height: 1.75;
+  font-size: 1.05rem;
+}
+
+.sectionMiniHeader {
+  margin: 0 0 22px;
+}
+
+.sectionMiniHeader h2 {
+  color: #083f52;
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.deleteMemoryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  margin-top: 12px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(159, 45, 45, 0.22);
+  background: rgba(159, 45, 45, 0.08);
+  color: #9f2d2d;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.deleteMemoryButton:hover {
+  background: rgba(159, 45, 45, 0.14);
+}
+
+.deleteMemoryIcon {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-top: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(159, 45, 45, 0.22);
+  background: rgba(159, 45, 45, 0.08);
+  color: #9f2d2d;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.deleteMemoryIcon:hover {
+  background: rgba(159, 45, 45, 0.16);
+  transform: translateY(-1px);
+}
+
+.memoryActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* ============================
+   Memory Card Actions Menu
+   ============================ */
+
+.memoryActionsMenu {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.memoryDotsButton {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(8, 63, 82, 0.14);
+  background: rgba(255, 255, 255, 0.88);
+  color: #083f52;
+  font-size: 1.3rem;
+  font-weight: 900;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.memoryDotsButton:hover {
+  background: rgba(8, 63, 82, 0.06);
+}
+
+.memoryActionsPanel {
+  position: absolute;
+  right: 0;
+  bottom: 44px;
+  z-index: 15;
+  width: 190px;
+  padding: 8px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(8, 63, 82, 0.12);
+  box-shadow: 0 18px 44px rgba(8, 63, 82, 0.18);
+}
+
+.memoryActionsPanel a,
+.memoryActionsPanel button {
+  width: 100%;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #083f52;
+  font: inherit;
+  font-weight: 900;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.memoryActionsPanel a:hover,
+.memoryActionsPanel button:hover {
+  background: rgba(8, 63, 82, 0.06);
+}
+
+.memoryActionsPanel .dangerAction {
+  color: #9f2d2d;
+}
+
+.memoryActionsPanel .dangerAction:hover {
+  background: rgba(159, 45, 45, 0.08);
+}
+
+/* ============================
+   Loved One Profile Cards
+   ============================ */
+
+.profileCardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.legacyProfileCard {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 20px;
+  align-items: stretch;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(8, 63, 82, 0.10);
+  border-radius: 26px;
+  padding: 18px;
+  box-shadow: 0 18px 48px rgba(8, 63, 82, 0.08);
+  overflow: hidden;
+}
+
+.legacyProfileImage {
+  min-height: 180px;
+  border-radius: 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(208, 146, 47, 0.22), transparent 40%),
+    rgba(8, 63, 82, 0.06);
+}
+
+.legacyProfileImage img {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.legacyProfilePlaceholder {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  color: #083f52;
+  font-size: 2.4rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.legacyProfileContent {
+  padding: 6px 4px;
+}
+
+.legacyProfileContent h2 {
+  color: #083f52;
+  margin: 0 0 8px;
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.profileRelationshipSmall {
+  margin: 0 0 10px;
+  color: #c88424;
+  font-weight: 900;
+}
+
+.profileCardActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+@media (max-width: 900px) {
+  .profileCardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .legacyProfileCard {
+    grid-template-columns: 1fr;
+  }
+
+  .legacyProfileImage img,
+  .legacyProfilePlaceholder,
+  .legacyProfileImage {
+    min-height: 240px;
+  }
+}
+
+/* ============================
+   Profile Photo Editor
+   ============================ */
+
+.profilePhotoEditor {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.profilePhotoPreview {
+  width: 160px;
+  height: 160px;
+  border-radius: 24px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(208, 146, 47, 0.22), transparent 40%),
+    rgba(8, 63, 82, 0.06);
+  color: #083f52;
+  font-weight: 900;
+  text-align: center;
+}
+
+.profilePhotoPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profilePhotoUpload {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(8, 63, 82, 0.14);
+  background: #ffffff;
+  color: #083f52;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.profilePhotoUpload input {
+  display: none;
+}
+
+@media (max-width: 650px) {
+  .profilePhotoEditor {
+    grid-template-columns: 1fr;
+  }
+
+  .profilePhotoPreview {
+    width: 100%;
+    height: 240px;
+  }
+}
+
+.profileHeroWithPhoto {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.profileHeroPhoto {
+  width: 220px;
+  height: 220px;
+  border-radius: 28px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(208, 146, 47, 0.22), transparent 40%),
+    rgba(8, 63, 82, 0.06);
+  color: #083f52;
+  font-size: 3rem;
+  font-weight: 900;
+}
+
+.profileHeroPhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 750px) {
+  .profileHeroWithPhoto {
+    grid-template-columns: 1fr;
+  }
+
+  .profileHeroPhoto {
+    width: 100%;
+    height: 280px;
+  }
+}
+
+/* ============================
+   Consent Signature Pad
+   ============================ */
+
+.signaturePadWrap {
+  margin: 14px 0 22px;
+}
+
+.signatureCanvas {
+  width: 100%;
+  height: 220px;
+  border: 1px dashed rgba(8, 63, 82, 0.28);
+  border-radius: 18px;
+  background: #ffffff;
+  touch-action: none;
+  display: block;
+}
+
+.signaturePadFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 10px;
+  color: #607488;
+  font-weight: 800;
+}
+
+.textButton {
+  border: 0;
+  background: transparent;
+  color: #9f2d2d;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.lockedNameBox {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(8, 63, 82, 0.14);
+  border-radius: 14px;
+  padding: 0 16px;
+  background: rgba(8, 63, 82, 0.04);
+  color: #083f52;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+
+/* ============================
+   Consent History
+   ============================ */
+
+.consentHistoryList {
+  display: grid;
+  gap: 18px;
+}
+
+.consentHistoryCard {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 22px;
+  align-items: center;
+  padding: 22px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 18px 48px rgba(8, 63, 82, 0.08);
+}
+
+.consentHistoryCard h2 {
+  margin: 0 0 12px;
+  color: #083f52;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.consentMeta {
+  display: grid;
+  gap: 7px;
+  color: #496678;
+  font-weight: 800;
+}
+
+.signaturePreview {
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  border: 1px dashed rgba(8, 63, 82, 0.2);
+  background: rgba(8, 63, 82, 0.03);
+  overflow: hidden;
+  color: #607488;
+  font-weight: 900;
+  text-align: center;
+}
+
+.signaturePreview img {
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+  background: #ffffff;
+}
+
+.emptySignature {
+  padding: 18px;
+}
+
+@media (max-width: 750px) {
+  .consentHistoryCard {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================
+   Memorial Settings
+   ============================ */
+
+.memorialSettingsBox {
+  margin: 24px 0;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(8, 63, 82, 0.12);
+  background: rgba(8, 63, 82, 0.035);
+}
+
+.slugPreviewRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.slugPreviewRow span {
+  color: #607488;
+  font-weight: 900;
+}
+
+.helperText {
+  margin: 10px 0 0;
+  color: #607488;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* ============================
+   Public Memorial Page
+   ============================ */
+
+.memorialShell {
+  min-height: 100vh;
+  padding: 56px 22px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(208, 146, 47, 0.18), transparent 32%),
+    radial-gradient(circle at 88% 16%, rgba(8, 63, 82, 0.08), transparent 34%),
+    #f8f1e6;
+}
+
+.memorialCard {
+  width: min(820px, 100%);
+  text-align: center;
+  padding: clamp(28px, 5vw, 54px);
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 24px 70px rgba(8, 63, 82, 0.12);
+}
+
+.memorialPhoto {
+  width: 230px;
+  height: 230px;
+  margin: 18px auto 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(208, 146, 47, 0.22), transparent 40%),
+    rgba(8, 63, 82, 0.06);
+  color: #083f52;
+  font-size: 3rem;
+  font-weight: 900;
+}
+
+.memorialPhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.memorialCard h1 {
+  margin: 0;
+  color: #083f52;
+  font-size: clamp(3rem, 8vw, 5.8rem);
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+}
+
+.memorialRelationship {
+  color: #c88424;
+  font-size: 1.2rem;
+  font-weight: 900;
+  margin: 18px 0 0;
+}
+
+.memorialBio {
+  max-width: 640px;
+  margin: 22px auto 0;
+  color: #496678;
+  line-height: 1.8;
+  font-size: 1.08rem;
+}
+
+.memorialFooter {
+  display: grid;
+  gap: 6px;
+  margin-top: 34px;
+  color: #607488;
+  font-weight: 800;
+}
+
+/* ============================
+   Memorial QR Code
+   ============================ */
+
+.qrCard {
+  width: min(1080px, 100%);
+  margin: 0 auto 34px;
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 24px;
+  align-items: center;
+  padding: 26px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 18px 48px rgba(8, 63, 82, 0.08);
+}
+
+.qrCard h2 {
+  color: #083f52;
+  margin: 0 0 10px;
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.qrCard p {
+  color: #496678;
+  line-height: 1.65;
+}
+
+.qrBox {
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1px solid rgba(8, 63, 82, 0.1);
+}
+
+.qrLinkBox {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(8, 63, 82, 0.05);
+  color: #083f52;
+  font-weight: 900;
+  word-break: break-all;
+}
+
+@media (max-width: 760px) {
+  .qrCard {
+    grid-template-columns: 1fr;
+  }
+}
+
+.publicMemoryBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(208, 146, 47, 0.14);
+  color: #c88424;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ============================
+   Public Memorial Memories
+   ============================ */
+
+.publicMemoriesSection {
+  width: min(980px, 100%);
+  margin: 34px auto 0;
+  padding: 28px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 18px 48px rgba(8, 63, 82, 0.08);
+}
+
+.publicMemoriesSection h2 {
+  color: #083f52;
+  margin: 0 0 22px;
+  font-size: clamp(2rem, 5vw, 3.3rem);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  text-align: center;
+}
+
+.publicMemoryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.publicMemoryCard {
+  background: #ffffff;
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  border-radius: 22px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.publicMemoryPreview {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: rgba(8, 63, 82, 0.04);
+  overflow: hidden;
+}
+
+.publicMemoryPreview img,
+.publicMemoryPreview video {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+.publicMemoryPreview audio {
+  width: 100%;
+}
+
+.publicMemoryInfo {
+  margin-top: 14px;
+}
+
+.publicMemoryInfo p {
+  margin: 0 0 6px;
+  color: #c88424;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+
+.publicMemoryInfo h3 {
+  margin: 0;
+  color: #083f52;
+  line-height: 1.35;
+  font-size: 1.05rem;
+}
+
+@media (max-width: 760px) {
+  .publicMemoryGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import AppLanguageToggle from "../../../components/app/AppLanguageToggle";
+import { supabase } from "../../../lib/supabaseClient";
+import SignaturePad from "../../../components/app/SignaturePad";
 
 const copy = {
   en: {
@@ -17,13 +18,20 @@ const copy = {
       "I understand that any AI voice feature must be used only for lawful, respectful, family legacy purposes and may not be used to impersonate, deceive, defraud, harass, or mislead anyone.",
       "I understand that VozEterna is in Founder Beta and that features, storage, privacy controls, AI tools, and service availability may change.",
     ],
-    fullName: "Full legal name",
-    placeholder: "Type your full legal name",
+    legalName: "Legal name on account",
+    signature: "Signature",
     checkbox:
       "I consent to voice recording and optional AI voice processing for VozEterna legacy purposes.",
     save: "Save Consent",
-    alert: "Please type your full legal name and accept the consent agreement.",
-    saved: "Consent saved on this device. You can now continue to recording.",
+    saving: "Saving...",
+    signInTitle: "Please sign in first",
+    signInText: "You need to sign in before saving a consent record.",
+    missingProfile: "Please set up your account legal name before signing consent.",
+    missingSignature: "Please sign inside the signature box before saving consent.",
+    alert: "Please accept the consent agreement before saving.",
+    signIn: "Sign in",
+    account: "Set up account",
+    saved: "Consent saved securely. You can now continue to recording.",
     continue: "Continue to recorder",
     back: "Back to app",
   },
@@ -39,13 +47,20 @@ const copy = {
       "Entiendo que cualquier función de voz por IA debe usarse únicamente para fines legales, respetuosos y de legado familiar, y no debe usarse para suplantar, engañar, defraudar, acosar o confundir a nadie.",
       "Entiendo que VozEterna está en Programa Fundador y que las funciones, almacenamiento, controles de privacidad, herramientas de IA y disponibilidad del servicio pueden cambiar.",
     ],
-    fullName: "Nombre legal completo",
-    placeholder: "Escribe tu nombre legal completo",
+    legalName: "Nombre legal en la cuenta",
+    signature: "Firma",
     checkbox:
       "Doy mi consentimiento para grabación de voz y procesamiento opcional de voz por IA para fines de legado en VozEterna.",
     save: "Guardar Consentimiento",
-    alert: "Por favor escribe tu nombre legal completo y acepta el consentimiento.",
-    saved: "Consentimiento guardado en este dispositivo. Ahora puedes continuar a grabar.",
+    saving: "Guardando...",
+    signInTitle: "Primero inicia sesión",
+    signInText: "Necesitas iniciar sesión antes de guardar un registro de consentimiento.",
+    missingProfile: "Por favor configura tu nombre legal antes de firmar el consentimiento.",
+    missingSignature: "Por favor firma dentro del recuadro antes de guardar el consentimiento.",
+    alert: "Por favor acepta el consentimiento antes de guardar.",
+    signIn: "Iniciar sesión",
+    account: "Configurar cuenta",
+    saved: "Consentimiento guardado de forma segura. Ahora puedes continuar a grabar.",
     continue: "Continuar a grabadora",
     back: "Volver a la app",
   },
@@ -53,29 +68,143 @@ const copy = {
 
 export default function ConsentPage() {
   const [language, setLanguage] = useState("en");
-  const [fullName, setFullName] = useState("");
+  const [user, setUser] = useState(null);
+  const [legalFullName, setLegalFullName] = useState("");
   const [accepted, setAccepted] = useState(false);
+  const [signatureDataUrl, setSignatureDataUrl] = useState("");
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+
   const t = copy[language];
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  useEffect(() => {
+    async function loadUserAndProfile() {
+      const { data: userData } = await supabase.auth.getUser();
+      const currentUser = userData.user;
+      setUser(currentUser);
 
-    if (!fullName.trim() || !accepted) {
+      if (!currentUser) return;
+
+      const { data } = await supabase
+        .from("user_profiles")
+        .select("legal_full_name")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+      if (data?.legal_full_name) {
+        setLegalFullName(data.legal_full_name);
+      }
+    }
+
+    loadUserAndProfile();
+  }, []);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setMessage("");
+
+    if (!accepted) {
       alert(t.alert);
       return;
     }
 
+    if (!user) {
+      setMessage(t.signInText);
+      return;
+    }
+
+    if (!legalFullName) {
+      setMessage(t.missingProfile);
+      return;
+    }
+
+    if (!signatureDataUrl) {
+      setMessage(t.missingSignature);
+      return;
+    }
+
+    setSaving(true);
+
     const consentRecord = {
-      fullName,
+      fullName: legalFullName,
       accepted,
       acceptedAt: new Date().toISOString(),
       agreementVersion: "Founder Beta Consent v1",
       language,
+      signatureCaptured: true,
     };
 
     localStorage.setItem("vozeterna_voice_consent", JSON.stringify(consentRecord));
+
+    const { error } = await supabase.from("consent_records").insert({
+      user_id: user.id,
+      full_name: legalFullName,
+      signer_profile_name: legalFullName,
+      signature_data_url: signatureDataUrl,
+      consent_type: "voice_recording_ai_processing",
+      agreement_version: "Founder Beta Consent v1",
+      language,
+      accepted: true,
+      accepted_at: new Date().toISOString(),
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+    });
+
+    if (error) {
+      setMessage(error.message);
+      setSaving(false);
+      return;
+    }
+
     setSaved(true);
+    setSaving(false);
+
+    setTimeout(() => {
+      window.location.href = "/app/record";
+    }, 900);
+  }
+
+  if (!user) {
+    return (
+      <main className="appShell">
+        <section className="appHero compact">
+          <p className="appEyebrow">{t.step}</p>
+          <h1>{t.signInTitle}</h1>
+          <p>{t.signInText}</p>
+
+          <div className="buttonRow">
+            <Link href="/app/login" className="appButton">
+              {t.signIn}
+            </Link>
+
+            <Link href="/app" className="appButton secondary">
+              {t.back}
+            </Link>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  if (!legalFullName) {
+    return (
+      <main className="appShell">
+        <section className="appHero compact">
+          <p className="appEyebrow">{t.step}</p>
+          <h1>{t.missingProfile}</h1>
+
+          <div className="buttonRow">
+            <Link href="/app/account" className="appButton">
+              {t.account}
+            </Link>
+
+            <Link href="/app" className="appButton secondary">
+              {t.back}
+            </Link>
+          </div>
+        </section>
+      </main>
+    );
   }
 
   return (
@@ -85,7 +214,23 @@ export default function ConsentPage() {
           {t.back}
         </Link>
 
-        <AppLanguageToggle language={language} setLanguage={setLanguage} />
+        <div className="appLanguageToggle" aria-label="Language selector">
+          <button
+            type="button"
+            className={language === "en" ? "active" : ""}
+            onClick={() => setLanguage("en")}
+          >
+            EN
+          </button>
+
+          <button
+            type="button"
+            className={language === "es" ? "active" : ""}
+            onClick={() => setLanguage("es")}
+          >
+            ES
+          </button>
+        </div>
       </div>
 
       <section className="appHero compact">
@@ -101,17 +246,11 @@ export default function ConsentPage() {
           <p key={paragraph}>{paragraph}</p>
         ))}
 
-        <label className="fieldLabel" htmlFor="fullName">
-          {t.fullName}
-        </label>
+        <label className="fieldLabel">{t.legalName}</label>
+        <div className="lockedNameBox">{legalFullName}</div>
 
-        <input
-          id="fullName"
-          className="appInput"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          placeholder={t.placeholder}
-        />
+        <label className="fieldLabel">{t.signature}</label>
+        <SignaturePad onChange={setSignatureDataUrl} />
 
         <label className="checkRow">
           <input
@@ -122,9 +261,11 @@ export default function ConsentPage() {
           <span>{t.checkbox}</span>
         </label>
 
-        <button className="appButton" type="submit">
-          {t.save}
+        <button className="appButton" type="submit" disabled={saving}>
+          {saving ? t.saving : t.save}
         </button>
+
+        {message && <div className="successBox">{message}</div>}
 
         {saved && (
           <div className="successBox">

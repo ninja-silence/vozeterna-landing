@@ -70,6 +70,10 @@ export default function ProfilePage() {
             Record memories
           </Link>
 
+          <Link href="/app/consent-history" className="appButton secondary">
+            Consent history
+          </Link>
+
           <button className="appButton danger" onClick={signOut}>
             Sign out
           </button>
