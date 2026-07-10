@@ -2771,3 +2771,309 @@ img[src="/brand/logo-primary.png"] {
   border-radius: 18px;
   display: block;
 }
+
+/* ============================
+   VozEterna App MVP
+   ============================ */
+
+.appShell {
+  min-height: 100vh;
+  padding: 52px 24px 80px;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(208, 146, 47, 0.14), transparent 34%),
+    linear-gradient(180deg, #fffaf1 0%, #fbf4e8 100%);
+  color: #083f52;
+}
+
+.appHero {
+  width: min(1080px, 100%);
+  margin: 0 auto 34px;
+}
+
+.appHero.compact {
+  max-width: 880px;
+}
+
+.appEyebrow {
+  color: #c88424;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.appHero h1 {
+  margin: 0;
+  color: #083f52;
+  font-size: clamp(3rem, 8vw, 5rem);
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+}
+
+.appHero p {
+  max-width: 760px;
+  color: #496678;
+  font-size: 1.08rem;
+  line-height: 1.75;
+}
+
+.appGrid {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.appCard,
+.consentBox,
+.recorderCard,
+.uploadBox {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(8, 63, 82, 0.10);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 18px 48px rgba(8, 63, 82, 0.08);
+}
+
+.appCard {
+  color: #083f52;
+  text-decoration: none;
+}
+
+.appCard span {
+  color: #c88424;
+  font-weight: 900;
+}
+
+.appCard h2,
+.consentBox h2,
+.recorderCard h2,
+.uploadBox h2 {
+  color: #083f52;
+  margin: 10px 0 12px;
+}
+
+.appCard p,
+.consentBox p,
+.recorderCard p,
+.uploadBox p {
+  color: #496678;
+  line-height: 1.7;
+}
+
+.consentBox,
+.uploadBox {
+  width: min(880px, 100%);
+  margin: 0 auto;
+}
+
+.fieldLabel {
+  display: block;
+  margin: 20px 0 8px;
+  font-weight: 900;
+  color: #083f52;
+}
+
+.appInput {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(8, 63, 82, 0.18);
+  border-radius: 12px;
+  padding: 0 14px;
+  font: inherit;
+  color: #083f52;
+  background: #ffffff;
+}
+
+.checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 20px 0;
+  color: #496678;
+  line-height: 1.6;
+}
+
+.checkRow input {
+  margin-top: 5px;
+}
+
+.appButton {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border-radius: 12px;
+  background: #083f52;
+  color: #ffffff;
+  border: 1px solid #083f52;
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.appButton.secondary {
+  background: #ffffff;
+  color: #083f52;
+}
+
+.appButton.danger {
+  background: #9f2d2d;
+  border-color: #9f2d2d;
+}
+
+.successBox {
+  margin-top: 22px;
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(37, 211, 102, 0.13);
+  color: #083f52;
+  font-weight: 800;
+}
+
+.recorderGrid {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.buttonRow,
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.filterRow button {
+  min-height: 38px;
+  border: 1px solid rgba(8, 63, 82, 0.14);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #083f52;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0 14px;
+}
+
+.cameraPreview,
+.recordedVideo {
+  width: 100%;
+  max-width: 720px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #071f28;
+  border-radius: 20px;
+  display: block;
+}
+
+.previewBox {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.uploadDrop {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  border: 2px dashed rgba(8, 63, 82, 0.22);
+  border-radius: 22px;
+  background: rgba(8, 63, 82, 0.04);
+  cursor: pointer;
+  text-align: center;
+  padding: 22px;
+}
+
+.uploadDrop input {
+  display: none;
+}
+
+.uploadDrop span {
+  color: #083f52;
+  font-weight: 900;
+}
+
+.fileList {
+  margin-top: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.fileItem {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(8, 63, 82, 0.05);
+  color: #496678;
+}
+
+.fileItem strong {
+  color: #083f52;
+}
+
+@media (max-width: 850px) {
+  .appGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .fileItem {
+    grid-template-columns: 1fr;
+  }
+
+  .appShell {
+    padding: 32px 18px 64px;
+  }
+}
+
+/* App language toggle */
+.appTopBar {
+  width: min(1080px, 100%);
+  margin: 0 auto 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.appLanguageToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(8, 63, 82, 0.08);
+}
+
+.appLanguageToggle button {
+  border: 0;
+  border-radius: 999px;
+  min-width: 42px;
+  min-height: 34px;
+  padding: 0 12px;
+  background: transparent;
+  color: #083f52;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.appLanguageToggle button.active {
+  background: #083f52;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(8, 63, 82, 0.18);
+}
+
+@media (max-width: 650px) {
+  .appTopBar {
+    align-items: flex-start;
+    flex-direction: column-reverse;
+  }
+}
