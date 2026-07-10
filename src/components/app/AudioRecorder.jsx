@@ -3,184 +3,203 @@
 import { useRef, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 
+const copy = {
+  en: {
+    eyebrow: "Audio Recorder",
+    title: "Record a voice memory",
+    text: "Save a blessing, prayer, story, message, or voice note directly to the private vault.",
+    start: "Start audio recording",
+    stop: "Stop recording",
+    save: "Save voice memory",
+    saving: "Saving...",
+    listen: "Preview recording",
+    ready: "Recording ready. Listen before saving.",
+    saved: "Voice memory saved successfully.",
+    noUser: "Please sign in before recording.",
+    noLovedOne: "Please choose a loved one profile before saving.",
+    noRecording: "Please record audio first.",
+    permission:
+      "Microphone access was blocked or unavailable. Please allow microphone permission and try again.",
+  },
+  es: {
+    eyebrow: "Grabadora de audio",
+    title: "Graba un recuerdo de voz",
+    text: "Guarda una bendición, oración, historia, mensaje o nota de voz directamente en la bóveda privada.",
+    start: "Iniciar grabación de audio",
+    stop: "Detener grabación",
+    save: "Guardar recuerdo de voz",
+    saving: "Guardando...",
+    listen: "Escuchar grabación",
+    ready: "Grabación lista. Escúchala antes de guardarla.",
+    saved: "Recuerdo de voz guardado correctamente.",
+    noUser: "Por favor inicia sesión antes de grabar.",
+    noLovedOne: "Por favor elige un perfil de ser querido antes de guardar.",
+    noRecording: "Primero graba un audio.",
+    permission:
+      "El acceso al micrófono fue bloqueado o no está disponible. Permite el micrófono e intenta otra vez.",
+  },
+};
+
 export default function AudioRecorder({
   language = "en",
   user,
   lovedOneId,
-  memoryType = "voice_of_person",
-  memoryNote = "",
+  memoryType,
+  memoryNote,
 }) {
-  const mediaRecorderRef = useRef(null);
-  const chunksRef = useRef([]);
-  const [recording, setRecording] = useState(false);
-  const [audioUrl, setAudioUrl] = useState("");
-  const [audioBlob, setAudioBlob] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState("");
+  const t = copy[language] || copy.en;
 
-  const t = {
-    en: {
-      title: "Audio Recorder",
-      text: "Record a voice memory, blessing, prayer, story, or message.",
-      start: "Start Audio Recording",
-      stop: "Stop Recording",
-      download: "Download audio",
-      save: "Save to Vault",
-      saving: "Saving...",
-      saved: "Audio memory saved to this legacy vault.",
-      consentAlert: "Please complete the consent agreement before recording.",
-      signInAlert: "Please sign in before saving.",
-      profileAlert: "Please choose a loved one profile before saving.",
-      noRecordingAlert: "Please record audio before saving.",
-    },
-    es: {
-      title: "Grabadora de Audio",
-      text: "Graba un recuerdo de voz, bendición, oración, historia o mensaje.",
-      start: "Iniciar Grabación de Audio",
-      stop: "Detener Grabación",
-      download: "Descargar audio",
-      save: "Guardar en Bóveda",
-      saving: "Guardando...",
-      saved: "Recuerdo de audio guardado en esta bóveda de legado.",
-      consentAlert: "Por favor completa el consentimiento antes de grabar.",
-      signInAlert: "Por favor inicia sesión antes de guardar.",
-      profileAlert: "Por favor elige un perfil de ser querido antes de guardar.",
-      noRecordingAlert: "Por favor graba un audio antes de guardar.",
-    },
-  }[language];
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+
+  const [recording, setRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [audioUrl, setAudioUrl] = useState("");
+  const [message, setMessage] = useState("");
+  const [saving, setSaving] = useState(false);
 
   async function startRecording() {
-    const consent = localStorage.getItem("vozeterna_voice_consent");
-
-    if (!consent) {
-      alert(t.consentAlert);
-      return;
-    }
-
     setMessage("");
-    setAudioUrl("");
-    setAudioBlob(null);
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    chunksRef.current = [];
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-    const recorder = new MediaRecorder(stream);
-    mediaRecorderRef.current = recorder;
+      audioChunksRef.current = [];
 
-    recorder.ondataavailable = (event) => {
-      if (event.data.size > 0) chunksRef.current.push(event.data);
-    };
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
 
-    recorder.onstop = () => {
-      const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-      const url = URL.createObjectURL(blob);
-      setAudioBlob(blob);
-      setAudioUrl(url);
-      stream.getTracks().forEach((track) => track.stop());
-    };
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
 
-    recorder.start();
-    setRecording(true);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const url = URL.createObjectURL(blob);
+
+        setAudioBlob(blob);
+        setAudioUrl(url);
+        setMessage(t.ready);
+
+        stream.getTracks().forEach((track) => track.stop());
+      };
+
+      mediaRecorder.start();
+      setRecording(true);
+    } catch {
+      setMessage(t.permission);
+    }
   }
 
   function stopRecording() {
-    mediaRecorderRef.current?.stop();
-    setRecording(false);
+    if (mediaRecorderRef.current && recording) {
+      mediaRecorderRef.current.stop();
+      setRecording(false);
+    }
   }
 
-  async function saveToVault() {
+  async function saveRecording() {
+    setMessage("");
+
     if (!user) {
-      setMessage(t.signInAlert);
+      setMessage(t.noUser);
       return;
     }
 
     if (!lovedOneId) {
-      setMessage(t.profileAlert);
+      setMessage(t.noLovedOne);
       return;
     }
 
     if (!audioBlob) {
-      setMessage(t.noRecordingAlert);
+      setMessage(t.noRecording);
       return;
     }
 
     setSaving(true);
-    setMessage("");
 
     const fileName = `voice-memory-${Date.now()}.webm`;
     const filePath = `${user.id}/${lovedOneId}/${fileName}`;
 
-    const { data: storageData, error: storageError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from("family-media")
       .upload(filePath, audioBlob, {
         contentType: "audio/webm",
-        cacheControl: "3600",
-        upsert: false,
       });
 
-    if (storageError) {
-      setMessage(storageError.message);
+    if (uploadError) {
+      setMessage(uploadError.message);
       setSaving(false);
       return;
     }
 
-    const { error: dbError } = await supabase.from("media_assets").insert({
+    const { error: insertError } = await supabase.from("media_assets").insert({
       user_id: user.id,
       loved_one_id: lovedOneId,
       file_name: fileName,
-      file_path: storageData.path,
+      file_path: filePath,
       file_type: "audio/webm",
       file_size: audioBlob.size,
-      title: fileName,
       memory_type: memoryType || "voice_of_person",
       memory_note: memoryNote?.trim() || null,
       visibility: "private",
+      show_on_memorial: false,
     });
 
-    if (dbError) {
-      setMessage(dbError.message);
+    if (insertError) {
+      setMessage(insertError.message);
       setSaving(false);
       return;
     }
 
     setMessage(t.saved);
+    setAudioBlob(null);
+    setAudioUrl("");
     setSaving(false);
   }
 
   return (
-    <div className="recorderCard">
-      <h2>{t.title}</h2>
-      <p>{t.text}</p>
+    <section className="recorderPanel audioRecorderPanel">
+      <div className="recorderPanelHeader">
+        <div>
+          <p className="appEyebrow">{t.eyebrow}</p>
+          <h2>{t.title}</h2>
+          <p>{t.text}</p>
+        </div>
 
-      <div className="buttonRow">
-        {!recording ? (
-          <button className="appButton" onClick={startRecording}>
-            {t.start}
-          </button>
-        ) : (
-          <button className="appButton danger" onClick={stopRecording}>
-            {t.stop}
-          </button>
-        )}
+        <div className={recording ? "recorderPulse active" : "recorderPulse"}>
+          <span />
+        </div>
       </div>
 
       {audioUrl && (
-        <div className="previewBox">
+        <div className="audioPreviewBox">
+          <p className="appEyebrow">{t.listen}</p>
           <audio controls src={audioUrl} />
-
-          <div className="buttonRow">
-            <a className="appButton secondary" href={audioUrl} download="vozeterna-voice-memory.webm">
-              {t.download}
-            </a>
-
-            <button className="appButton" onClick={saveToVault} disabled={saving}>
-              {saving ? t.saving : t.save}
-            </button>
-          </div>
         </div>
       )}
 
-      {message && <div className="successBox">{message}</div>}
-    </div>
+      {message && <div className="successBox recorderMessage">{message}</div>}
+
+      <div className="buttonRow">
+        {!recording ? (
+          <button type="button" className="appButton" onClick={startRecording}>
+            {t.start}
+          </button>
+        ) : (
+          <button type="button" className="appButton dangerButton" onClick={stopRecording}>
+            {t.stop}
+          </button>
+        )}
+
+        {audioBlob && (
+          <button type="button" className="appButton secondary" onClick={saveRecording} disabled={saving}>
+            {saving ? t.saving : t.save}
+          </button>
+        )}
+      </div>
+    </section>
   );
 }

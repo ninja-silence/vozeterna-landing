@@ -3,75 +3,159 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { supabase } from "../../../../lib/supabaseClient";
 import MemoryActions from "../../../../components/app/MemoryActions";
 import MemorialQrCode from "../../../../components/app/MemorialQrCode";
+import { supabase } from "../../../../lib/supabaseClient";
+import { getStoredAppLanguage } from "../../../../lib/appLanguage";
+
+const copy = {
+  en: {
+    loading: "Loading...",
+    notFound: "Profile not found",
+    notFoundText: "This loved one profile may not exist or you may not have access to it.",
+    profile: "Legacy Profile",
+    publicMemorial: "Public memorial enabled",
+    privateProfile: "Private profile",
+    relationship: "Relationship",
+    born: "Born",
+    passed: "Passed",
+    backProfiles: "Back to profiles",
+    editProfile: "Edit profile",
+    uploadMemory: "Upload memory",
+    recordMemory: "Record memory",
+    lifeStory: "Life Story",
+    noLifeStory: "No life story has been added yet.",
+    memories: "Private Vault Memories",
+    memoriesText:
+      "These memories are stored in your private family vault. Only memories you approve will appear on the public memorial page.",
+    noMemories: "No memories added yet",
+    noMemoriesText:
+      "Upload a photo, audio message, video, document, or record a memory connected to this profile.",
+    addedPublic: "Memory added to public memorial page.",
+    removedPublic: "Memory hidden from public memorial page.",
+    deleted: "Memory deleted.",
+    deleteConfirm: "Delete this memory? This cannot be undone.",
+    publicBadge: "Public",
+    privateBadge: "Private",
+    saved: "Saved",
+    unknownDate: "Unknown date",
+    memoryTypes: {
+      photo_of_person: "Photo",
+      photo_from_person: "Photo from them",
+      story_about_person: "Story",
+      message_from_person: "Message",
+      voice_of_person: "Voice",
+      family_memory: "Family Memory",
+      document_or_keepsake: "Keepsake",
+    },
+  },
+  es: {
+    loading: "Cargando...",
+    notFound: "Perfil no encontrado",
+    notFoundText: "Este perfil puede no existir o quizá no tienes acceso.",
+    profile: "Perfil de legado",
+    publicMemorial: "Memorial público activado",
+    privateProfile: "Perfil privado",
+    relationship: "Parentesco",
+    born: "Nacimiento",
+    passed: "Fallecimiento",
+    backProfiles: "Volver a perfiles",
+    editProfile: "Editar perfil",
+    uploadMemory: "Subir recuerdo",
+    recordMemory: "Grabar recuerdo",
+    lifeStory: "Historia de vida",
+    noLifeStory: "Todavía no se ha agregado una historia de vida.",
+    memories: "Recuerdos de la bóveda privada",
+    memoriesText:
+      "Estos recuerdos están guardados en tu bóveda familiar privada. Solo los recuerdos que apruebes aparecerán en la página memorial pública.",
+    noMemories: "Todavía no hay recuerdos",
+    noMemoriesText:
+      "Sube una foto, mensaje de audio, video, documento o graba un recuerdo conectado a este perfil.",
+    addedPublic: "Recuerdo agregado a la página memorial pública.",
+    removedPublic: "Recuerdo ocultado de la página memorial pública.",
+    deleted: "Recuerdo eliminado.",
+    deleteConfirm: "¿Eliminar este recuerdo? Esta acción no se puede deshacer.",
+    publicBadge: "Público",
+    privateBadge: "Privado",
+    saved: "Guardado",
+    unknownDate: "Fecha desconocida",
+    memoryTypes: {
+      photo_of_person: "Foto",
+      photo_from_person: "Foto de esa persona",
+      story_about_person: "Historia",
+      message_from_person: "Mensaje",
+      voice_of_person: "Voz",
+      family_memory: "Recuerdo familiar",
+      document_or_keepsake: "Recuerdo especial",
+    },
+  },
+};
 
 export default function LovedOneDetailPage() {
   const params = useParams();
-  const lovedOneId = params.id;
+  const id = params.id;
 
-  const [user, setUser] = useState(null);
+  const [language, setLanguage] = useState("en");
   const [person, setPerson] = useState(null);
-  const [profilePhotoUrl, setProfilePhotoUrl] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
   const [memories, setMemories] = useState([]);
   const [signedUrls, setSignedUrls] = useState({});
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
+  const t = copy[language];
+
+  useEffect(() => {
+    setLanguage(getStoredAppLanguage());
+
+    function handleLanguageChange(event) {
+      setLanguage(event.detail?.language || getStoredAppLanguage());
+    }
+
+    window.addEventListener("vozeterna-language-change", handleLanguageChange);
+
+    return () => {
+      window.removeEventListener("vozeterna-language-change", handleLanguageChange);
+    };
+  }, []);
+
   useEffect(() => {
     async function loadProfile() {
-      const { data: userData } = await supabase.auth.getUser();
-      const currentUser = userData.user;
-
-      setUser(currentUser);
-
-      if (!currentUser) {
-        setLoading(false);
-        return;
-      }
-
-      const { data: personData, error: personError } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from("loved_ones")
         .select("*")
-        .eq("id", lovedOneId)
-        .single();
+        .eq("id", id)
+        .maybeSingle();
 
-      if (personError) {
-        setMessage(personError.message);
+      if (profileError || !profileData) {
         setLoading(false);
         return;
       }
 
-      setPerson(personData);
+      setPerson(profileData);
 
-      if (personData.profile_photo_path) {
+      if (profileData.profile_photo_path) {
         const { data: signedPhotoData } = await supabase.storage
           .from("family-media")
-          .createSignedUrl(personData.profile_photo_path, 60 * 10);
+          .createSignedUrl(profileData.profile_photo_path, 60 * 10);
 
         if (signedPhotoData?.signedUrl) {
-          setProfilePhotoUrl(signedPhotoData.signedUrl);
+          setPhotoUrl(signedPhotoData.signedUrl);
         }
       }
 
-      const { data: memoryData, error: memoryError } = await supabase
+      const { data: memoryData } = await supabase
         .from("media_assets")
         .select("*")
-        .eq("loved_one_id", lovedOneId)
+        .eq("loved_one_id", id)
         .order("created_at", { ascending: false });
 
-      if (memoryError) {
-        setMessage(memoryError.message);
-        setLoading(false);
-        return;
-      }
-
-      setMemories(memoryData || []);
+      const profileMemories = memoryData || [];
+      setMemories(profileMemories);
 
       const urlMap = {};
 
-      for (const memory of memoryData || []) {
+      for (const memory of profileMemories) {
         const { data: signedData } = await supabase.storage
           .from("family-media")
           .createSignedUrl(memory.file_path, 60 * 10);
@@ -86,34 +170,48 @@ export default function LovedOneDetailPage() {
     }
 
     loadProfile();
-  }, [lovedOneId]);
+  }, [id]);
 
-  async function deleteMemory(memory) {
-    const confirmed = window.confirm(`Delete "${memory.file_name}" from this legacy profile?`);
+  function getInitials(name) {
+    return (
+      name
+        ?.split(" ")
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase() || "VE"
+    );
+  }
 
-    if (!confirmed) return;
+  function formatDate(value) {
+    if (!value) return null;
 
-    const { error: storageError } = await supabase.storage
-      .from("family-media")
-      .remove([memory.file_path]);
+    return new Intl.DateTimeFormat(language === "es" ? "es-MX" : "en-US", {
+      dateStyle: "medium",
+    }).format(new Date(`${value}T00:00:00`));
+  }
 
-    if (storageError) {
-      setMessage(`Storage delete failed: ${storageError.message}`);
-      return;
-    }
+  function formatCreatedDate(value) {
+    if (!value) return t.unknownDate;
 
-    const { error: dbError } = await supabase
-      .from("media_assets")
-      .delete()
-      .eq("id", memory.id);
+    return new Intl.DateTimeFormat(language === "es" ? "es-MX" : "en-US", {
+      dateStyle: "medium",
+    }).format(new Date(value));
+  }
 
-    if (dbError) {
-      setMessage(`Database delete failed: ${dbError.message}`);
-      return;
-    }
+  function getFileKind(fileName, fileType) {
+    const type = fileType || "";
+    const lower = fileName.toLowerCase();
 
-    setMemories((current) => current.filter((item) => item.id !== memory.id));
-    setMessage("Memory deleted successfully.");
+    if (type.startsWith("image/") || lower.match(/\.(jpg|jpeg|png|webp)$/)) return "image";
+    if (type.startsWith("audio/") || lower.match(/\.(mp3|wav|webm|mpeg)$/)) return "audio";
+    if (type.startsWith("video/") || lower.match(/\.(mp4|mov|webm|quicktime)$/)) return "video";
+
+    return "file";
+  }
+
+  function formatMemoryType(type) {
+    return t.memoryTypes[type] || (language === "es" ? "Recuerdo" : "Memory");
   }
 
   async function toggleMemoryPublic(memory) {
@@ -135,62 +233,33 @@ export default function LovedOneDetailPage() {
       )
     );
 
-    setMessage(nextValue ? "Memory added to public memorial page." : "Memory hidden from public memorial page.");
+    setMessage(nextValue ? t.addedPublic : t.removedPublic);
   }
 
-  function formatMemoryType(type) {
-    const labels = {
-      photo_of_person: "Photo of this person",
-      photo_from_person: "Photo from this person",
-      story_about_person: "Story about this person",
-      message_from_person: "Message from this person",
-      voice_of_person: "Voice of this person",
-      family_memory: "Family memory",
-      document_or_keepsake: "Document or keepsake",
-    };
+  async function deleteMemory(memory) {
+    const confirmed = window.confirm(t.deleteConfirm);
 
-    return labels[type] || "";
-  }
+    if (!confirmed) return;
 
-  function getFileKind(fileName, fileType) {
-    const type = fileType || "";
-    const lower = fileName.toLowerCase();
+    await supabase.storage.from("family-media").remove([memory.file_path]);
 
-    if (type.startsWith("image/") || lower.match(/\.(jpg|jpeg|png|webp)$/)) return "image";
-    if (type.startsWith("audio/") || lower.match(/\.(mp3|wav|webm|mpeg)$/)) return "audio";
-    if (type.startsWith("video/") || lower.match(/\.(mp4|mov|webm|quicktime)$/)) return "video";
+    const { error } = await supabase.from("media_assets").delete().eq("id", memory.id);
 
-    return "file";
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    setMemories((current) => current.filter((item) => item.id !== memory.id));
+    setMessage(t.deleted);
   }
 
   if (loading) {
     return (
       <main className="appShell">
         <section className="appHero compact">
-          <p className="appEyebrow">Legacy Profile</p>
-          <h1>Loading profile...</h1>
-        </section>
-      </main>
-    );
-  }
-
-  if (!user) {
-    return (
-      <main className="appShell">
-        <section className="appHero compact">
-          <p className="appEyebrow">Legacy Profile</p>
-          <h1>Please sign in</h1>
-          <p>You need to sign in before viewing this private legacy profile.</p>
-
-          <div className="buttonRow">
-            <Link href="/app/login" className="appButton">
-              Sign in
-            </Link>
-
-            <Link href="/app" className="appButton secondary">
-              Back to app
-            </Link>
-          </div>
+          <p className="appEyebrow">{t.profile}</p>
+          <h1>{t.loading}</h1>
         </section>
       </main>
     );
@@ -200,12 +269,12 @@ export default function LovedOneDetailPage() {
     return (
       <main className="appShell">
         <section className="appHero compact">
-          <p className="appEyebrow">Legacy Profile</p>
-          <h1>Profile not found</h1>
-          <p>This profile could not be found or you may not have permission to view it.</p>
+          <p className="appEyebrow">{t.profile}</p>
+          <h1>{t.notFound}</h1>
+          <p>{t.notFoundText}</p>
 
           <Link href="/app/loved-ones" className="appButton">
-            Back to profiles
+            {t.backProfiles}
           </Link>
         </section>
       </main>
@@ -213,92 +282,140 @@ export default function LovedOneDetailPage() {
   }
 
   return (
-    <main className="appShell">
-      <section className="profileHeroCard profileHeroWithPhoto">
-        <div className="profileHeroPhoto">
-          {profilePhotoUrl ? (
-            <img src={profilePhotoUrl} alt={person.full_name} />
-          ) : (
-            <span>
-              {person.full_name
-                ?.split(" ")
-                .slice(0, 2)
-                .map((part) => part[0])
-                .join("")
-                .toUpperCase() || "VE"}
-            </span>
-          )}
+    <main className="appShell personVaultShell">
+      <section className="personVaultHero">
+        <div className="personVaultPhotoWrap">
+          <div className="personVaultPhoto">
+            {photoUrl ? (
+              <img src={photoUrl} alt={person.full_name} />
+            ) : (
+              <span>{getInitials(person.full_name)}</span>
+            )}
+          </div>
         </div>
 
-        <div>
-          <p className="appEyebrow">Legacy Profile</p>
+        <div className="personVaultInfo">
+          <p className="appEyebrow">
+            {person.memorial_public ? t.publicMemorial : t.privateProfile}
+          </p>
+
           <h1>{person.full_name}</h1>
 
-          {person.relationship && <p className="profileRelationship">{person.relationship}</p>}
+          <div className="personVaultDetails">
+            {person.relationship && (
+              <p>
+                <strong>{t.relationship}:</strong> {person.relationship}
+              </p>
+            )}
 
-          {person.bio && <p className="profileBio">{person.bio}</p>}
+            {person.birth_date && (
+              <p>
+                <strong>{t.born}:</strong> {formatDate(person.birth_date)}
+              </p>
+            )}
+
+            {person.death_date && (
+              <p>
+                <strong>{t.passed}:</strong> {formatDate(person.death_date)}
+              </p>
+            )}
+          </div>
 
           <div className="buttonRow">
-            <Link href={`/app/upload?lovedOneId=${person.id}`} className="appButton">
-              Upload memories
-            </Link>
-
-            <Link href={`/app/loved-ones/${person.id}/edit`} className="appButton secondary">
-              Edit profile
-            </Link>
-
             <Link href="/app/loved-ones" className="appButton secondary">
-              Back to profiles
+              {t.backProfiles}
+            </Link>
+
+            <Link href={`/app/loved-ones/${person.id}/edit`} className="appButton">
+              {t.editProfile}
+            </Link>
+
+            <Link href={`/app/upload?lovedOneId=${person.id}`} className="appButton ghost">
+              {t.uploadMemory}
+            </Link>
+
+            <Link href={`/app/record?lovedOneId=${person.id}`} className="appButton ghost">
+              {t.recordMemory}
             </Link>
           </div>
         </div>
       </section>
 
-      {person.memorial_public && person.memorial_slug && (
-        <MemorialQrCode
-          url={`${window.location.origin}/memorial/${person.memorial_slug}`}
-        />
-      )}
+      <section className="personVaultMiddleGrid">
+        <article className="personStoryCard">
+          <p className="appEyebrow">{t.lifeStory}</p>
+          <h2>{t.lifeStory}</h2>
+          <p>{person.bio || t.noLifeStory}</p>
+        </article>
 
-      <section className="libraryBox">
-        <div className="sectionMiniHeader">
-          <p className="appEyebrow">Saved Memories</p>
-          <h2>{person.full_name}'s Legacy Vault</h2>
+        {person.memorial_public && person.memorial_slug ? (
+          <MemorialQrCode
+            url={`${window.location.origin}/memorial/${person.memorial_slug}`}
+          />
+        ) : (
+          <article className="personPrivacyCard">
+            <span>VE</span>
+            <h2>{language === "es" ? "Bóveda privada" : "Private vault"}</h2>
+            <p>
+              {language === "es"
+                ? "Este perfil está protegido. Puedes activar una página memorial pública desde Editar perfil."
+                : "This profile is protected. You can enable a public memorial page from Edit profile."}
+            </p>
+          </article>
+        )}
+      </section>
+
+      <section className="personMemoriesSection">
+        <div className="personMemoriesHeader">
+          <div>
+            <p className="appEyebrow">{t.memories}</p>
+            <h2>{t.memories}</h2>
+            <p>{t.memoriesText}</p>
+          </div>
+
+          <div className="buttonRow">
+            <Link href={`/app/upload?lovedOneId=${person.id}`} className="appButton">
+              {t.uploadMemory}
+            </Link>
+
+            <Link href={`/app/record?lovedOneId=${person.id}`} className="appButton secondary">
+              {t.recordMemory}
+            </Link>
+          </div>
         </div>
 
-        {message && <div className="successBox">{message}</div>}
+        {message && <div className="successBox personVaultMessage">{message}</div>}
 
         {memories.length === 0 ? (
           <div className="emptyState">
-            <h2>No memories yet</h2>
-            <p>Upload photos, voice recordings, videos, or stories for this profile.</p>
-
-            <Link href={`/app/upload?lovedOneId=${person.id}`} className="appButton">
-              Upload first memory
-            </Link>
+            <h2>{t.noMemories}</h2>
+            <p>{t.noMemoriesText}</p>
           </div>
         ) : (
-          <div className="libraryGrid">
+          <div className="memoryGalleryGrid personMemoryGrid">
             {memories.map((memory) => {
               const kind = getFileKind(memory.file_name, memory.file_type);
               const url = signedUrls[memory.id];
 
               return (
-                <article className="memoryCard" key={memory.id}>
-                  <div className="memoryPreview">
+                <article className="memoryGalleryCard" key={memory.id}>
+                  <div className="memoryGalleryPreview">
                     {kind === "image" && url && <img src={url} alt={memory.file_name} />}
-                    {kind === "audio" && url && <audio controls src={url} />}
-                    {kind === "video" && url && <video controls src={url} />}
-                    {kind === "file" && <span>File</span>}
-                  </div>
-
-                  <div className="memoryInfo">
-                    <h2>{memory.file_name}</h2>
-                    <p>{formatMemoryType(memory.memory_type) || kind.toUpperCase()}</p>
-
-                    {memory.memory_note && (
-                      <p className="memoryBio">{memory.memory_note}</p>
+                    {kind === "audio" && url && (
+                      <div className="audioMemoryPreview">
+                        <span>♪</span>
+                        <audio controls src={url} />
+                      </div>
                     )}
+                    {kind === "video" && url && <video controls src={url} />}
+                    {kind === "file" && <span className="fileMemoryIcon">VE</span>}
+
+                    <div className="memoryGalleryOverlay">
+                      <span>{formatMemoryType(memory.memory_type)}</span>
+                      <span className={memory.show_on_memorial ? "publicStatus" : "privateStatus"}>
+                        {memory.show_on_memorial ? t.publicBadge : t.privateBadge}
+                      </span>
+                    </div>
 
                     <MemoryActions
                       url={url}
@@ -307,6 +424,18 @@ export default function LovedOneDetailPage() {
                       onTogglePublic={() => toggleMemoryPublic(memory)}
                       onDelete={() => deleteMemory(memory)}
                     />
+                  </div>
+
+                  <div className="memoryGalleryInfo">
+                    <p className="memoryProfileName">{person.full_name}</p>
+                    <h2>{memory.memory_note || memory.title || memory.file_name}</h2>
+
+                    <div className="memoryGalleryMeta">
+                      <span>{memory.file_name}</span>
+                      <span>
+                        {t.saved}: {formatCreatedDate(memory.created_at)}
+                      </span>
+                    </div>
                   </div>
                 </article>
               );

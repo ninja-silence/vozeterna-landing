@@ -2,102 +2,130 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { supabase } from "../../../lib/supabaseClient";
 import SignaturePad from "../../../components/app/SignaturePad";
+import { supabase } from "../../../lib/supabaseClient";
+import { useAppLanguage } from "../../../lib/useAppLanguage";
 
 const copy = {
   en: {
-    step: "Step 1",
-    title: "Consent & Disclosure",
+    eyebrow: "Voice & AI Consent",
+    title: "Consent Before Recording",
     subtitle:
-      "Before recording, uploading, or creating a cloned voice, the person must clearly consent.",
-    formTitle: "Voice Recording and AI Voice Consent",
-    paragraphs: [
-      "I understand that VozEterna may allow me to record or upload my voice for preservation, transcription, family legacy purposes, and optional AI voice-related features.",
-      "I confirm that I am the person being recorded, or that I have the legal right and permission to submit this voice recording. I understand that AI voice cloning can create synthetic audio that sounds similar to the recorded person.",
-      "I understand that any AI voice feature must be used only for lawful, respectful, family legacy purposes and may not be used to impersonate, deceive, defraud, harass, or mislead anyone.",
-      "I understand that VozEterna is in Founder Beta and that features, storage, privacy controls, AI tools, and service availability may change.",
-    ],
-    legalName: "Legal name on account",
-    signature: "Signature",
-    checkbox:
-      "I consent to voice recording and optional AI voice processing for VozEterna legacy purposes.",
-    save: "Save Consent",
-    saving: "Saving...",
-    signInTitle: "Please sign in first",
-    signInText: "You need to sign in before saving a consent record.",
-    missingProfile: "Please set up your account legal name before signing consent.",
-    missingSignature: "Please sign inside the signature box before saving consent.",
-    alert: "Please accept the consent agreement before saving.",
+      "Review and sign the consent agreement before recording voice, video, or enabling future AI voice features.",
+    signInTitle: "Please sign in",
+    signInText: "You need to sign in before completing consent.",
     signIn: "Sign in",
-    account: "Set up account",
-    saved: "Consent saved securely. You can now continue to recording.",
-    continue: "Continue to recorder",
-    back: "Back to app",
+    accountRequiredTitle: "Legal name required",
+    accountRequiredText:
+      "Please set your legal name before signing consent. This connects the agreement to the correct account owner.",
+    accountSetup: "Set legal name",
+    legalName: "Legal name on account",
+    agreementVersion: "Founder Beta Consent v1",
+    summaryEyebrow: "Consent Summary",
+    summaryTitle: "What you are agreeing to",
+    summaryText:
+      "This consent helps VozEterna protect recordings, signatures, family memories, and future AI-related permissions.",
+    points: [
+      "You understand that voice and video memories are saved to your private vault.",
+      "You confirm you have the right or permission to upload or record the selected memories.",
+      "You understand future AI voice features require consent and must not be used for deception, fraud, harassment, or impersonation.",
+      "You understand private memories are not public unless you choose to share them on a memorial page.",
+    ],
+    signatureTitle: "Sign consent",
+    signatureText:
+      "Your signature will be saved with your legal name, agreement version, and timestamp.",
+    checkbox:
+      "I understand and agree to the VozEterna recording, voice, and AI processing consent terms.",
+    submit: "Sign and continue",
+    saving: "Saving consent...",
+    success: "Consent saved successfully.",
+    missingSignature: "Please add your signature before continuing.",
+    missingCheckbox: "Please confirm that you understand and agree.",
+    back: "Back to account",
+    record: "Continue to record",
+    trustTitle: "Built for family trust",
+    trustText:
+      "Consent records help keep legacy memories respectful, private, and connected to the correct account.",
   },
   es: {
-    step: "Paso 1",
-    title: "Consentimiento y Divulgación",
+    eyebrow: "Consentimiento de voz e IA",
+    title: "Consentimiento antes de grabar",
     subtitle:
-      "Antes de grabar, subir archivos o crear una voz clonada, la persona debe dar su consentimiento claramente.",
-    formTitle: "Consentimiento para Grabación de Voz e IA",
-    paragraphs: [
-      "Entiendo que VozEterna puede permitirme grabar o subir mi voz para preservación, transcripción, legado familiar y funciones opcionales relacionadas con voz por IA.",
-      "Confirmo que soy la persona que está siendo grabada, o que tengo el derecho legal y permiso para enviar esta grabación de voz. Entiendo que la clonación de voz por IA puede crear audio sintético que suena similar a la persona grabada.",
-      "Entiendo que cualquier función de voz por IA debe usarse únicamente para fines legales, respetuosos y de legado familiar, y no debe usarse para suplantar, engañar, defraudar, acosar o confundir a nadie.",
-      "Entiendo que VozEterna está en Programa Fundador y que las funciones, almacenamiento, controles de privacidad, herramientas de IA y disponibilidad del servicio pueden cambiar.",
-    ],
-    legalName: "Nombre legal en la cuenta",
-    signature: "Firma",
-    checkbox:
-      "Doy mi consentimiento para grabación de voz y procesamiento opcional de voz por IA para fines de legado en VozEterna.",
-    save: "Guardar Consentimiento",
-    saving: "Guardando...",
-    signInTitle: "Primero inicia sesión",
-    signInText: "Necesitas iniciar sesión antes de guardar un registro de consentimiento.",
-    missingProfile: "Por favor configura tu nombre legal antes de firmar el consentimiento.",
-    missingSignature: "Por favor firma dentro del recuadro antes de guardar el consentimiento.",
-    alert: "Por favor acepta el consentimiento antes de guardar.",
+      "Revisa y firma el consentimiento antes de grabar voz, video o activar futuras funciones de voz con IA.",
+    signInTitle: "Por favor inicia sesión",
+    signInText: "Necesitas iniciar sesión antes de completar el consentimiento.",
     signIn: "Iniciar sesión",
-    account: "Configurar cuenta",
-    saved: "Consentimiento guardado de forma segura. Ahora puedes continuar a grabar.",
-    continue: "Continuar a grabadora",
-    back: "Volver a la app",
+    accountRequiredTitle: "Nombre legal requerido",
+    accountRequiredText:
+      "Configura tu nombre legal antes de firmar el consentimiento. Esto conecta el acuerdo con el dueño correcto de la cuenta.",
+    accountSetup: "Configurar nombre legal",
+    legalName: "Nombre legal en la cuenta",
+    agreementVersion: "Founder Beta Consent v1",
+    summaryEyebrow: "Resumen del consentimiento",
+    summaryTitle: "Lo que estás aceptando",
+    summaryText:
+      "Este consentimiento ayuda a VozEterna a proteger grabaciones, firmas, recuerdos familiares y futuros permisos relacionados con IA.",
+    points: [
+      "Entiendes que los recuerdos de voz y video se guardan en tu bóveda privada.",
+      "Confirmas que tienes el derecho o permiso para subir o grabar los recuerdos seleccionados.",
+      "Entiendes que futuras funciones de voz con IA requieren consentimiento y no deben usarse para engaño, fraude, acoso o suplantación.",
+      "Entiendes que los recuerdos privados no son públicos a menos que tú decidas compartirlos en una página memorial.",
+    ],
+    signatureTitle: "Firmar consentimiento",
+    signatureText:
+      "Tu firma se guardará con tu nombre legal, versión del acuerdo y fecha/hora.",
+    checkbox:
+      "Entiendo y acepto los términos de consentimiento de VozEterna para grabación, voz y procesamiento con IA.",
+    submit: "Firmar y continuar",
+    saving: "Guardando consentimiento...",
+    success: "Consentimiento guardado correctamente.",
+    missingSignature: "Por favor agrega tu firma antes de continuar.",
+    missingCheckbox: "Por favor confirma que entiendes y aceptas.",
+    back: "Volver a cuenta",
+    record: "Continuar a grabar",
+    trustTitle: "Diseñado para confianza familiar",
+    trustText:
+      "Los registros de consentimiento ayudan a mantener los recuerdos de legado respetuosos, privados y conectados a la cuenta correcta.",
   },
 };
 
 export default function ConsentPage() {
-  const [language, setLanguage] = useState("en");
-  const [user, setUser] = useState(null);
-  const [legalFullName, setLegalFullName] = useState("");
-  const [accepted, setAccepted] = useState(false);
-  const [signatureDataUrl, setSignatureDataUrl] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState("");
-
+  const language = useAppLanguage();
   const t = copy[language];
 
+  const [user, setUser] = useState(null);
+  const [legalName, setLegalName] = useState("");
+  const [signatureDataUrl, setSignatureDataUrl] = useState("");
+  const [accepted, setAccepted] = useState(false);
+  const [message, setMessage] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    async function loadUserAndProfile() {
+    async function loadConsentSetup() {
       const { data: userData } = await supabase.auth.getUser();
       const currentUser = userData.user;
       setUser(currentUser);
 
-      if (!currentUser) return;
+      if (!currentUser) {
+        setLoading(false);
+        return;
+      }
 
-      const { data } = await supabase
+      const { data: profileData } = await supabase
         .from("user_profiles")
         .select("legal_full_name")
         .eq("id", currentUser.id)
         .maybeSingle();
 
-      if (data?.legal_full_name) {
-        setLegalFullName(data.legal_full_name);
+      if (profileData?.legal_full_name) {
+        setLegalName(profileData.legal_full_name);
       }
+
+      setLoading(false);
     }
 
-    loadUserAndProfile();
+    loadConsentSetup();
   }, []);
 
   async function handleSubmit(e) {
@@ -105,17 +133,7 @@ export default function ConsentPage() {
     setMessage("");
 
     if (!accepted) {
-      alert(t.alert);
-      return;
-    }
-
-    if (!user) {
-      setMessage(t.signInText);
-      return;
-    }
-
-    if (!legalFullName) {
-      setMessage(t.missingProfile);
+      setMessage(t.missingCheckbox);
       return;
     }
 
@@ -126,28 +144,19 @@ export default function ConsentPage() {
 
     setSaving(true);
 
-    const consentRecord = {
-      fullName: legalFullName,
-      accepted,
-      acceptedAt: new Date().toISOString(),
-      agreementVersion: "Founder Beta Consent v1",
-      language,
-      signatureCaptured: true,
-    };
-
-    localStorage.setItem("vozeterna_voice_consent", JSON.stringify(consentRecord));
+    const acceptedAt = new Date().toISOString();
 
     const { error } = await supabase.from("consent_records").insert({
       user_id: user.id,
-      full_name: legalFullName,
-      signer_profile_name: legalFullName,
-      signature_data_url: signatureDataUrl,
+      full_name: legalName,
+      signer_profile_name: legalName,
       consent_type: "voice_recording_ai_processing",
-      agreement_version: "Founder Beta Consent v1",
+      agreement_version: t.agreementVersion,
       language,
       accepted: true,
-      accepted_at: new Date().toISOString(),
-      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+      accepted_at: acceptedAt,
+      signature_data_url: signatureDataUrl,
+      user_agent: navigator.userAgent,
     });
 
     if (error) {
@@ -156,19 +165,38 @@ export default function ConsentPage() {
       return;
     }
 
-    setSaved(true);
-    setSaving(false);
+    localStorage.setItem(
+      "vozeterna_voice_consent",
+      JSON.stringify({
+        fullName: legalName,
+        accepted: true,
+        acceptedAt,
+        agreementVersion: t.agreementVersion,
+        language,
+        source: "supabase",
+      })
+    );
 
-    setTimeout(() => {
-      window.location.href = "/app/record";
-    }, 900);
+    setMessage(t.success);
+    setSaving(false);
+  }
+
+  if (loading) {
+    return (
+      <main className="appShell">
+        <section className="appHero compact">
+          <p className="appEyebrow">{t.eyebrow}</p>
+          <h1>{language === "es" ? "Cargando..." : "Loading..."}</h1>
+        </section>
+      </main>
+    );
   }
 
   if (!user) {
     return (
       <main className="appShell">
         <section className="appHero compact">
-          <p className="appEyebrow">{t.step}</p>
+          <p className="appEyebrow">{t.eyebrow}</p>
           <h1>{t.signInTitle}</h1>
           <p>{t.signInText}</p>
 
@@ -176,30 +204,23 @@ export default function ConsentPage() {
             <Link href="/app/login" className="appButton">
               {t.signIn}
             </Link>
-
-            <Link href="/app" className="appButton secondary">
-              {t.back}
-            </Link>
           </div>
         </section>
       </main>
     );
   }
 
-  if (!legalFullName) {
+  if (!legalName) {
     return (
       <main className="appShell">
         <section className="appHero compact">
-          <p className="appEyebrow">{t.step}</p>
-          <h1>{t.missingProfile}</h1>
+          <p className="appEyebrow">{t.eyebrow}</p>
+          <h1>{t.accountRequiredTitle}</h1>
+          <p>{t.accountRequiredText}</p>
 
           <div className="buttonRow">
             <Link href="/app/account" className="appButton">
-              {t.account}
-            </Link>
-
-            <Link href="/app" className="appButton secondary">
-              {t.back}
+              {t.accountSetup}
             </Link>
           </div>
         </section>
@@ -208,73 +229,88 @@ export default function ConsentPage() {
   }
 
   return (
-    <main className="appShell">
-      <div className="appTopBar">
-        <Link href="/app" className="textLink">
-          {t.back}
-        </Link>
-
-        <div className="appLanguageToggle" aria-label="Language selector">
-          <button
-            type="button"
-            className={language === "en" ? "active" : ""}
-            onClick={() => setLanguage("en")}
-          >
-            EN
-          </button>
-
-          <button
-            type="button"
-            className={language === "es" ? "active" : ""}
-            onClick={() => setLanguage("es")}
-          >
-            ES
-          </button>
+    <main className="appShell consentTrustShell">
+      <section className="consentTrustHero">
+        <div>
+          <p className="appEyebrow">{t.eyebrow}</p>
+          <h1>{t.title}</h1>
+          <p>{t.subtitle}</p>
         </div>
-      </div>
 
-      <section className="appHero compact">
-        <p className="appEyebrow">{t.step}</p>
-        <h1>{t.title}</h1>
-        <p>{t.subtitle}</p>
+        <aside className="consentTrustCard">
+          <span>VE</span>
+          <h2>{t.trustTitle}</h2>
+          <p>{t.trustText}</p>
+        </aside>
       </section>
 
-      <form className="consentBox" onSubmit={handleSubmit}>
-        <h2>{t.formTitle}</h2>
+      <section className="consentTrustGrid">
+        <aside className="consentSummaryCard">
+          <p className="appEyebrow">{t.summaryEyebrow}</p>
+          <h2>{t.summaryTitle}</h2>
+          <p>{t.summaryText}</p>
 
-        {t.paragraphs.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
-        ))}
-
-        <label className="fieldLabel">{t.legalName}</label>
-        <div className="lockedNameBox">{legalFullName}</div>
-
-        <label className="fieldLabel">{t.signature}</label>
-        <SignaturePad onChange={setSignatureDataUrl} />
-
-        <label className="checkRow">
-          <input
-            type="checkbox"
-            checked={accepted}
-            onChange={(e) => setAccepted(e.target.checked)}
-          />
-          <span>{t.checkbox}</span>
-        </label>
-
-        <button className="appButton" type="submit" disabled={saving}>
-          {saving ? t.saving : t.save}
-        </button>
-
-        {message && <div className="successBox">{message}</div>}
-
-        {saved && (
-          <div className="successBox">
-            {t.saved}
-            <br />
-            <Link href="/app/record">{t.continue}</Link>
+          <div className="consentPointList">
+            {t.points.map((point) => (
+              <div className="consentPoint" key={point}>
+                <span>✓</span>
+                <p>{point}</p>
+              </div>
+            ))}
           </div>
-        )}
-      </form>
+        </aside>
+
+        <form className="consentSignatureCard" onSubmit={handleSubmit}>
+          {message && <div className="successBox">{message}</div>}
+
+          <div className="consentIdentityBox">
+            <div>
+              <p className="appEyebrow">{t.legalName}</p>
+              <strong>{legalName}</strong>
+            </div>
+
+            <div>
+              <p className="appEyebrow">
+                {language === "es" ? "Versión del acuerdo" : "Agreement version"}
+              </p>
+              <span>{t.agreementVersion}</span>
+            </div>
+          </div>
+
+          <div className="signatureIntro">
+            <p className="appEyebrow">{t.signatureTitle}</p>
+            <h2>{t.signatureTitle}</h2>
+            <p>{t.signatureText}</p>
+          </div>
+
+          <SignaturePad language={language} onChange={setSignatureDataUrl} />
+
+          <label className="consentCheckRow">
+            <input
+              type="checkbox"
+              checked={accepted}
+              onChange={(e) => setAccepted(e.target.checked)}
+            />
+            <span>{t.checkbox}</span>
+          </label>
+
+          <div className="buttonRow">
+            <button type="submit" className="appButton" disabled={saving}>
+              {saving ? t.saving : t.submit}
+            </button>
+
+            <Link href="/app/account" className="appButton secondary">
+              {t.back}
+            </Link>
+
+            {message === t.success && (
+              <Link href="/app/record" className="appButton ghost">
+                {t.record}
+              </Link>
+            )}
+          </div>
+        </form>
+      </section>
     </main>
   );
 }

@@ -2,13 +2,93 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { supabase } from "../../../lib/supabaseClient";
 import MemoryActions from "../../../components/app/MemoryActions";
+import { supabase } from "../../../lib/supabaseClient";
+import { useAppLanguage } from "../../../lib/useAppLanguage";
+
+const copy = {
+  en: {
+    eyebrow: "Memory Library",
+    title: "Your Memory Gallery",
+    subtitle:
+      "A private family archive for photos, voices, videos, keepsakes, and stories connected to the people you love.",
+    signInTitle: "Please sign in",
+    signInText: "You need to sign in before viewing your private memory library.",
+    signIn: "Sign in",
+    back: "Back to dashboard",
+    upload: "Upload memory",
+    record: "Record memory",
+    emptyTitle: "No memories yet",
+    emptyText: "Upload or record your first memory to begin building your family legacy vault.",
+    addedPublic: "Memory added to public memorial page.",
+    removedPublic: "Memory hidden from public memorial page.",
+    deleted: "Memory deleted.",
+    deleteConfirm: "Delete this memory? This cannot be undone.",
+    belongsTo: "Profile",
+    noProfile: "No profile assigned",
+    privateBadge: "Private",
+    publicBadge: "Public Memorial",
+    saved: "Saved",
+    unknownDate: "Unknown date",
+    trustTitle: "Private by default",
+    trustText:
+      "Memories stay private unless you choose to show them on a public memorial page.",
+    memoryTypes: {
+      photo_of_person: "Photo",
+      photo_from_person: "Photo from them",
+      story_about_person: "Story",
+      message_from_person: "Message",
+      voice_of_person: "Voice",
+      family_memory: "Family Memory",
+      document_or_keepsake: "Keepsake",
+    },
+  },
+  es: {
+    eyebrow: "Biblioteca de recuerdos",
+    title: "Tu galería de recuerdos",
+    subtitle:
+      "Un archivo familiar privado para fotos, voces, videos, recuerdos especiales e historias conectadas a las personas que amas.",
+    signInTitle: "Por favor inicia sesión",
+    signInText: "Necesitas iniciar sesión antes de ver tu biblioteca privada de recuerdos.",
+    signIn: "Iniciar sesión",
+    back: "Volver al inicio",
+    upload: "Subir recuerdo",
+    record: "Grabar recuerdo",
+    emptyTitle: "Todavía no hay recuerdos",
+    emptyText: "Sube o graba tu primer recuerdo para comenzar a construir tu bóveda de legado familiar.",
+    addedPublic: "Recuerdo agregado a la página memorial pública.",
+    removedPublic: "Recuerdo ocultado de la página memorial pública.",
+    deleted: "Recuerdo eliminado.",
+    deleteConfirm: "¿Eliminar este recuerdo? Esta acción no se puede deshacer.",
+    belongsTo: "Perfil",
+    noProfile: "Sin perfil asignado",
+    privateBadge: "Privado",
+    publicBadge: "Memorial público",
+    saved: "Guardado",
+    unknownDate: "Fecha desconocida",
+    trustTitle: "Privado por defecto",
+    trustText:
+      "Los recuerdos permanecen privados a menos que decidas mostrarlos en una página memorial pública.",
+    memoryTypes: {
+      photo_of_person: "Foto",
+      photo_from_person: "Foto de esa persona",
+      story_about_person: "Historia",
+      message_from_person: "Mensaje",
+      voice_of_person: "Voz",
+      family_memory: "Recuerdo familiar",
+      document_or_keepsake: "Recuerdo especial",
+    },
+  },
+};
 
 export default function LibraryPage() {
+  const language = useAppLanguage();
+  const t = copy[language];
+
   const [user, setUser] = useState(null);
   const [memories, setMemories] = useState([]);
   const [signedUrls, setSignedUrls] = useState({});
+  const [profilesById, setProfilesById] = useState({});
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
@@ -16,7 +96,6 @@ export default function LibraryPage() {
     async function loadLibrary() {
       const { data: userData } = await supabase.auth.getUser();
       const currentUser = userData.user;
-
       setUser(currentUser);
 
       if (!currentUser) {
@@ -24,37 +103,28 @@ export default function LibraryPage() {
         return;
       }
 
-      const { data, error } = await supabase
-        .from("media_assets")
-        .select(`
-          id,
-          file_name,
-          file_path,
-          file_type,
-          file_size,
-          title,
-          memory_type,
-          memory_note,
-          show_on_memorial,
-          created_at,
-          loved_ones (
-            full_name,
-            relationship
-          )
-        `)
-        .order("created_at", { ascending: false });
+      const [{ data: memoryData }, { data: profileData }] = await Promise.all([
+        supabase
+          .from("media_assets")
+          .select("*")
+          .order("created_at", { ascending: false }),
+        supabase.from("loved_ones").select("id, full_name"),
+      ]);
 
-      if (error) {
-        setMessage(error.message);
-        setLoading(false);
-        return;
-      }
+      const loadedMemories = memoryData || [];
+      const loadedProfiles = profileData || [];
 
-      setMemories(data || []);
+      const profileMap = {};
+      loadedProfiles.forEach((profile) => {
+        profileMap[profile.id] = profile.full_name;
+      });
+
+      setProfilesById(profileMap);
+      setMemories(loadedMemories);
 
       const urlMap = {};
 
-      for (const memory of data || []) {
+      for (const memory of loadedMemories) {
         const { data: signedData } = await supabase.storage
           .from("family-media")
           .createSignedUrl(memory.file_path, 60 * 10);
@@ -71,32 +141,27 @@ export default function LibraryPage() {
     loadLibrary();
   }, []);
 
-  async function deleteMemory(memory) {
-    const confirmed = window.confirm(`Delete "${memory.file_name}" from your VozEterna vault?`);
+  function getFileKind(fileName, fileType) {
+    const type = fileType || "";
+    const lower = fileName.toLowerCase();
 
-    if (!confirmed) return;
+    if (type.startsWith("image/") || lower.match(/\.(jpg|jpeg|png|webp)$/)) return "image";
+    if (type.startsWith("audio/") || lower.match(/\.(mp3|wav|webm|mpeg)$/)) return "audio";
+    if (type.startsWith("video/") || lower.match(/\.(mp4|mov|webm|quicktime)$/)) return "video";
 
-    const { error: storageError } = await supabase.storage
-      .from("family-media")
-      .remove([memory.file_path]);
+    return "file";
+  }
 
-    if (storageError) {
-      setMessage(`Storage delete failed: ${storageError.message}`);
-      return;
-    }
+  function formatMemoryType(type) {
+    return t.memoryTypes[type] || (language === "es" ? "Recuerdo" : "Memory");
+  }
 
-    const { error: dbError } = await supabase
-      .from("media_assets")
-      .delete()
-      .eq("id", memory.id);
+  function formatDate(value) {
+    if (!value) return t.unknownDate;
 
-    if (dbError) {
-      setMessage(`Database delete failed: ${dbError.message}`);
-      return;
-    }
-
-    setMemories((current) => current.filter((item) => item.id !== memory.id));
-    setMessage("Memory deleted successfully.");
+    return new Intl.DateTimeFormat(language === "es" ? "es-MX" : "en-US", {
+      dateStyle: "medium",
+    }).format(new Date(value));
   }
 
   async function toggleMemoryPublic(memory) {
@@ -118,40 +183,32 @@ export default function LibraryPage() {
       )
     );
 
-    setMessage(nextValue ? "Memory added to public memorial page." : "Memory hidden from public memorial page.");
+    setMessage(nextValue ? t.addedPublic : t.removedPublic);
   }
 
-  function formatMemoryType(type) {
-    const labels = {
-      photo_of_person: "Photo of this person",
-      photo_from_person: "Photo from this person",
-      story_about_person: "Story about this person",
-      message_from_person: "Message from this person",
-      voice_of_person: "Voice of this person",
-      family_memory: "Family memory",
-      document_or_keepsake: "Document or keepsake",
-    };
+  async function deleteMemory(memory) {
+    const confirmed = window.confirm(t.deleteConfirm);
+    if (!confirmed) return;
 
-    return labels[type] || "";
-  }
+    await supabase.storage.from("family-media").remove([memory.file_path]);
 
-  function getFileKind(fileName, fileType) {
-    const type = fileType || "";
-    const lower = fileName.toLowerCase();
+    const { error } = await supabase.from("media_assets").delete().eq("id", memory.id);
 
-    if (type.startsWith("image/") || lower.match(/\.(jpg|jpeg|png|webp)$/)) return "image";
-    if (type.startsWith("audio/") || lower.match(/\.(mp3|wav|webm|mpeg)$/)) return "audio";
-    if (type.startsWith("video/") || lower.match(/\.(mp4|mov|webm|quicktime)$/)) return "video";
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
 
-    return "file";
+    setMemories((current) => current.filter((item) => item.id !== memory.id));
+    setMessage(t.deleted);
   }
 
   if (loading) {
     return (
       <main className="appShell">
         <section className="appHero compact">
-          <p className="appEyebrow">Memory Library</p>
-          <h1>Loading memories...</h1>
+          <p className="appEyebrow">{t.eyebrow}</p>
+          <h1>{language === "es" ? "Cargando..." : "Loading..."}</h1>
         </section>
       </main>
     );
@@ -161,17 +218,16 @@ export default function LibraryPage() {
     return (
       <main className="appShell">
         <section className="appHero compact">
-          <p className="appEyebrow">Memory Library</p>
-          <h1>Please sign in</h1>
-          <p>You need to sign in before viewing your private family memories.</p>
+          <p className="appEyebrow">{t.eyebrow}</p>
+          <h1>{t.signInTitle}</h1>
+          <p>{t.signInText}</p>
 
           <div className="buttonRow">
             <Link href="/app/login" className="appButton">
-              Sign in
+              {t.signIn}
             </Link>
-
             <Link href="/app" className="appButton secondary">
-              Back to app
+              {t.back}
             </Link>
           </div>
         </section>
@@ -180,78 +236,98 @@ export default function LibraryPage() {
   }
 
   return (
-    <main className="appShell">
-      <section className="appHero compact">
-        <p className="appEyebrow">Memory Library</p>
-        <h1>Your Saved Memories</h1>
-        <p>View the photos, audio files, and videos saved inside your private VozEterna vault.</p>
+    <main className="appShell libraryGalleryShell">
+      <section className="libraryGalleryHero">
+        <div>
+          <p className="appEyebrow">{t.eyebrow}</p>
+          <h1>{t.title}</h1>
+          <p>{t.subtitle}</p>
 
-        <div className="buttonRow">
-          <Link href="/app/upload" className="appButton">
-            Upload more
-          </Link>
-
-          <Link href="/app/loved-ones" className="appButton secondary">
-            Loved one profiles
-          </Link>
-        </div>
-      </section>
-
-      <section className="libraryBox">
-        {message && <div className="successBox">{message}</div>}
-
-        {memories.length === 0 ? (
-          <div className="emptyState">
-            <h2>No memories uploaded yet</h2>
-            <p>Upload your first photo, audio file, or video to begin building your family vault.</p>
+          <div className="buttonRow">
             <Link href="/app/upload" className="appButton">
-              Upload memories
+              {t.upload}
+            </Link>
+            <Link href="/app/record" className="appButton secondary">
+              {t.record}
             </Link>
           </div>
-        ) : (
-          <div className="libraryGrid">
-            {memories.map((memory) => {
-              const kind = getFileKind(memory.file_name, memory.file_type);
-              const url = signedUrls[memory.id];
+        </div>
 
-              return (
-                <article className="memoryCard" key={memory.id}>
-                  <div className="memoryPreview">
-                    {kind === "image" && url && <img src={url} alt={memory.file_name} />}
-                    {kind === "audio" && url && <audio controls src={url} />}
-                    {kind === "video" && url && <video controls src={url} />}
-                    {kind === "file" && <span>File</span>}
-                  </div>
-
-                  <div className="memoryInfo">
-                    <h2>{memory.file_name}</h2>
-                    <p>{formatMemoryType(memory.memory_type) || kind.toUpperCase()}</p>
-
-                    {memory.memory_note && (
-                      <p className="memoryBio">{memory.memory_note}</p>
-                    )}
-
-                    {memory.loved_ones?.full_name && (
-                      <p className="memoryBio">
-                        For: {memory.loved_ones.full_name}
-                        {memory.loved_ones.relationship ? ` — ${memory.loved_ones.relationship}` : ""}
-                      </p>
-                    )}
-
-                    <MemoryActions
-                      url={url}
-                      memoryName={memory.file_name}
-                      isPublic={Boolean(memory.show_on_memorial)}
-                      onTogglePublic={() => toggleMemoryPublic(memory)}
-                      onDelete={() => deleteMemory(memory)}
-                    />
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
+        <aside className="libraryTrustCard">
+          <span>VE</span>
+          <h2>{t.trustTitle}</h2>
+          <p>{t.trustText}</p>
+        </aside>
       </section>
+
+      {message && <div className="successBox libraryMessageBox">{message}</div>}
+
+      {memories.length === 0 ? (
+        <section className="emptyState">
+          <h2>{t.emptyTitle}</h2>
+          <p>{t.emptyText}</p>
+
+          <div className="buttonRow">
+            <Link href="/app/upload" className="appButton">
+              {t.upload}
+            </Link>
+            <Link href="/app/record" className="appButton secondary">
+              {t.record}
+            </Link>
+          </div>
+        </section>
+      ) : (
+        <section className="memoryGalleryGrid">
+          {memories.map((memory) => {
+            const kind = getFileKind(memory.file_name, memory.file_type);
+            const url = signedUrls[memory.id];
+            const profileName = profilesById[memory.loved_one_id] || t.noProfile;
+
+            return (
+              <article className="memoryGalleryCard" key={memory.id}>
+                <div className="memoryGalleryPreview">
+                  {kind === "image" && url && <img src={url} alt={memory.file_name} />}
+                  {kind === "audio" && url && (
+                    <div className="audioMemoryPreview">
+                      <span>♪</span>
+                      <audio controls src={url} />
+                    </div>
+                  )}
+                  {kind === "video" && url && <video controls src={url} />}
+                  {kind === "file" && <span className="fileMemoryIcon">VE</span>}
+
+                  <div className="memoryGalleryOverlay">
+                    <span>{formatMemoryType(memory.memory_type)}</span>
+                    <span className={memory.show_on_memorial ? "publicStatus" : "privateStatus"}>
+                      {memory.show_on_memorial ? t.publicBadge : t.privateBadge}
+                    </span>
+                  </div>
+
+                  <MemoryActions
+                    url={url}
+                    memoryName={memory.file_name}
+                    isPublic={Boolean(memory.show_on_memorial)}
+                    onTogglePublic={() => toggleMemoryPublic(memory)}
+                    onDelete={() => deleteMemory(memory)}
+                  />
+                </div>
+
+                <div className="memoryGalleryInfo">
+                  <p className="memoryProfileName">{profileName}</p>
+                  <h2>{memory.memory_note || memory.title || memory.file_name}</h2>
+
+                  <div className="memoryGalleryMeta">
+                    <span>{memory.file_name}</span>
+                    <span>
+                      {t.saved}: {formatDate(memory.created_at)}
+                    </span>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </section>
+      )}
     </main>
   );
 }

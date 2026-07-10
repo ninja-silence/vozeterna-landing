@@ -4286,3 +4286,2087 @@ img[src="/brand/logo-primary.png"] {
   position: relative;
   z-index: 1;
 }
+
+.appButton.ghost {
+  background: rgba(8, 63, 82, 0.06);
+  color: #083f52;
+  border: 1px solid rgba(8, 63, 82, 0.12);
+}
+
+/* ============================
+   Warm Memory Gallery
+   ============================ */
+
+.libraryGalleryShell {
+  position: relative;
+  overflow: hidden;
+}
+
+.libraryGalleryShell::before {
+  content: "";
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  left: -160px;
+  top: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(208, 146, 47, 0.18), transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.libraryGalleryShell::after {
+  content: "";
+  position: fixed;
+  width: 560px;
+  height: 560px;
+  right: -180px;
+  top: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(8, 63, 82, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.libraryGalleryHero,
+.memoryGalleryGrid,
+.libraryMessageBox {
+  position: relative;
+  z-index: 1;
+}
+
+.libraryGalleryHero {
+  width: min(1120px, 100%);
+  margin: 0 auto 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 22px;
+  align-items: stretch;
+}
+
+.libraryGalleryHero > div,
+.libraryTrustCard {
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.78));
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.libraryGalleryHero > div {
+  padding: clamp(28px, 5vw, 48px);
+}
+
+.libraryGalleryHero h1 {
+  max-width: 760px;
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: clamp(3.8rem, 8vw, 6.4rem);
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+}
+
+.libraryGalleryHero p {
+  max-width: 680px;
+  color: #496678;
+  line-height: 1.75;
+}
+
+.libraryTrustCard {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.libraryTrustCard span {
+  width: 76px;
+  height: 76px;
+  margin-bottom: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #083f52;
+  color: #ffffff;
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  box-shadow: 0 16px 38px rgba(8, 63, 82, 0.18);
+}
+
+.libraryTrustCard h2 {
+  margin: 0 0 10px;
+  color: #083f52;
+  font-size: 2rem;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.libraryTrustCard p {
+  margin: 0;
+  color: #496678;
+  line-height: 1.7;
+}
+
+.libraryMessageBox {
+  width: min(1120px, 100%);
+  margin: 0 auto 22px;
+}
+
+.memoryGalleryGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.memoryGalleryCard {
+  overflow: hidden;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 18px 48px rgba(8, 63, 82, 0.08);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.memoryGalleryCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(208, 146, 47, 0.26);
+  box-shadow: 0 26px 64px rgba(8, 63, 82, 0.13);
+}
+
+.memoryGalleryPreview {
+  position: relative;
+  min-height: 245px;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(208, 146, 47, 0.12), transparent 35%),
+    rgba(8, 63, 82, 0.05);
+  overflow: hidden;
+}
+
+.memoryGalleryPreview img,
+.memoryGalleryPreview video {
+  width: 100%;
+  height: 245px;
+  object-fit: cover;
+  display: block;
+}
+
+.memoryGalleryOverlay {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  z-index: 3;
+}
+
+.memoryGalleryOverlay span {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #083f52;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 22px rgba(8, 63, 82, 0.08);
+}
+
+.memoryGalleryOverlay .publicStatus {
+  background: rgba(208, 146, 47, 0.9);
+  color: #ffffff;
+}
+
+.memoryGalleryOverlay .privateStatus {
+  background: rgba(8, 63, 82, 0.88);
+  color: #ffffff;
+}
+
+.memoryGalleryPreview .memoryActionsMenu {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 5;
+}
+
+.memoryGalleryPreview .publicMemoryBadge {
+  display: none;
+}
+
+.audioMemoryPreview {
+  height: 245px;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.audioMemoryPreview > span {
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #083f52;
+  color: #ffffff;
+  font-size: 2.4rem;
+  box-shadow: 0 18px 44px rgba(8, 63, 82, 0.18);
+}
+
+.audioMemoryPreview audio {
+  width: 100%;
+}
+
+.fileMemoryIcon {
+  height: 245px;
+  display: grid;
+  place-items: center;
+  color: #083f52;
+  font-size: 3rem;
+  font-weight: 950;
+}
+
+.memoryGalleryInfo {
+  padding: 20px;
+}
+
+.memoryProfileName {
+  margin: 0 0 8px;
+  color: #c88424;
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.memoryGalleryInfo h2 {
+  margin: 0;
+  color: #083f52;
+  font-size: 1.35rem;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.memoryGalleryMeta {
+  display: grid;
+  gap: 5px;
+  margin-top: 12px;
+  color: #607488;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+@media (max-width: 1080px) {
+  .memoryGalleryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .libraryGalleryHero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .memoryGalleryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .libraryGalleryHero h1 {
+    font-size: clamp(3.1rem, 17vw, 4.4rem);
+  }
+}
+
+/* ============================
+   Guided Upload Page
+   ============================ */
+
+.uploadGuidedShell {
+  position: relative;
+  overflow: hidden;
+}
+
+.uploadGuidedShell::before {
+  content: "";
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  left: -160px;
+  top: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(208, 146, 47, 0.18), transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.uploadGuidedShell::after {
+  content: "";
+  position: fixed;
+  width: 560px;
+  height: 560px;
+  right: -180px;
+  top: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(8, 63, 82, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.uploadGuidedHero,
+.uploadGuidedGrid {
+  position: relative;
+  z-index: 1;
+}
+
+.uploadGuidedHero {
+  width: min(1120px, 100%);
+  margin: 0 auto 28px;
+  padding: clamp(28px, 5vw, 48px);
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 90% 12%, rgba(208, 146, 47, 0.13), transparent 35%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.uploadGuidedHero h1 {
+  max-width: 760px;
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: clamp(3.8rem, 8vw, 6.4rem);
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+}
+
+.uploadGuidedHero p {
+  max-width: 680px;
+  color: #496678;
+  line-height: 1.75;
+}
+
+.uploadGuidedGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+.uploadGuidedForm,
+.uploadGuideCard {
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.uploadGuidedForm {
+  padding: clamp(24px, 4vw, 34px);
+}
+
+.uploadGuideCard {
+  padding: 28px;
+  position: sticky;
+  top: 92px;
+}
+
+.uploadGuideCard h2 {
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: 2.25rem;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.uploadGuideCard > p {
+  color: #496678;
+  line-height: 1.75;
+}
+
+.uploadGuidePoints {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.uploadGuidePoint {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.uploadGuidePoint span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(208, 146, 47, 0.16);
+  color: #c88424;
+  font-weight: 950;
+}
+
+.uploadGuidePoint p {
+  margin: 4px 0 0;
+  color: #496678;
+  line-height: 1.55;
+}
+
+.privateVaultNote {
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 95% 0%, rgba(208, 146, 47, 0.16), transparent 40%),
+    rgba(8, 63, 82, 0.045);
+  border: 1px solid rgba(8, 63, 82, 0.08);
+}
+
+.privateVaultNote strong {
+  display: block;
+  color: #083f52;
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+
+.privateVaultNote p {
+  margin: 0;
+  color: #607488;
+  line-height: 1.6;
+}
+
+.uploadDropzone {
+  min-height: 126px;
+  margin-top: 8px;
+  margin-bottom: 22px;
+  padding: 24px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  border-radius: 24px;
+  border: 2px dashed rgba(8, 63, 82, 0.18);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(208, 146, 47, 0.1), transparent 45%),
+    rgba(8, 63, 82, 0.03);
+  cursor: pointer;
+  transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.uploadDropzone:hover {
+  transform: translateY(-2px);
+  border-color: rgba(208, 146, 47, 0.42);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(208, 146, 47, 0.16), transparent 45%),
+    rgba(8, 63, 82, 0.04);
+}
+
+.uploadDropzone span {
+  display: block;
+  color: #083f52;
+  font-weight: 950;
+  font-size: 1.1rem;
+  word-break: break-word;
+}
+
+.uploadDropzone small {
+  margin-top: 8px;
+  display: block;
+  color: #607488;
+  line-height: 1.5;
+}
+
+.visuallyHiddenFile {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 980px) {
+  .uploadGuidedGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .uploadGuideCard {
+    position: static;
+  }
+}
+
+@media (max-width: 680px) {
+  .uploadGuidedHero h1 {
+    font-size: clamp(3.1rem, 17vw, 4.4rem);
+  }
+}
+
+/* ============================
+   Upload Page Final Polish
+   ============================ */
+
+.uploadTypeGuide {
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 96% 0%, rgba(208, 146, 47, 0.14), transparent 42%),
+    rgba(8, 63, 82, 0.035);
+  border: 1px solid rgba(8, 63, 82, 0.08);
+}
+
+.uploadTypeGuide strong {
+  display: block;
+  color: #083f52;
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+
+.uploadTypeGuide p {
+  margin: 0;
+  color: #607488;
+  line-height: 1.65;
+}
+
+.uploadGuidedForm .successBox {
+  margin-bottom: 18px;
+}
+
+.uploadDropzone span {
+  max-width: 100%;
+}
+
+/* ============================
+   Guided Record Page
+   ============================ */
+
+.recordGuidedShell {
+  position: relative;
+  overflow: hidden;
+}
+
+.recordGuidedShell::before {
+  content: "";
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  left: -160px;
+  top: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(208, 146, 47, 0.18), transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.recordGuidedShell::after {
+  content: "";
+  position: fixed;
+  width: 560px;
+  height: 560px;
+  right: -180px;
+  top: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(8, 63, 82, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.recordGuidedHero,
+.recordSetupGrid,
+.recorderGuidedGrid {
+  position: relative;
+  z-index: 1;
+}
+
+.recordGuidedHero {
+  width: min(1120px, 100%);
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 370px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.recordGuidedHero > div,
+.recordPromptCard,
+.recordSetupPanel,
+.recordMiniGuide {
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76));
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.recordGuidedHero > div {
+  padding: clamp(28px, 5vw, 48px);
+}
+
+.recordGuidedHero h1 {
+  max-width: 780px;
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: clamp(3.6rem, 8vw, 6.2rem);
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+}
+
+.recordGuidedHero p {
+  max-width: 680px;
+  color: #496678;
+  line-height: 1.75;
+}
+
+.recordPromptCard {
+  padding: 28px;
+}
+
+.recordPromptCard h2 {
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: 2.25rem;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.recordPromptCard > p {
+  color: #496678;
+  line-height: 1.7;
+}
+
+.recordPromptList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.recordPromptList span {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(8, 63, 82, 0.06);
+  color: #083f52;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.recordPrivateNote {
+  margin-top: 24px;
+}
+
+.recordSetupGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.recordSetupPanel {
+  padding: clamp(24px, 4vw, 34px);
+}
+
+.recordMiniGuide {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.recordMiniGuide span {
+  width: 76px;
+  height: 76px;
+  margin-bottom: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #083f52;
+  color: #ffffff;
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  box-shadow: 0 16px 38px rgba(8, 63, 82, 0.18);
+}
+
+.recordMiniGuide h2 {
+  margin: 0 0 10px;
+  color: #083f52;
+  font-size: 2rem;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.recordMiniGuide p {
+  margin: 0;
+  color: #496678;
+  line-height: 1.7;
+}
+
+.recorderGuidedGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+.recorderSectionHeader {
+  margin-top: 6px;
+}
+
+.recorderGuidedGrid > .audioRecorder,
+.recorderGuidedGrid > .cameraRecorder,
+.recorderGuidedGrid > div:not(.recorderSectionHeader) {
+  border-radius: 34px;
+}
+
+@media (max-width: 980px) {
+  .recordGuidedHero,
+  .recordSetupGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .recordGuidedHero h1 {
+    font-size: clamp(3.1rem, 17vw, 4.4rem);
+  }
+}
+
+/* ============================
+   Recorder Component Polish
+   ============================ */
+
+.recorderPanel {
+  padding: clamp(24px, 4vw, 34px);
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 95% 0%, rgba(208, 146, 47, 0.12), transparent 34%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.recorderPanelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.recorderPanelHeader h2 {
+  margin: 8px 0 8px;
+  color: #083f52;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.recorderPanelHeader p {
+  color: #496678;
+  line-height: 1.65;
+  max-width: 680px;
+}
+
+.recorderPulse {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: rgba(8, 63, 82, 0.07);
+}
+
+.recorderPulse span {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #607488;
+}
+
+.recorderPulse.active {
+  background: rgba(208, 57, 47, 0.12);
+}
+
+.recorderPulse.active span {
+  background: #d0392f;
+  animation: recorderPulseBlink 1s infinite;
+}
+
+@keyframes recorderPulseBlink {
+  0%,
+  100% {
+    transform: scale(0.86);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+.audioPreviewBox,
+.videoPreviewBox {
+  margin: 18px 0;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(8, 63, 82, 0.035);
+  border: 1px solid rgba(8, 63, 82, 0.08);
+}
+
+.audioPreviewBox audio {
+  width: 100%;
+}
+
+.videoPreviewBox video {
+  width: 100%;
+  max-height: 360px;
+  border-radius: 18px;
+  background: #062831;
+}
+
+.recorderMessage {
+  margin: 16px 0;
+}
+
+.dangerButton {
+  background: #9f2f26 !important;
+  color: #ffffff !important;
+}
+
+.cameraFilterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.cameraFilterRow button {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(8, 63, 82, 0.14);
+  background: rgba(255, 255, 255, 0.78);
+  color: #083f52;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.cameraFilterRow button.active,
+.cameraFilterRow button:hover {
+  background: #083f52;
+  color: #ffffff;
+}
+
+.cameraPreviewShell {
+  width: min(720px, 100%);
+  min-height: 380px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 20px;
+  border-radius: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(8, 63, 82, 0.34), transparent 30%),
+    #062831;
+  border: 1px solid rgba(8, 63, 82, 0.16);
+}
+
+.cameraPreviewVideo {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 680px) {
+  .recorderPanelHeader {
+    flex-direction: column;
+  }
+
+  .cameraPreviewShell {
+    min-height: 260px;
+  }
+
+  .cameraPreviewVideo {
+    height: 260px;
+  }
+}
+
+/* ============================
+   Account Trust Page
+   ============================ */
+
+.accountTrustShell {
+  position: relative;
+  overflow: hidden;
+}
+
+.accountTrustShell::before {
+  content: "";
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  left: -160px;
+  top: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(208, 146, 47, 0.18), transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.accountTrustShell::after {
+  content: "";
+  position: fixed;
+  width: 560px;
+  height: 560px;
+  right: -180px;
+  top: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(8, 63, 82, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.accountTrustHero,
+.accountTrustGrid {
+  position: relative;
+  z-index: 1;
+}
+
+.accountTrustHero {
+  width: min(1120px, 100%);
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.accountTrustHero > div,
+.accountStatusCard,
+.accountIdentityCard,
+.identityTrustCard {
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 95% 0%, rgba(208, 146, 47, 0.12), transparent 34%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.accountTrustHero > div {
+  padding: clamp(28px, 5vw, 48px);
+}
+
+.accountTrustHero h1 {
+  max-width: 780px;
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: clamp(3.8rem, 8vw, 6.4rem);
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+}
+
+.accountTrustHero p {
+  max-width: 680px;
+  color: #496678;
+  line-height: 1.75;
+}
+
+.accountStatusCard {
+  padding: 28px;
+  display: grid;
+  align-content: center;
+  gap: 16px;
+}
+
+.consentStatusPill {
+  width: fit-content;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: rgba(159, 47, 38, 0.12);
+  color: #9f2f26;
+  font-weight: 950;
+}
+
+.consentStatusPill.signed {
+  background: rgba(208, 146, 47, 0.16);
+  color: #c88424;
+}
+
+.accountConsentMeta {
+  display: grid;
+  gap: 6px;
+  color: #496678;
+  line-height: 1.6;
+}
+
+.accountConsentMeta p {
+  margin: 0;
+}
+
+.accountTrustGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+.accountIdentityCard,
+.identityTrustCard {
+  padding: clamp(24px, 4vw, 34px);
+}
+
+.identityEmailBox {
+  margin-bottom: 22px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(8, 63, 82, 0.04);
+  border: 1px solid rgba(8, 63, 82, 0.08);
+}
+
+.identityEmailBox strong {
+  color: #083f52;
+  font-size: 1.1rem;
+  word-break: break-word;
+}
+
+.identityTrustCard > span {
+  width: 76px;
+  height: 76px;
+  margin-bottom: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #083f52;
+  color: #ffffff;
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  box-shadow: 0 16px 38px rgba(8, 63, 82, 0.18);
+}
+
+.identityTrustCard h2 {
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: 2.25rem;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.identityTrustCard > p {
+  color: #496678;
+  line-height: 1.75;
+}
+
+.identityTrustPoints {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.identityTrustPoint {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.identityTrustPoint span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(208, 146, 47, 0.16);
+  color: #c88424;
+  font-weight: 950;
+}
+
+.identityTrustPoint p {
+  margin: 4px 0 0;
+  color: #496678;
+  line-height: 1.55;
+}
+
+@media (max-width: 980px) {
+  .accountTrustHero,
+  .accountTrustGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .accountTrustHero h1 {
+    font-size: clamp(3.1rem, 17vw, 4.4rem);
+  }
+}
+
+/* ============================
+   Consent Trust Page
+   ============================ */
+
+.consentTrustShell {
+  position: relative;
+  overflow: hidden;
+}
+
+.consentTrustShell::before {
+  content: "";
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  left: -160px;
+  top: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(208, 146, 47, 0.18), transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.consentTrustShell::after {
+  content: "";
+  position: fixed;
+  width: 560px;
+  height: 560px;
+  right: -180px;
+  top: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(8, 63, 82, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.consentTrustHero,
+.consentTrustGrid {
+  position: relative;
+  z-index: 1;
+}
+
+.consentTrustHero {
+  width: min(1120px, 100%);
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.consentTrustHero > div,
+.consentTrustCard,
+.consentSummaryCard,
+.consentSignatureCard {
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 95% 0%, rgba(208, 146, 47, 0.12), transparent 34%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.consentTrustHero > div {
+  padding: clamp(28px, 5vw, 48px);
+}
+
+.consentTrustHero h1 {
+  max-width: 780px;
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: clamp(3.8rem, 8vw, 6.4rem);
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+}
+
+.consentTrustHero p {
+  max-width: 680px;
+  color: #496678;
+  line-height: 1.75;
+}
+
+.consentTrustCard {
+  padding: 28px;
+  display: grid;
+  align-content: center;
+}
+
+.consentTrustCard span {
+  width: 76px;
+  height: 76px;
+  margin-bottom: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #083f52;
+  color: #ffffff;
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  box-shadow: 0 16px 38px rgba(8, 63, 82, 0.18);
+}
+
+.consentTrustCard h2,
+.consentSummaryCard h2,
+.signatureIntro h2 {
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: 2.25rem;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.consentTrustCard p,
+.consentSummaryCard p,
+.signatureIntro p {
+  color: #496678;
+  line-height: 1.7;
+}
+
+.consentTrustGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 390px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.consentSummaryCard,
+.consentSignatureCard {
+  padding: clamp(24px, 4vw, 34px);
+}
+
+.consentPointList {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.consentPoint {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.consentPoint span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(208, 146, 47, 0.16);
+  color: #c88424;
+  font-weight: 950;
+}
+
+.consentPoint p {
+  margin: 4px 0 0;
+  color: #496678;
+  line-height: 1.55;
+}
+
+.signatureIntro {
+  margin: 24px 0 16px;
+}
+
+.signaturePadWrap {
+  margin: 16px 0 20px;
+}
+
+.signatureCanvas {
+  width: 100%;
+  height: 220px;
+  display: block;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 2px dashed rgba(8, 63, 82, 0.18);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.signaturePadFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.signaturePadFooter p {
+  margin: 0;
+  color: #607488;
+  font-size: 0.92rem;
+}
+
+.textButton {
+  border: 0;
+  background: transparent;
+  color: #083f52;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.consentCheckRow {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 12px;
+  align-items: start;
+  margin: 20px 0;
+  color: #496678;
+  line-height: 1.6;
+  font-weight: 800;
+}
+
+.consentCheckRow input {
+  margin-top: 4px;
+  transform: scale(1.25);
+}
+
+.lockedNameBox small {
+  display: block;
+  margin-top: 6px;
+  color: #607488;
+  font-weight: 800;
+}
+
+@media (max-width: 980px) {
+  .consentTrustHero,
+  .consentTrustGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .consentTrustHero h1 {
+    font-size: clamp(3.1rem, 17vw, 4.4rem);
+  }
+
+  .signaturePadFooter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ============================
+   Consent History Trust Page
+   ============================ */
+
+.consentHistoryShell {
+  position: relative;
+  overflow: hidden;
+}
+
+.consentHistoryShell::before {
+  content: "";
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  left: -160px;
+  top: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(208, 146, 47, 0.18), transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.consentHistoryShell::after {
+  content: "";
+  position: fixed;
+  width: 560px;
+  height: 560px;
+  right: -180px;
+  top: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(8, 63, 82, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.consentHistoryHero,
+.consentArchiveGrid,
+.consentHistoryMessage {
+  position: relative;
+  z-index: 1;
+}
+
+.consentHistoryHero {
+  width: min(1120px, 100%);
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.consentHistoryHero > div,
+.consentHistoryTrustCard,
+.consentArchiveCard {
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 95% 0%, rgba(208, 146, 47, 0.12), transparent 34%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.consentHistoryHero > div {
+  padding: clamp(28px, 5vw, 48px);
+}
+
+.consentHistoryHero h1 {
+  max-width: 780px;
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: clamp(3.8rem, 8vw, 6.4rem);
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+}
+
+.consentHistoryHero p {
+  max-width: 680px;
+  color: #496678;
+  line-height: 1.75;
+}
+
+.consentHistoryTrustCard {
+  padding: 28px;
+  display: grid;
+  align-content: center;
+}
+
+.consentHistoryTrustCard span {
+  width: 76px;
+  height: 76px;
+  margin-bottom: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #083f52;
+  color: #ffffff;
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  box-shadow: 0 16px 38px rgba(8, 63, 82, 0.18);
+}
+
+.consentHistoryTrustCard h2 {
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: 2.25rem;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.consentHistoryTrustCard p {
+  color: #496678;
+  line-height: 1.75;
+}
+
+.consentHistoryMessage {
+  width: min(1120px, 100%);
+  margin: 0 auto 22px;
+}
+
+.consentArchiveGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+}
+
+.consentArchiveCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 24px;
+  align-items: center;
+  padding: clamp(22px, 4vw, 30px);
+}
+
+.consentArchiveHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+}
+
+.consentArchiveHeader > span {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(208, 146, 47, 0.16);
+  color: #c88424;
+  font-weight: 950;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.consentArchiveInfo h2 {
+  margin: 8px 0 14px;
+  color: #083f52;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.consentArchiveMeta {
+  display: grid;
+  gap: 7px;
+}
+
+.consentArchiveMeta p {
+  margin: 0;
+  color: #496678;
+  line-height: 1.5;
+}
+
+.consentArchiveMeta strong {
+  color: #083f52;
+}
+
+.consentArchiveSignature {
+  min-height: 150px;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 2px dashed rgba(8, 63, 82, 0.16);
+}
+
+.consentArchiveSignature img {
+  width: 100%;
+  height: 130px;
+  object-fit: contain;
+}
+
+.consentArchiveSignature span {
+  color: #607488;
+  font-weight: 900;
+}
+
+@media (max-width: 980px) {
+  .consentHistoryHero,
+  .consentArchiveCard {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .consentHistoryHero h1 {
+    font-size: clamp(3.1rem, 17vw, 4.4rem);
+  }
+}
+
+/* ============================
+   Edit Legacy Profile Page
+   ============================ */
+
+.editProfileShell {
+  position: relative;
+  overflow: hidden;
+}
+
+.editProfileShell::before {
+  content: "";
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  left: -160px;
+  top: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(208, 146, 47, 0.18), transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.editProfileShell::after {
+  content: "";
+  position: fixed;
+  width: 560px;
+  height: 560px;
+  right: -180px;
+  top: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(8, 63, 82, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.editProfileHero,
+.editProfileGrid {
+  position: relative;
+  z-index: 1;
+}
+
+.editProfileHero {
+  width: min(1120px, 100%);
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.editProfileHero > div,
+.editProfilePhotoCard,
+.editProfileForm,
+.editMemorialCard {
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 95% 0%, rgba(208, 146, 47, 0.12), transparent 34%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.editProfileHero > div {
+  padding: clamp(28px, 5vw, 48px);
+}
+
+.editProfileHero h1 {
+  max-width: 780px;
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: clamp(3.8rem, 8vw, 6.4rem);
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+}
+
+.editProfileHero p {
+  max-width: 680px;
+  color: #496678;
+  line-height: 1.75;
+}
+
+.editProfilePhotoCard {
+  padding: 28px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.editProfilePhoto {
+  width: 190px;
+  height: 190px;
+  margin-bottom: 20px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(208, 146, 47, 0.22), transparent 40%),
+    rgba(8, 63, 82, 0.06);
+  color: #083f52;
+  font-size: 2.3rem;
+  font-weight: 950;
+}
+
+.editProfilePhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photoUploadButton {
+  margin-top: 16px;
+  cursor: pointer;
+}
+
+.editProfileGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+.editProfileForm,
+.editMemorialCard {
+  padding: clamp(24px, 4vw, 34px);
+}
+
+.editMemorialCard h2 {
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: 2.25rem;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.editMemorialCard > p {
+  color: #496678;
+  line-height: 1.75;
+}
+
+.memorialSwitch {
+  margin: 22px 0;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(8, 63, 82, 0.04);
+  border: 1px solid rgba(8, 63, 82, 0.08);
+}
+
+@media (max-width: 980px) {
+  .editProfileHero,
+  .editProfileGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .editProfileHero h1 {
+    font-size: clamp(3.1rem, 17vw, 4.4rem);
+  }
+}
+
+/* ============================
+   Loved One Profiles Gallery Polish
+   ============================ */
+
+.profileGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.profileCard {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  padding: 24px;
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 95% 0%, rgba(208, 146, 47, 0.12), transparent 34%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+  overflow: hidden;
+}
+
+.profileCardPhoto {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(208, 146, 47, 0.22), transparent 40%),
+    rgba(8, 63, 82, 0.06);
+  color: #083f52;
+  font-size: 2.4rem;
+  font-weight: 950;
+}
+
+.profileCardPhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profileCardBody {
+  min-width: 0;
+}
+
+.profileCardBody h2 {
+  margin: 8px 0 12px;
+  color: #083f52;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.profileCardBody p {
+  margin: 6px 0;
+  color: #496678;
+  line-height: 1.55;
+}
+
+.profileCardBody strong {
+  color: #083f52;
+}
+
+.profileCardBody .buttonRow {
+  margin-top: 18px;
+}
+
+@media (max-width: 1080px) {
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .profileCard {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .profileCardPhoto {
+    margin: 0 auto;
+  }
+
+  .profileCardBody .buttonRow {
+    justify-content: center;
+  }
+}
+
+/* ============================
+   Page Hero Title Spacing Fix
+   ============================ */
+
+.appHero.compact h1 {
+  line-height: 0.95;
+  margin-bottom: 14px;
+  padding-bottom: 4px;
+}
+
+.appHero.compact p {
+  margin-top: 0;
+}
+
+/* ============================
+   Person Vault Detail Page
+   ============================ */
+
+.personVaultShell {
+  position: relative;
+  overflow: hidden;
+}
+
+.personVaultShell::before {
+  content: "";
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  left: -160px;
+  top: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(208, 146, 47, 0.18), transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.personVaultShell::after {
+  content: "";
+  position: fixed;
+  width: 560px;
+  height: 560px;
+  right: -180px;
+  top: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(8, 63, 82, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.personVaultHero,
+.personVaultMiddleGrid,
+.personMemoriesSection {
+  position: relative;
+  z-index: 1;
+}
+
+.personVaultHero {
+  width: min(1120px, 100%);
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+  padding: clamp(24px, 4vw, 34px);
+  border-radius: 38px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 95% 0%, rgba(208, 146, 47, 0.13), transparent 35%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.personVaultPhotoWrap {
+  display: grid;
+  place-items: center;
+}
+
+.personVaultPhoto {
+  width: 280px;
+  height: 280px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(208, 146, 47, 0.22), transparent 40%),
+    rgba(8, 63, 82, 0.06);
+  color: #083f52;
+  font-size: 2.5rem;
+  font-weight: 950;
+  box-shadow: 0 18px 48px rgba(8, 63, 82, 0.12);
+}
+
+.personVaultPhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.personVaultInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.personVaultInfo h1 {
+  margin: 10px 0 14px;
+  color: #083f52;
+  font-size: clamp(4rem, 9vw, 7rem);
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+  padding-bottom: 8px;
+}
+
+.personVaultDetails {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+
+.personVaultDetails p {
+  margin: 0;
+  color: #496678;
+  line-height: 1.5;
+}
+
+.personVaultDetails strong {
+  color: #083f52;
+}
+
+.personVaultMiddleGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.personStoryCard,
+.personPrivacyCard {
+  padding: clamp(24px, 4vw, 34px);
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 95% 0%, rgba(208, 146, 47, 0.12), transparent 34%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.personStoryCard h2,
+.personPrivacyCard h2,
+.personMemoriesHeader h2 {
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.personStoryCard p,
+.personPrivacyCard p,
+.personMemoriesHeader p {
+  color: #496678;
+  line-height: 1.75;
+}
+
+.personPrivacyCard span {
+  width: 76px;
+  height: 76px;
+  margin-bottom: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #083f52;
+  color: #ffffff;
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  box-shadow: 0 16px 38px rgba(8, 63, 82, 0.18);
+}
+
+.personMemoriesSection {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 34px);
+  border-radius: 38px;
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(8, 63, 82, 0.08);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.06);
+}
+
+.personMemoriesHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 22px;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.personMemoriesHeader > div:first-child {
+  max-width: 680px;
+}
+
+.personVaultMessage {
+  margin-bottom: 22px;
+}
+
+.personMemoryGrid {
+  width: 100%;
+}
+
+@media (max-width: 980px) {
+  .personVaultHero,
+  .personVaultMiddleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .personMemoriesHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 680px) {
+  .personVaultPhoto {
+    width: 230px;
+    height: 230px;
+  }
+
+  .personVaultInfo h1 {
+    font-size: clamp(3.2rem, 17vw, 4.8rem);
+  }
+}

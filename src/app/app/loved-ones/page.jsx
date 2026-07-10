@@ -3,16 +3,79 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabaseClient";
+import { getStoredAppLanguage } from "../../../lib/appLanguage";
+
+const copy = {
+  en: {
+    eyebrow: "Loved One Profiles",
+    title: "Legacy Profiles",
+    subtitle:
+      "Create a profile for each loved one, then connect photos, voice memories, videos, stories, and memorial pages to the right person.",
+    newProfile: "Create new profile",
+    dashboard: "Back to dashboard",
+    signInTitle: "Please sign in",
+    signInText: "You need to sign in before viewing your loved one profiles.",
+    signIn: "Sign in",
+    emptyTitle: "No profiles yet",
+    emptyText:
+      "Start by creating a loved one profile. After that, you can upload memories, record audio or video, and prepare a public memorial page.",
+    relationship: "Relationship",
+    born: "Born",
+    passed: "Passed",
+    publicMemorial: "Public memorial enabled",
+    privateProfile: "Private profile",
+    open: "Open profile",
+    edit: "Edit",
+    memorial: "View memorial",
+  },
+  es: {
+    eyebrow: "Perfiles de seres queridos",
+    title: "Perfiles de legado",
+    subtitle:
+      "Crea un perfil para cada ser querido y conecta fotos, recuerdos de voz, videos, historias y páginas memoriales con la persona correcta.",
+    newProfile: "Crear nuevo perfil",
+    dashboard: "Volver al inicio",
+    signInTitle: "Por favor inicia sesión",
+    signInText: "Necesitas iniciar sesión antes de ver los perfiles de tus seres queridos.",
+    signIn: "Iniciar sesión",
+    emptyTitle: "Todavía no hay perfiles",
+    emptyText:
+      "Comienza creando un perfil de ser querido. Después podrás subir recuerdos, grabar audio o video y preparar una página memorial pública.",
+    relationship: "Parentesco",
+    born: "Nacimiento",
+    passed: "Fallecimiento",
+    publicMemorial: "Memorial público activado",
+    privateProfile: "Perfil privado",
+    open: "Abrir perfil",
+    edit: "Editar",
+    memorial: "Ver memorial",
+  },
+};
 
 export default function LovedOnesPage() {
+  const [language, setLanguage] = useState("en");
   const [user, setUser] = useState(null);
-  const [lovedOnes, setLovedOnes] = useState([]);
-  const [profileImages, setProfileImages] = useState({});
+  const [profiles, setProfiles] = useState([]);
+  const [signedUrls, setSignedUrls] = useState({});
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
+  const t = copy[language];
 
   useEffect(() => {
-    async function loadLovedOnes() {
+    setLanguage(getStoredAppLanguage());
+
+    function handleLanguageChange(event) {
+      setLanguage(event.detail?.language || getStoredAppLanguage());
+    }
+
+    window.addEventListener("vozeterna-language-change", handleLanguageChange);
+
+    return () => {
+      window.removeEventListener("vozeterna-language-change", handleLanguageChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    async function loadProfiles() {
       const { data: userData } = await supabase.auth.getUser();
       const currentUser = userData.user;
       setUser(currentUser);
@@ -27,65 +90,58 @@ export default function LovedOnesPage() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) {
-        setMessage(error.message);
-        setLoading(false);
-        return;
-      }
+      if (!error) {
+        const lovedOnes = data || [];
+        setProfiles(lovedOnes);
 
-      const profiles = data || [];
-      setLovedOnes(profiles);
+        const urlMap = {};
 
-      const imageMap = {};
+        for (const profile of lovedOnes) {
+          if (profile.profile_photo_path) {
+            const { data: signedData } = await supabase.storage
+              .from("family-media")
+              .createSignedUrl(profile.profile_photo_path, 60 * 10);
 
-      for (const profile of profiles) {
-        if (profile.profile_photo_path) {
-          const { data: signedData } = await supabase.storage
-            .from("family-media")
-            .createSignedUrl(profile.profile_photo_path, 60 * 10);
-
-          if (signedData?.signedUrl) {
-            imageMap[profile.id] = signedData.signedUrl;
-            continue;
+            if (signedData?.signedUrl) {
+              urlMap[profile.id] = signedData.signedUrl;
+            }
           }
         }
 
-        const { data: mediaData } = await supabase
-          .from("media_assets")
-          .select("file_path, file_type, file_name")
-          .eq("loved_one_id", profile.id)
-          .order("created_at", { ascending: false });
-
-        const firstImage = (mediaData || []).find((item) => {
-          const type = item.file_type || "";
-          const name = item.file_name || "";
-          return type.startsWith("image/") || name.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/);
-        });
-
-        if (firstImage?.file_path) {
-          const { data: signedData } = await supabase.storage
-            .from("family-media")
-            .createSignedUrl(firstImage.file_path, 60 * 10);
-
-          if (signedData?.signedUrl) {
-            imageMap[profile.id] = signedData.signedUrl;
-          }
-        }
+        setSignedUrls(urlMap);
       }
 
-      setProfileImages(imageMap);
       setLoading(false);
     }
 
-    loadLovedOnes();
+    loadProfiles();
   }, []);
+
+  function formatDate(value) {
+    if (!value) return null;
+
+    return new Intl.DateTimeFormat(language === "es" ? "es-MX" : "en-US", {
+      dateStyle: "medium",
+    }).format(new Date(`${value}T00:00:00`));
+  }
+
+  function getInitials(name) {
+    return (
+      name
+        ?.split(" ")
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase() || "VE"
+    );
+  }
 
   if (loading) {
     return (
       <main className="appShell">
         <section className="appHero compact">
-          <p className="appEyebrow">Loved One Profiles</p>
-          <h1>Loading...</h1>
+          <p className="appEyebrow">{t.eyebrow}</p>
+          <h1>{language === "es" ? "Cargando..." : "Loading..."}</h1>
         </section>
       </main>
     );
@@ -95,17 +151,17 @@ export default function LovedOnesPage() {
     return (
       <main className="appShell">
         <section className="appHero compact">
-          <p className="appEyebrow">Loved One Profiles</p>
-          <h1>Please sign in</h1>
-          <p>You need to sign in before creating a family legacy profile.</p>
+          <p className="appEyebrow">{t.eyebrow}</p>
+          <h1>{t.signInTitle}</h1>
+          <p>{t.signInText}</p>
 
           <div className="buttonRow">
             <Link href="/app/login" className="appButton">
-              Sign in
+              {t.signIn}
             </Link>
 
             <Link href="/app" className="appButton secondary">
-              Back to app
+              {t.dashboard}
             </Link>
           </div>
         </section>
@@ -116,78 +172,93 @@ export default function LovedOnesPage() {
   return (
     <main className="appShell">
       <section className="appHero compact">
-        <p className="appEyebrow">Loved One Profiles</p>
-        <h1>Who are these memories for?</h1>
-        <p>
-          Create a profile for a parent, grandparent, spouse, relative, friend, or loved one whose voice,
-          stories, photos, and memories you want to preserve.
-        </p>
+        <p className="appEyebrow">{t.eyebrow}</p>
+        <h1>{t.title}</h1>
+        <p>{t.subtitle}</p>
 
         <div className="buttonRow">
           <Link href="/app/loved-ones/new" className="appButton">
-            Create profile
+            {t.newProfile}
           </Link>
 
-          <Link href="/app/library" className="appButton secondary">
-            View library
+          <Link href="/app" className="appButton secondary">
+            {t.dashboard}
           </Link>
         </div>
       </section>
 
-      <section className="libraryBox">
-        {message && <div className="successBox">{message}</div>}
+      {profiles.length === 0 ? (
+        <section className="emptyState">
+          <h2>{t.emptyTitle}</h2>
+          <p>{t.emptyText}</p>
 
-        {lovedOnes.length === 0 ? (
-          <div className="emptyState">
-            <h2>No profiles yet</h2>
-            <p>Create your first loved one profile to begin organizing memories with meaning.</p>
+          <Link href="/app/loved-ones/new" className="appButton">
+            {t.newProfile}
+          </Link>
+        </section>
+      ) : (
+        <section className="profileGrid">
+          {profiles.map((profile) => (
+            <article className="profileCard" key={profile.id}>
+              <div className="profileCardPhoto">
+                {signedUrls[profile.id] ? (
+                  <img src={signedUrls[profile.id]} alt={profile.full_name} />
+                ) : (
+                  <span>{getInitials(profile.full_name)}</span>
+                )}
+              </div>
 
-            <Link href="/app/loved-ones/new" className="appButton">
-              Create first profile
-            </Link>
-          </div>
-        ) : (
-          <div className="profileCardGrid">
-            {lovedOnes.map((person) => (
-              <article className="legacyProfileCard" key={person.id}>
-                <div className="legacyProfileImage">
-                  {profileImages[person.id] ? (
-                    <img src={profileImages[person.id]} alt={person.full_name} />
-                  ) : (
-                    <div className="legacyProfilePlaceholder">
-                      {person.full_name
-                        ?.split(" ")
-                        .slice(0, 2)
-                        .map((part) => part[0])
-                        .join("")
-                        .toUpperCase() || "VE"}
-                    </div>
+              <div className="profileCardBody">
+                <p className="appEyebrow">
+                  {profile.memorial_public ? t.publicMemorial : t.privateProfile}
+                </p>
+
+                <h2>{profile.full_name}</h2>
+
+                {profile.relationship && (
+                  <p>
+                    <strong>{t.relationship}:</strong> {profile.relationship}
+                  </p>
+                )}
+
+                {profile.birth_date && (
+                  <p>
+                    <strong>{t.born}:</strong> {formatDate(profile.birth_date)}
+                  </p>
+                )}
+
+                {profile.death_date && (
+                  <p>
+                    <strong>{t.passed}:</strong> {formatDate(profile.death_date)}
+                  </p>
+                )}
+
+                <div className="buttonRow">
+                  <Link href={`/app/loved-ones/${profile.id}`} className="appButton">
+                    {t.open}
+                  </Link>
+
+                  <Link
+                    href={`/app/loved-ones/${profile.id}/edit`}
+                    className="appButton secondary"
+                  >
+                    {t.edit}
+                  </Link>
+
+                  {profile.memorial_public && profile.memorial_slug && (
+                    <Link
+                      href={`/memorial/${profile.memorial_slug}`}
+                      className="appButton ghost"
+                    >
+                      {t.memorial}
+                    </Link>
                   )}
                 </div>
-
-                <div className="legacyProfileContent">
-                  <p className="appEyebrow">Legacy Profile</p>
-                  <h2>{person.full_name}</h2>
-
-                  {person.relationship && <p className="profileRelationshipSmall">{person.relationship}</p>}
-
-                  {person.bio && <p className="memoryBio">{person.bio}</p>}
-
-                  <div className="profileCardActions">
-                    <Link href={`/app/loved-ones/${person.id}`} className="textLink">
-                      Open legacy profile
-                    </Link>
-
-                    <Link href={`/app/upload?lovedOneId=${person.id}`} className="textLink">
-                      Upload memory
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
+              </div>
+            </article>
+          ))}
+        </section>
+      )}
     </main>
   );
 }

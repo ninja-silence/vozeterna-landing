@@ -2,10 +2,23 @@
 
 import { useRef, useState } from "react";
 
-export default function SignaturePad({ onChange }) {
+export default function SignaturePad({ language = "en", onChange }) {
   const canvasRef = useRef(null);
   const [drawing, setDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
+
+  const copy = {
+    en: {
+      clear: "Clear signature",
+      hint: "Sign inside the box using your mouse or finger.",
+    },
+    es: {
+      clear: "Borrar firma",
+      hint: "Firma dentro del recuadro usando tu mouse o dedo.",
+    },
+  };
+
+  const t = copy[language] || copy.en;
 
   function getPoint(event) {
     const canvas = canvasRef.current;
@@ -15,8 +28,8 @@ export default function SignaturePad({ onChange }) {
     const clientY = event.touches?.[0]?.clientY ?? event.clientY;
 
     return {
-      x: clientX - rect.left,
-      y: clientY - rect.top,
+      x: (clientX - rect.left) * (canvas.width / rect.width),
+      y: (clientY - rect.top) * (canvas.height / rect.height),
     };
   }
 
@@ -24,14 +37,13 @@ export default function SignaturePad({ onChange }) {
     event.preventDefault();
 
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    const context = canvas.getContext("2d");
     const point = getPoint(event);
 
-    ctx.beginPath();
-    ctx.moveTo(point.x, point.y);
+    context.beginPath();
+    context.moveTo(point.x, point.y);
 
     setDrawing(true);
-    setHasSignature(true);
   }
 
   function draw(event) {
@@ -40,44 +52,51 @@ export default function SignaturePad({ onChange }) {
     event.preventDefault();
 
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    const context = canvas.getContext("2d");
     const point = getPoint(event);
 
-    ctx.lineTo(point.x, point.y);
-    ctx.strokeStyle = "#083f52";
-    ctx.lineWidth = 2.4;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.stroke();
+    context.lineWidth = 3;
+    context.lineCap = "round";
+    context.strokeStyle = "#083f52";
+    context.lineTo(point.x, point.y);
+    context.stroke();
 
-    onChange?.(canvas.toDataURL("image/png"));
+    setHasSignature(true);
+
+    if (onChange) {
+      onChange(canvas.toDataURL("image/png"));
+    }
   }
 
   function stopDrawing() {
-    if (!drawing) return;
-
     setDrawing(false);
 
     const canvas = canvasRef.current;
-    onChange?.(canvas.toDataURL("image/png"));
+
+    if (hasSignature && onChange) {
+      onChange(canvas.toDataURL("image/png"));
+    }
   }
 
   function clearSignature() {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    const context = canvas.getContext("2d");
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
     setHasSignature(false);
-    onChange?.("");
+
+    if (onChange) {
+      onChange("");
+    }
   }
 
   return (
     <div className="signaturePadWrap">
       <canvas
         ref={canvasRef}
-        width={720}
-        height={220}
+        width="720"
+        height="240"
         className="signatureCanvas"
         onMouseDown={startDrawing}
         onMouseMove={draw}
@@ -89,10 +108,10 @@ export default function SignaturePad({ onChange }) {
       />
 
       <div className="signaturePadFooter">
-        <span>{hasSignature ? "Signature captured" : "Sign inside the box"}</span>
+        <p>{t.hint}</p>
 
         <button type="button" className="textButton" onClick={clearSignature}>
-          Clear
+          {t.clear}
         </button>
       </div>
     </div>
