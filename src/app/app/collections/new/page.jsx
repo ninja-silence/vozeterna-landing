@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../../../lib/supabaseClient";
 import { useAppLanguage } from "../../../../lib/useAppLanguage";
 
@@ -51,6 +51,8 @@ const copy = {
 
 export default function NewCollectionPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const preselectedLovedOneId = searchParams.get("lovedOneId") || "";
   const language = useAppLanguage();
   const t = copy[language] || copy.en;
 
@@ -61,7 +63,7 @@ export default function NewCollectionPage() {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    loved_one_id: "",
+    loved_one_id: preselectedLovedOneId,
     is_public: false,
   });
 
