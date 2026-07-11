@@ -219,7 +219,7 @@ export default function AddMemoryToAlbumPage() {
         </section>
       ) : (
         <>
-          <section className="addMemoriesGrid">
+          <section className="addAlbumSelectionGrid">
             {availableCollections.map((collection) => {
               const selected = selectedIds.includes(collection.id);
 
@@ -248,17 +248,18 @@ export default function AddMemoryToAlbumPage() {
 
                   <button
                     type="button"
-                    className={selected ? "appButton" : "appButton ghost"}
+                    className={selected ? "albumSelectCheckbox selected" : "albumSelectCheckbox"}
                     onClick={() => toggleCollection(collection.id)}
+                    aria-label={selected ? t.selected : t.add}
                   >
-                    {selected ? t.selected : t.add}
+                    <span />
                   </button>
                 </article>
               );
             })}
           </section>
 
-          <div className="addMemoriesFooter">
+          <div className="addAlbumSelectionFooter">
             <button
               type="button"
               className="appButton"
