@@ -286,11 +286,11 @@ export default function AddMemoriesToCollectionPage() {
               >
                 <button
                   type="button"
-                  className="selectMemoryButton"
+                  className={selected ? "selectMemoryCheckbox selected" : "selectMemoryCheckbox"}
                   onClick={() => toggleSelected(memory.id)}
                   aria-label={selected ? "Remove memory" : "Select memory"}
                 >
-                  {selected ? "✓" : "+"}
+                  <span />
                 </button>
 
                 <div className="memoryGalleryPreview">

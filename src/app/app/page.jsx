@@ -43,6 +43,9 @@ const copy = {
       memoriesLabel: "Memories",
       memoriesTitle: "Saved Items",
       memoriesText: "Photos, audio, video, notes, and keepsakes saved.",
+      albumsLabel: "Albums",
+      albumsTitle: "Memory Albums",
+      albumsText: "Curated collections that organize family memories.",
       publicLabel: "Public",
       publicTitle: "Memorial Pages",
       publicText: "Public memorial profiles enabled for sharing.",
@@ -132,6 +135,9 @@ const copy = {
       memoriesLabel: "Recuerdos",
       memoriesTitle: "Elementos guardados",
       memoriesText: "Fotos, audio, video, notas y recuerdos especiales guardados.",
+      albumsLabel: "Álbumes",
+      albumsTitle: "Álbumes de recuerdos",
+      albumsText: "Colecciones organizadas para recuerdos familiares.",
       publicLabel: "Público",
       publicTitle: "Páginas memoriales",
       publicText: "Perfiles conmemorativos públicos habilitados para compartir.",
@@ -195,6 +201,7 @@ export default function AppHomePage() {
     memories: 0,
     publicMemorials: 0,
     consentRecords: 0,
+    albums: 0,
   });
   const [loadingStats, setLoadingStats] = useState(true);
 
@@ -215,7 +222,7 @@ export default function AppHomePage() {
         return;
       }
 
-      const [profilesResult, memoriesResult, publicMemorialsResult, consentResult] =
+      const [profilesResult, memoriesResult, publicMemorialsResult, consentResult, albumsResult] =
         await Promise.all([
           supabase.from("loved_ones").select("id", { count: "exact", head: true }),
           supabase.from("media_assets").select("id", { count: "exact", head: true }),
@@ -224,6 +231,7 @@ export default function AppHomePage() {
             .select("id", { count: "exact", head: true })
             .eq("memorial_public", true),
           supabase.from("consent_records").select("id", { count: "exact", head: true }),
+          supabase.from("memory_collections").select("id", { count: "exact", head: true }),
         ]);
 
       setStats({
@@ -231,6 +239,7 @@ export default function AppHomePage() {
         memories: memoriesResult.count || 0,
         publicMemorials: publicMemorialsResult.count || 0,
         consentRecords: consentResult.count || 0,
+        albums: albumsResult.count || 0,
       });
 
       setLoadingStats(false);
@@ -284,6 +293,13 @@ export default function AppHomePage() {
           <strong>{loadingStats ? statLabel : stats.memories}</strong>
           <h2>{t.stats.memoriesTitle}</h2>
           <p>{t.stats.memoriesText}</p>
+        </article>
+
+        <article>
+          <span>{t.stats.albumsLabel}</span>
+          <strong>{loadingStats ? statLabel : stats.albums}</strong>
+          <h2>{t.stats.albumsTitle}</h2>
+          <p>{t.stats.albumsText}</p>
         </article>
 
         <article>

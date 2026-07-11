@@ -20,6 +20,10 @@ const copy = {
     makePrivate: "Make private",
     delete: "Delete memory",
     editMemory: "Edit memory",
+    addToAlbum: "Add to album",
+    albumsTitle: "This memory is in",
+    noAlbums: "This memory is not in any albums yet.",
+    openAlbum: "Open album",
     deleteConfirm: "Delete this memory? This cannot be undone.",
     deleted: "Memory deleted.",
     addedPublic: "Memory is now public on the memorial page.",
@@ -59,6 +63,10 @@ const copy = {
     makePrivate: "Hacer privado",
     delete: "Eliminar recuerdo",
     editMemory: "Editar recuerdo",
+    addToAlbum: "Agregar a álbum",
+    albumsTitle: "Este recuerdo está en",
+    noAlbums: "Este recuerdo todavía no está en ningún álbum.",
+    openAlbum: "Abrir álbum",
     deleteConfirm: "¿Eliminar este recuerdo? Esta acción no se puede deshacer.",
     deleted: "Recuerdo eliminado.",
     addedPublic: "El recuerdo ahora es público en la página memorial.",
@@ -100,6 +108,7 @@ export default function MemoryDetailPage() {
   const [signedUrl, setSignedUrl] = useState("");
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [albums, setAlbums] = useState([]);
 
   useEffect(() => {
     async function loadMemory() {
@@ -341,6 +350,10 @@ export default function MemoryDetailPage() {
 
             <Link href={`/app/memories/${memory.id}/edit`} className="appButton ghost">
               {t.editMemory}
+            </Link>
+
+            <Link href={`/app/memories/${memory.id}/add-to-album`} className="appButton ghost">
+              {t.addToAlbum}
             </Link>
 
             <button type="button" className="appButton dangerButton" onClick={deleteMemory}>
