@@ -28,6 +28,9 @@ const copy = {
     cancel: "Cancel",
     back: "Back to collection",
     saved: "Collection updated.",
+    deleteCollection: "Delete collection",
+    deleteConfirm: "Delete this collection? Memories will stay in your library, but this album will be removed.",
+    deleted: "Collection deleted.",
     error: "Something went wrong. Please try again.",
     notFound: "Collection not found",
   },
@@ -52,6 +55,9 @@ const copy = {
     cancel: "Cancelar",
     back: "Volver al álbum",
     saved: "Álbum actualizado.",
+    deleteCollection: "Eliminar álbum",
+    deleteConfirm: "¿Eliminar este álbum? Los recuerdos permanecerán en tu biblioteca, pero el álbum será eliminado.",
+    deleted: "Álbum eliminado.",
     error: "Algo salió mal. Inténtalo de nuevo.",
     notFound: "Álbum no encontrado",
   },
@@ -114,6 +120,32 @@ export default function EditCollectionPage() {
       ...current,
       [field]: value,
     }));
+  }
+
+  async function deleteCollection() {
+    const confirmed = window.confirm(t.deleteConfirm);
+    if (!confirmed) return;
+
+    setSaving(true);
+    setMessage("");
+
+    const { error } = await supabase
+      .from("memory_collections")
+      .delete()
+      .eq("id", id);
+
+    setSaving(false);
+
+    if (error) {
+      setMessage(error.message || t.error);
+      return;
+    }
+
+    setMessage(t.deleted);
+
+    setTimeout(() => {
+      router.push("/app/collections");
+    }, 700);
   }
 
   async function handleSubmit(event) {
@@ -255,6 +287,15 @@ export default function EditCollectionPage() {
             <Link href={`/app/collections/${id}`} className="appButton ghost">
               {t.cancel}
             </Link>
+
+            <button
+              type="button"
+              className="appButton dangerButton"
+              onClick={deleteCollection}
+              disabled={saving}
+            >
+              {t.deleteCollection}
+            </button>
           </div>
         </form>
       </section>
