@@ -2532,7 +2532,7 @@ a.primary:hover {
 
 .recording-wave-svg {
   width: 58px;
-  height: 58px;
+  height: 68px;
 }
 
 .recording-wave-bg {
@@ -2609,7 +2609,7 @@ a.primary:hover {
   display: grid;
   place-items: center;
   width: 42px;
-  height: 42px;
+  height: 44px;
   border-radius: 999px;
   background: var(--ve-navy);
   color: #ffffff;
@@ -5083,7 +5083,7 @@ img[src="/brand/logo-primary.png"] {
 
 .recorderPulse {
   width: 58px;
-  height: 58px;
+  height: 68px;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -7552,7 +7552,7 @@ body {
 .appHeader {
   max-width: none;
   margin: 0;
-  min-height: 58px;
+  min-height: 68px;
   padding: 0 28px;
   border-bottom: 1px solid rgba(8, 63, 82, 0.08);
 }
@@ -8293,7 +8293,7 @@ select.appInput {
 
 .collectionIcon {
   width: 58px;
-  height: 58px;
+  height: 68px;
   display: grid;
   place-items: center;
   border-radius: 20px;
@@ -8579,7 +8579,7 @@ select.appInput {
 /* Checkbox-style selectors for add-to-album/add-to-collection cards */
 .addMemoryCheckboxButton {
   width: 42px;
-  height: 42px;
+  height: 44px;
   min-width: 42px;
   border-radius: 12px;
   border: 2px solid rgba(18, 78, 92, 0.35);
@@ -8932,13 +8932,13 @@ select.appInput {
 .appLogoWithImage {
   display: inline-flex;
   align-items: center;
-  min-width: 170px;
+  min-width: 260px;
 }
 
 .appLogoImage {
   display: block;
   width: auto;
-  height: 42px;
+  height: 68px;
   object-fit: contain;
 }
 
@@ -8948,6 +8948,6 @@ select.appInput {
   }
 
   .appLogoImage {
-    height: 34px;
+    height: 44px;
   }
 }
