@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../../../lib/supabaseClient";
 import { useAppLanguage } from "../../../../lib/useAppLanguage";
 
@@ -51,19 +51,29 @@ const copy = {
 
 export default function NewCollectionPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const preselectedLovedOneId = searchParams.get("lovedOneId") || "";
   const language = useAppLanguage();
   const t = copy[language] || copy.en;
 
   const [profiles, setProfiles] = useState([]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const lovedOneId = params.get("lovedOneId") || "";
+
+    if (lovedOneId) {
+      setForm((current) => ({
+        ...current,
+        loved_one_id: lovedOneId,
+      }));
+    }
+  }, []);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
   const [form, setForm] = useState({
     title: "",
     description: "",
-    loved_one_id: preselectedLovedOneId,
+    loved_one_id: "",
     is_public: false,
   });
 
