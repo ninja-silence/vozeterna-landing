@@ -7724,3 +7724,144 @@ select.appInput {
 .publicMemorialShell {
   padding-top: clamp(28px, 5vw, 58px);
 }
+
+/* ============================
+   Dashboard Vault Progress
+   ============================ */
+
+.vaultProgressList {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.vaultProgressItem {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 10px;
+  border-radius: 16px;
+  background: rgba(8, 63, 82, 0.045);
+  border: 1px solid rgba(8, 63, 82, 0.06);
+}
+
+.vaultProgressItem span {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(8, 63, 82, 0.08);
+  color: #083f52;
+  font-weight: 950;
+}
+
+.vaultProgressItem p {
+  margin: 0;
+  color: #496678;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.vaultProgressItem.done span {
+  background: rgba(208, 146, 47, 0.18);
+  color: #c88424;
+}
+
+.vaultProgressItem.done p {
+  color: #083f52;
+}
+
+.vaultProgressItem.next {
+  background: rgba(255, 255, 255, 0.68);
+  border-color: rgba(208, 146, 47, 0.14);
+}
+
+.vaultProgressItem.next span {
+  background: #083f52;
+  color: #ffffff;
+}
+
+.dashboardStatusCard h2 {
+  margin-bottom: 10px;
+}
+
+/* ============================
+   Dashboard Stats Inside Hero
+   ============================ */
+
+.dashboardHeroStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.dashboardHeroStats article {
+  min-height: 138px;
+  padding: 22px;
+}
+
+.dashboardHeroStats article strong {
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+}
+
+.dashboardHeroStats article h2 {
+  font-size: 1.05rem;
+}
+
+.dashboardHeroStats article p {
+  font-size: 0.92rem;
+}
+
+@media (max-width: 760px) {
+  .dashboardHeroStats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================
+   Dashboard Hero Stats Refinement
+   ============================ */
+
+.dashboardHeroStats {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  margin-top: 24px !important;
+}
+
+.dashboardHeroStats article {
+  min-height: 116px !important;
+  padding: 18px 20px !important;
+  border-radius: 24px !important;
+}
+
+.dashboardHeroStats article span {
+  font-size: 0.68rem !important;
+}
+
+.dashboardHeroStats article strong {
+  display: block;
+  margin: 6px 0 2px;
+  font-size: clamp(2rem, 4vw, 3rem) !important;
+  line-height: 0.9;
+}
+
+.dashboardHeroStats article h2 {
+  margin: 6px 0 4px !important;
+  font-size: 1rem !important;
+  line-height: 1.15 !important;
+}
+
+.dashboardHeroStats article p {
+  margin: 0 !important;
+  font-size: 0.84rem !important;
+  line-height: 1.35 !important;
+}
+
+@media (max-width: 760px) {
+  .dashboardHeroStats {
+    grid-template-columns: 1fr !important;
+  }
+}

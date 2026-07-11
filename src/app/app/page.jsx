@@ -17,6 +17,18 @@ const copy = {
     recordMemory: "Record memory",
     viewLibrary: "View library",
     vaultStatus: "Vault Status",
+    progressTitle: "Vault Progress",
+    progressText: "A quick look at what is already set up and what to do next.",
+    consentDone: "Consent signed",
+    consentTodo: "Sign consent",
+    profilesDone: "Profiles created",
+    profilesTodo: "Create first profile",
+    memoriesDone: "Memories saved",
+    memoriesTodo: "Add first memory",
+    publicDone: "Public page enabled",
+    publicTodo: "Enable a public page",
+    voiceTodo: "Add a voice or video memory",
+    publicMemoryTodo: "Choose memories for public page",
     statusSignedIn: "Your legacy system is taking shape",
     statusSignedOut: "Sign in to begin",
     statusTextSignedIn:
@@ -88,6 +100,18 @@ const copy = {
     recordMemory: "Grabar recuerdo",
     viewLibrary: "Ver biblioteca",
     vaultStatus: "Estado de la bóveda",
+    progressTitle: "Progreso de la bóveda",
+    progressText: "Un vistazo rápido a lo que ya está configurado y lo que sigue.",
+    consentDone: "Consentimiento firmado",
+    consentTodo: "Firmar consentimiento",
+    profilesDone: "Perfiles creados",
+    profilesTodo: "Crear primer perfil",
+    memoriesDone: "Recuerdos guardados",
+    memoriesTodo: "Agregar primer recuerdo",
+    publicDone: "Página pública activada",
+    publicTodo: "Activar una página pública",
+    voiceTodo: "Agregar recuerdo de voz o video",
+    publicMemoryTodo: "Elegir recuerdos para la página pública",
     statusSignedIn: "Tu sistema de legado está tomando forma",
     statusSignedOut: "Inicia sesión para comenzar",
     statusTextSignedIn:
@@ -235,28 +259,7 @@ export default function AppHomePage() {
               {t.viewLibrary}
             </Link>
           </div>
-        </div>
-
-        <div className="dashboardStatusCard">
-          <AppLanguageToggle language={language} setLanguage={setLanguage} />
-
-          <div className="statusOrb">
-            <span>{user ? "VE" : "?"}</span>
-          </div>
-
-          <p className="appEyebrow">{t.vaultStatus}</p>
-          <h2>{user ? t.statusSignedIn : t.statusSignedOut}</h2>
-          <p>{user ? t.statusTextSignedIn : t.statusTextSignedOut}</p>
-
-          {!user && (
-            <Link href="/app/login" className="appButton">
-              {t.signIn}
-            </Link>
-          )}
-        </div>
-      </section>
-
-      <section className="dashboardStatsGrid liveStatsGrid">
+<section className="dashboardStatsGrid liveStatsGrid dashboardHeroStats">
         <article>
           <span>{t.stats.profilesLabel}</span>
           <strong>{loadingStats ? statLabel : stats.profiles}</strong>
@@ -284,6 +287,58 @@ export default function AppHomePage() {
           <h2>{t.stats.consentTitle}</h2>
           <p>{t.stats.consentText}</p>
         </article>
+      </section>
+        </div>
+
+        <div className="dashboardStatusCard">
+          <AppLanguageToggle language={language} setLanguage={setLanguage} />
+
+          <div className="statusOrb">
+            <span>{user ? "VE" : "?"}</span>
+          </div>
+
+          <p className="appEyebrow">{t.vaultStatus}</p>
+          <h2>{user ? t.progressTitle : t.statusSignedOut}</h2>
+          <p>{user ? t.progressText : t.statusTextSignedOut}</p>
+
+          {user ? (
+            <div className="vaultProgressList">
+              <div className={stats.consentRecords > 0 ? "vaultProgressItem done" : "vaultProgressItem"}>
+                <span>{stats.consentRecords > 0 ? "✓" : "○"}</span>
+                <p>{stats.consentRecords > 0 ? t.consentDone : t.consentTodo}</p>
+              </div>
+
+              <div className={stats.profiles > 0 ? "vaultProgressItem done" : "vaultProgressItem"}>
+                <span>{stats.profiles > 0 ? "✓" : "○"}</span>
+                <p>{stats.profiles > 0 ? t.profilesDone : t.profilesTodo}</p>
+              </div>
+
+              <div className={stats.memories > 0 ? "vaultProgressItem done" : "vaultProgressItem"}>
+                <span>{stats.memories > 0 ? "✓" : "○"}</span>
+                <p>{stats.memories > 0 ? t.memoriesDone : t.memoriesTodo}</p>
+              </div>
+
+              <div className={stats.publicMemorials > 0 ? "vaultProgressItem done" : "vaultProgressItem"}>
+                <span>{stats.publicMemorials > 0 ? "✓" : "○"}</span>
+                <p>{stats.publicMemorials > 0 ? t.publicDone : t.publicTodo}</p>
+              </div>
+
+              <div className="vaultProgressItem next">
+                <span>→</span>
+                <p>{t.voiceTodo}</p>
+              </div>
+
+              <div className="vaultProgressItem next">
+                <span>→</span>
+                <p>{t.publicMemoryTodo}</p>
+              </div>
+            </div>
+          ) : (
+            <Link href="/app/login" className="appButton">
+              {t.signIn}
+            </Link>
+          )}
+        </div>
       </section>
 
       <section className="dashboardActionGrid">
