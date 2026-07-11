@@ -14,7 +14,7 @@ const copy = {
     subtitle:
       "Start a private legacy profile for someone you love. You can add photos, voice memories, videos, stories, and memorial settings afterward.",
     fullName: "Full name",
-    fullNamePlaceholder: "Example: Rosa Frias Lopez",
+    fullNamePlaceholder: "Example: Maria Lopez",
     relationship: "Relationship",
     relationshipType: "Relationship type",
     relationshipCustom: "Custom relationship",
