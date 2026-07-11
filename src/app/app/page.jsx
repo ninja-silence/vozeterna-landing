@@ -88,6 +88,12 @@ const copy = {
         text: "View, share, delete, and control which memories appear on memorial pages.",
         href: "/app/library",
       },
+      {
+        tag: "Albums",
+        title: "Memory Albums",
+        text: "Organize photos, voices, videos, and stories into curated family collections.",
+        href: "/app/collections",
+      },
     ],
   },
   es: {
@@ -170,6 +176,12 @@ const copy = {
         title: "Biblioteca de recuerdos",
         text: "Ve, comparte, elimina y controla qué recuerdos aparecen en páginas memoriales.",
         href: "/app/library",
+      },
+      {
+        tag: "Álbumes",
+        title: "Álbumes de recuerdos",
+        text: "Organiza fotos, voces, videos e historias en colecciones familiares curadas.",
+        href: "/app/collections",
       },
     ],
   },

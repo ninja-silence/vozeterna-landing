@@ -37,8 +37,9 @@ const copy = {
     addedPublic: "Memory added to public memorial page.",
     removedPublic: "Memory hidden from public memorial page.",
     deleted: "Memory deleted.",
+    viewDetails: "View details",
     deleteConfirm: "Delete this memory? This cannot be undone.",
-    publicBadge: "Public",
+    publicBadge: "Public on memorial",
     privateBadge: "Private",
     saved: "Saved",
     unknownDate: "Unknown date",
@@ -79,8 +80,9 @@ const copy = {
     addedPublic: "Recuerdo agregado a la página memorial pública.",
     removedPublic: "Recuerdo ocultado de la página memorial pública.",
     deleted: "Recuerdo eliminado.",
+    viewDetails: "Ver detalles",
     deleteConfirm: "¿Eliminar este recuerdo? Esta acción no se puede deshacer.",
-    publicBadge: "Público",
+    publicBadge: "Público en memorial",
     privateBadge: "Privado",
     saved: "Guardado",
     unknownDate: "Fecha desconocida",
@@ -436,6 +438,12 @@ export default function LovedOneDetailPage() {
                   <div className="memoryGalleryInfo">
                     <p className="memoryProfileName">{person.full_name}</p>
                     <h2>{memory.memory_note || memory.title || memory.file_name}</h2>
+
+                    <div className="buttonRow memoryCardDetailRow">
+                      <Link href={`/app/memories/${memory.id}`} className="appButton secondary">
+                        {t.viewDetails}
+                      </Link>
+                    </div>
 
                     <div className="memoryGalleryMeta">
                       <span>{memory.file_name}</span>

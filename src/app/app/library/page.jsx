@@ -23,6 +23,7 @@ const copy = {
     addedPublic: "Memory added to public memorial page.",
     removedPublic: "Memory hidden from public memorial page.",
     deleted: "Memory deleted.",
+    viewDetails: "View details",
     deleteConfirm: "Delete this memory? This cannot be undone.",
     belongsTo: "Profile",
     noProfile: "No profile assigned",
@@ -59,11 +60,12 @@ const copy = {
     addedPublic: "Recuerdo agregado a la página memorial pública.",
     removedPublic: "Recuerdo ocultado de la página memorial pública.",
     deleted: "Recuerdo eliminado.",
+    viewDetails: "Ver detalles",
     deleteConfirm: "¿Eliminar este recuerdo? Esta acción no se puede deshacer.",
     belongsTo: "Perfil",
     noProfile: "Sin perfil asignado",
     privateBadge: "Privado",
-    publicBadge: "Memorial público",
+    publicBadge: "Público en memorial",
     saved: "Guardado",
     unknownDate: "Fecha desconocida",
     trustTitle: "Privado por defecto",
@@ -317,7 +319,13 @@ export default function LibraryPage() {
                   <p className="memoryProfileName">{profileName}</p>
                   <h2>{memory.memory_note || memory.title || memory.file_name}</h2>
 
-                  <div className="memoryGalleryMeta">
+                  <div className="buttonRow memoryCardDetailRow">
+                      <Link href={`/app/memories/${memory.id}`} className="appButton secondary">
+                        {t.viewDetails}
+                      </Link>
+                    </div>
+
+                    <div className="memoryGalleryMeta">
                     <span>{memory.file_name}</span>
                     <span>
                       {t.saved}: {formatDate(memory.created_at)}

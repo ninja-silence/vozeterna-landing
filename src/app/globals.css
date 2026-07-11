@@ -7865,3 +7865,663 @@ select.appInput {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ============================
+   Memory Detail Page
+   ============================ */
+
+.memoryDetailShell {
+  position: relative;
+  overflow: hidden;
+}
+
+.memoryDetailShell::before {
+  content: "";
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  left: -160px;
+  top: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(208, 146, 47, 0.16), transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.memoryDetailShell::after {
+  content: "";
+  position: fixed;
+  width: 560px;
+  height: 560px;
+  right: -180px;
+  top: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(8, 63, 82, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.memoryDetailHero,
+.memoryDetailGrid,
+.memoryDetailMessage {
+  position: relative;
+  z-index: 1;
+}
+
+.memoryDetailHero {
+  width: min(1120px, 100%);
+  margin: 0 auto 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.memoryDetailHero > div,
+.memoryDetailPrivacyCard,
+.memoryDetailPreviewCard,
+.memoryDetailInfoCard {
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 95% 0%, rgba(208, 146, 47, 0.12), transparent 34%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.memoryDetailHero > div {
+  padding: clamp(28px, 5vw, 48px);
+}
+
+.memoryDetailHero h1 {
+  max-width: 760px;
+  margin: 10px 0 12px;
+  padding-bottom: 6px;
+  color: #083f52;
+  font-size: clamp(3.4rem, 8vw, 6rem);
+  line-height: 0.9;
+  letter-spacing: -0.075em;
+}
+
+.memoryDetailHero p {
+  color: #496678;
+  line-height: 1.75;
+}
+
+.memoryDetailPrivacyCard {
+  padding: 28px;
+  display: grid;
+  align-content: center;
+  gap: 14px;
+}
+
+.memoryDetailPrivacyCard h2 {
+  margin: 6px 0 0;
+  color: #083f52;
+  font-size: 2.1rem;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.memoryDetailPrivacyCard p {
+  color: #496678;
+  line-height: 1.65;
+}
+
+.memoryDetailMessage {
+  width: min(1120px, 100%);
+  margin: 0 auto 22px;
+}
+
+.memoryDetailGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+.memoryDetailPreviewCard {
+  min-height: 520px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.memoryDetailPreviewCard img,
+.memoryDetailPreviewCard video {
+  width: 100%;
+  max-height: 680px;
+  object-fit: contain;
+  display: block;
+}
+
+.memoryDetailAudio,
+.memoryDetailFile {
+  width: min(520px, 90%);
+  display: grid;
+  place-items: center;
+  gap: 24px;
+  padding: 34px;
+  text-align: center;
+}
+
+.memoryDetailAudio > span,
+.memoryDetailFile > span {
+  width: 110px;
+  height: 110px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #083f52;
+  color: #ffffff;
+  font-size: 2.8rem;
+  font-weight: 950;
+  box-shadow: 0 18px 44px rgba(8, 63, 82, 0.18);
+}
+
+.memoryDetailAudio audio {
+  width: 100%;
+}
+
+.memoryDetailFile p {
+  color: #496678;
+  font-weight: 900;
+  word-break: break-word;
+}
+
+.memoryDetailInfoCard {
+  padding: clamp(24px, 4vw, 34px);
+}
+
+.memoryDetailInfoCard h2 {
+  margin: 10px 0 18px;
+  color: #083f52;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.memoryDetailMeta {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.memoryDetailMeta p {
+  margin: 0;
+  color: #496678;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.memoryDetailMeta strong {
+  color: #083f52;
+}
+
+.dangerButton {
+  background: #8f1d1d !important;
+  color: #ffffff !important;
+}
+
+@media (max-width: 980px) {
+  .memoryDetailHero,
+  .memoryDetailGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .memoryDetailPreviewCard {
+    min-height: 340px;
+  }
+}
+
+@media (max-width: 680px) {
+  .memoryDetailHero h1 {
+    font-size: clamp(3rem, 16vw, 4.4rem);
+  }
+}
+
+/* ============================
+   Memory Card Detail Button
+   ============================ */
+
+.memoryCardDetailRow {
+  margin: 14px 0 12px;
+}
+
+.memoryCardDetailRow .appButton {
+  min-height: 38px;
+  padding: 0 14px;
+  font-size: 0.86rem;
+}
+
+/* ============================
+   Edit Memory Page
+   ============================ */
+
+.editMemoryHero {
+  width: min(960px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+}
+
+.editMemoryCard {
+  width: min(960px, 100%);
+  margin: 24px auto 0;
+  padding: clamp(24px, 4vw, 38px);
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 250, 241, 0.8)),
+    radial-gradient(circle at 100% 0%, rgba(208, 146, 47, 0.12), transparent 36%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.toggleSettingRow {
+  display: grid !important;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(8, 63, 82, 0.05);
+  border: 1px solid rgba(8, 63, 82, 0.08);
+}
+
+.toggleSettingRow input {
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  accent-color: #083f52;
+}
+
+.toggleSettingRow span {
+  display: grid;
+  gap: 4px;
+}
+
+.toggleSettingRow strong {
+  color: #083f52;
+}
+
+.toggleSettingRow small {
+  color: #496678;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .editMemoryHero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* ============================
+   Edit Memory Form Polish
+   ============================ */
+
+.editMemoryCard .appForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.editMemoryCard .appForm label:not(.toggleSettingRow) {
+  display: grid;
+  gap: 8px;
+  color: #496678;
+  font-size: 0.94rem;
+  font-weight: 800;
+}
+
+.editMemoryCard .appForm input[type="text"],
+.editMemoryCard .appForm textarea,
+.editMemoryCard .appForm select {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px 15px;
+  border-radius: 16px;
+  border: 1px solid rgba(8, 63, 82, 0.16);
+  background: rgba(255, 255, 255, 0.9);
+  color: #083f52;
+  font-size: 1rem;
+  font-weight: 700;
+  outline: none;
+}
+
+.editMemoryCard .appForm textarea {
+  min-height: 140px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.editMemoryCard .appForm input:focus,
+.editMemoryCard .appForm textarea:focus,
+.editMemoryCard .appForm select:focus {
+  border-color: rgba(208, 146, 47, 0.72);
+  box-shadow: 0 0 0 4px rgba(208, 146, 47, 0.12);
+}
+
+.editMemoryCard .buttonRow {
+  margin-top: 4px;
+}
+
+@media (max-width: 720px) {
+  .editMemoryCard {
+    padding: 22px;
+  }
+}
+
+/* ============================
+   Collections / Albums
+   ============================ */
+
+.collectionsShell,
+.newCollectionShell {
+  position: relative;
+  overflow: hidden;
+}
+
+.collectionsHero,
+.newCollectionHero {
+  width: min(1120px, 100%);
+  margin: 0 auto 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 22px;
+  align-items: center;
+  padding: clamp(28px, 5vw, 48px);
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 100% 0%, rgba(208, 146, 47, 0.12), transparent 34%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.collectionsHero h1,
+.newCollectionHero h1 {
+  max-width: 760px;
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: clamp(3.4rem, 8vw, 6rem);
+  line-height: 0.9;
+  letter-spacing: -0.075em;
+}
+
+.collectionsHero p,
+.newCollectionHero p {
+  max-width: 720px;
+  color: #496678;
+  line-height: 1.75;
+}
+
+.collectionsGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.collectionCard {
+  min-height: 320px;
+  padding: 24px;
+  border-radius: 30px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 250, 241, 0.8)),
+    radial-gradient(circle at 100% 0%, rgba(8, 63, 82, 0.08), transparent 36%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+  display: grid;
+  gap: 18px;
+  align-content: space-between;
+}
+
+.collectionCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.collectionIcon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: #083f52;
+  color: #ffffff;
+  font-weight: 950;
+  letter-spacing: -0.08em;
+}
+
+.collectionCard h2 {
+  margin: 8px 0 8px;
+  color: #083f52;
+  font-size: 2.1rem;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.collectionCard p {
+  color: #496678;
+  line-height: 1.55;
+}
+
+.collectionCardMeta {
+  display: grid;
+  gap: 6px;
+  color: #496678;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.collectionsEmpty {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.collectionFormCard {
+  width: min(900px, 100%);
+}
+
+@media (max-width: 980px) {
+  .collectionsHero,
+  .newCollectionHero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .collectionsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .collectionsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .collectionsHero h1,
+  .newCollectionHero h1 {
+    font-size: clamp(3rem, 16vw, 4.4rem);
+  }
+}
+
+/* ============================
+   Collection Detail
+   ============================ */
+
+.collectionDetailHero {
+  width: min(1120px, 100%);
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.collectionDetailHero > div,
+.collectionDetailActions,
+.collectionMemoriesSection {
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 241, 0.76)),
+    radial-gradient(circle at 100% 0%, rgba(208, 146, 47, 0.12), transparent 34%);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  box-shadow: 0 20px 60px rgba(8, 63, 82, 0.08);
+}
+
+.collectionDetailHero > div {
+  padding: clamp(28px, 5vw, 48px);
+}
+
+.collectionDetailHero h1 {
+  max-width: 760px;
+  margin: 10px 0 12px;
+  color: #083f52;
+  font-size: clamp(3.4rem, 8vw, 6rem);
+  line-height: 0.9;
+  letter-spacing: -0.075em;
+}
+
+.collectionDetailHero p {
+  max-width: 720px;
+  color: #496678;
+  line-height: 1.75;
+}
+
+.collectionDetailMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+  align-items: center;
+}
+
+.collectionDetailMeta > span:first-child {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(8, 63, 82, 0.06);
+  color: #083f52;
+  font-weight: 900;
+  font-size: 0.86rem;
+}
+
+.collectionDetailActions {
+  padding: 24px;
+  display: grid;
+  align-content: center;
+  gap: 12px;
+}
+
+.collectionDetailActions .appButton {
+  width: 100%;
+  justify-content: center;
+}
+
+.collectionMemoriesSection {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 36px);
+}
+
+.sectionHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.sectionHeaderRow h2 {
+  margin: 8px 0 0;
+  color: #083f52;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.collectionEmptyState {
+  margin: 10px auto 0;
+}
+
+@media (max-width: 900px) {
+  .collectionDetailHero {
+    grid-template-columns: 1fr;
+  }
+
+  .collectionDetailActions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .collectionDetailHero h1 {
+    font-size: clamp(3rem, 16vw, 4.4rem);
+  }
+
+  .collectionDetailActions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================
+   Add Memories to Collection
+   ============================ */
+
+.addMemoriesMessage {
+  width: min(1120px, 100%);
+  margin: 0 auto 22px;
+}
+
+.addMemoriesGrid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.selectableMemoryCard {
+  position: relative;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.selectableMemoryCard.selected {
+  border-color: rgba(208, 146, 47, 0.9);
+  box-shadow: 0 24px 70px rgba(208, 146, 47, 0.18);
+  transform: translateY(-2px);
+}
+
+.selectMemoryButton {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 8;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: #083f52;
+  color: #ffffff;
+  font-size: 1.3rem;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 14px 34px rgba(8, 63, 82, 0.22);
+}
+
+.selectableMemoryCard.selected .selectMemoryButton {
+  background: #d0922f;
+  color: #083f52;
+}
+
+.collectionDetailActions .appButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
