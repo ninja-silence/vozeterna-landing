@@ -34,6 +34,15 @@ const copy = {
     noMemories: "No memories added yet",
     noMemoriesText:
       "Upload a photo, audio message, video, document, or record a memory connected to this profile.",
+    albums: "Memory Albums",
+    albumsText: "Albums connected to this loved one profile.",
+    noAlbums: "No albums connected yet",
+    noAlbumsText: "Create an album for this loved one to organize photos, voices, videos, and stories.",
+    createAlbum: "Create album",
+    openAlbum: "Open album",
+    albumPrivate: "Private",
+    albumPublic: "Public",
+    albumMemories: "memories",
     addedPublic: "Memory added to public memorial page.",
     removedPublic: "Memory hidden from public memorial page.",
     deleted: "Memory deleted.",
@@ -77,6 +86,15 @@ const copy = {
     noMemories: "Todavía no hay recuerdos",
     noMemoriesText:
       "Sube una foto, mensaje de audio, video, documento o graba un recuerdo conectado a este perfil.",
+    albums: "Álbumes de recuerdos",
+    albumsText: "Álbumes conectados a este perfil.",
+    noAlbums: "Todavía no hay álbumes conectados",
+    noAlbumsText: "Crea un álbum para este ser querido y organiza fotos, voces, videos e historias.",
+    createAlbum: "Crear álbum",
+    openAlbum: "Abrir álbum",
+    albumPrivate: "Privado",
+    albumPublic: "Público",
+    albumMemories: "recuerdos",
     addedPublic: "Recuerdo agregado a la página memorial pública.",
     removedPublic: "Recuerdo ocultado de la página memorial pública.",
     deleted: "Recuerdo eliminado.",
@@ -106,6 +124,7 @@ export default function LovedOneDetailPage() {
   const [person, setPerson] = useState(null);
   const [photoUrl, setPhotoUrl] = useState("");
   const [memories, setMemories] = useState([]);
+  const [albums, setAlbums] = useState([]);
   const [signedUrls, setSignedUrls] = useState({});
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -173,6 +192,20 @@ export default function LovedOneDetailPage() {
       }
 
       setSignedUrls(urlMap);
+
+      const { data: albumData } = await supabase
+        .from("memory_collections")
+        .select(`
+          *,
+          memory_collection_items (
+            id
+          )
+        `)
+        .eq("loved_one_id", id)
+        .order("created_at", { ascending: false });
+
+      setAlbums(albumData || []);
+
       setLoading(false);
     }
 
@@ -370,6 +403,50 @@ export default function LovedOneDetailPage() {
                 : "This profile is protected. You can enable a public memorial page from Edit profile."}
             </p>
           </article>
+        )}
+      </section>
+
+      <section className="personAlbumsSection">
+        <div className="personMemoriesHeader">
+          <div>
+            <p className="appEyebrow">{t.albums}</p>
+            <h2>{t.albums}</h2>
+            <p>{t.albumsText}</p>
+          </div>
+
+          <Link href={`/app/collections/new`} className="appButton secondary">
+            {t.createAlbum}
+          </Link>
+        </div>
+
+        {albums.length === 0 ? (
+          <div className="emptyState">
+            <h2>{t.noAlbums}</h2>
+            <p>{t.noAlbumsText}</p>
+          </div>
+        ) : (
+          <div className="profileAlbumsGrid">
+            {albums.map((album) => (
+              <article className="profileAlbumCard" key={album.id}>
+                <div>
+                  <span className={album.is_public ? "publicStatus" : "privateStatus"}>
+                    {album.is_public ? t.albumPublic : t.albumPrivate}
+                  </span>
+
+                  <h2>{album.title}</h2>
+                  <p>{album.description || t.albumsText}</p>
+
+                  <small>
+                    {(album.memory_collection_items || []).length} {t.albumMemories}
+                  </small>
+                </div>
+
+                <Link href={`/app/collections/${album.id}`} className="appButton ghost">
+                  {t.openAlbum}
+                </Link>
+              </article>
+            ))}
+          </div>
         )}
       </section>
 
