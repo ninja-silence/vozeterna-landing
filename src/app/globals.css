@@ -11301,3 +11301,1695 @@ select.appInput {
     justify-content: center;
   }
 }
+/* Record page mockup match with teal controls */
+.recordMockPage {
+  width: min(1060px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 2rem 0 5rem;
+}
+
+.recordMockHero,
+.recordMockCard,
+.recordMockNext,
+.recordGateCard,
+.recordMockPrepare {
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216, 170, 99, 0.08), transparent 32%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 249, 240, 0.9));
+  border: 1px solid rgba(8, 63, 82, 0.08);
+  box-shadow: 0 22px 54px rgba(76, 54, 31, 0.08);
+}
+
+.recordMockHero {
+  padding: 46px;
+  min-height: 455px;
+}
+
+.recordMockHero h1,
+.recordGateCard h1 {
+  max-width: 780px;
+  margin: 0;
+  color: #083f52;
+  font-size: clamp(4.4rem, 7.6vw, 6.9rem);
+  line-height: 0.88;
+  letter-spacing: -0.07em;
+}
+
+.recordMockHero > p:not(.appEyebrow),
+.recordGateCard > p:not(.appEyebrow) {
+  max-width: 780px;
+  margin: 1.8rem 0 0;
+  color: rgba(8, 63, 82, 0.72);
+  font-size: 1.14rem;
+  line-height: 1.6;
+}
+
+.recordMockPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 2.2rem;
+}
+
+.recordMockPills span {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: 14px;
+  color: #083f52;
+  font-size: 1.05rem;
+  font-weight: 900;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(8, 63, 82, 0.11);
+  box-shadow: 0 8px 18px rgba(8, 63, 82, 0.04);
+}
+
+.recordMockPills strong {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #0f6f78, #083f52);
+  color: #f5dfad;
+  font-size: 0.78rem;
+}
+
+.recordMockHeroButtons {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 28px;
+  margin-top: 3rem;
+}
+
+.recordTealHeroButton {
+  min-height: 88px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-decoration: none;
+  color: #fffaf2;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 950;
+  background: linear-gradient(145deg, #0f6f78, #083f52);
+  border: 1px solid rgba(8, 63, 82, 0.16);
+  box-shadow: 0 18px 32px rgba(8, 63, 82, 0.16);
+}
+
+.recordTealHeroButton.secondary {
+  color: #083f52;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 242, 0.92));
+  border-color: rgba(8, 63, 82, 0.13);
+  box-shadow: 0 14px 30px rgba(76, 54, 31, 0.06);
+}
+
+.recordTealHeroButton span {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.recordMockPrepare {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 24px 28px;
+}
+
+.recordMockPrepare label {
+  display: grid;
+  gap: 7px;
+}
+
+.recordMockPrepare label > span {
+  color: #083f52;
+  font-weight: 900;
+  font-size: 0.95rem;
+}
+
+.recordMockPrepare select,
+.recordMockPrepare textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(8, 63, 82, 0.12);
+  background: rgba(255, 255, 255, 0.92);
+  color: #083f52;
+  font: inherit;
+}
+
+.recordMockPrepare select {
+  min-height: 44px;
+  padding: 0 12px;
+}
+
+.recordMockPrepare textarea {
+  min-height: 82px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.recordMockCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  margin-top: 46px;
+}
+
+.recordMockCard {
+  padding: 34px;
+}
+
+.recordMockCard > h2,
+.recordMockNext h2 {
+  margin: 0;
+  color: #083f52;
+  font-size: 1.55rem;
+  font-weight: 950;
+}
+
+.recordMockDivider {
+  height: 1px;
+  margin: 18px 0 24px;
+  background: rgba(8, 63, 82, 0.13);
+}
+
+.recordMockCard > h3 {
+  margin: 0 0 0.8rem;
+  color: #083f52;
+  font-size: clamp(2rem, 3.2vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.recordMockCard > p {
+  margin: 0 0 1.4rem;
+  color: rgba(8, 63, 82, 0.7);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.recordWaveBox {
+  overflow: hidden;
+  border-radius: 4px;
+  background: linear-gradient(145deg, #0d5167, #083f52);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tealWaveform {
+  height: 112px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tealWaveform span {
+  width: 3px;
+  height: calc(16px + ((var(--bar-index) % 13) * 4px));
+  border-radius: 999px;
+  background: #55d0d1;
+  opacity: 0.88;
+  transform-origin: center;
+}
+
+.tealWaveform.active span {
+  animation: tealWavePulse 880ms ease-in-out infinite;
+  animation-delay: calc(var(--bar-index) * 32ms);
+}
+
+@keyframes tealWavePulse {
+  0%, 100% {
+    transform: scaleY(0.5);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scaleY(1.35);
+    opacity: 1;
+  }
+}
+
+.recordWaveDots {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.recordWaveDots span {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: #55d0d1;
+}
+
+.recordWaveDots span:nth-child(2) {
+  background: #36b56f;
+}
+
+.recordWaveDots span:nth-child(3) {
+  background: #8f8f9a;
+}
+
+.recordMockInner > p,
+.recordMockMessage {
+  margin: 1rem 0 0;
+  color: rgba(8, 63, 82, 0.72);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.recordAudioPreview {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.recordControlRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1.4rem;
+}
+
+.recordTealButton {
+  min-height: 58px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  color: #fffaf2;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 950;
+  background: linear-gradient(145deg, #0f6f78, #083f52);
+  box-shadow: 0 14px 26px rgba(8, 63, 82, 0.16);
+}
+
+.recordTealButton.secondary {
+  color: #083f52;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(8, 63, 82, 0.12);
+}
+
+.recordTealButton.ghost {
+  min-height: 44px;
+  color: #083f52;
+  background: rgba(8, 63, 82, 0.06);
+  box-shadow: none;
+}
+
+.recordVideoWrap .recorderPanel,
+.recordVideoWrap .cameraRecorderCard,
+.recordVideoWrap .cameraRecorder,
+.recordVideoWrap > div {
+  box-shadow: none !important;
+}
+
+.recordVideoWrap .appButton,
+.recordVideoWrap button:not(.filterButton) {
+  background: linear-gradient(145deg, #0f6f78, #083f52) !important;
+  color: #fffaf2 !important;
+  border-color: rgba(8, 63, 82, 0.16) !important;
+}
+
+.recordVideoWrap .appButton.secondary {
+  color: #083f52 !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
+.recordVideoWrap video,
+.recordVideoWrap .cameraPreview {
+  width: 100% !important;
+  min-height: 190px !important;
+  border-radius: 4px !important;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(15, 111, 120, 0.22), transparent 34%),
+    linear-gradient(145deg, #1d2b31, #14252b) !important;
+}
+
+.recordMockNext {
+  margin-top: 34px;
+  padding: 34px;
+}
+
+.recordMockNext ul {
+  list-style: none;
+  display: grid;
+  gap: 22px;
+  padding: 0;
+  margin: 0;
+}
+
+.recordMockNext li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+}
+
+.recordMockNext li span {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #083f52;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+  font-weight: 950;
+}
+
+.recordMockNext li strong {
+  color: #083f52;
+  font-size: 1.25rem;
+}
+
+.recordGateCard {
+  max-width: 780px;
+  margin: 2rem auto 0;
+  padding: 42px;
+}
+
+@media (max-width: 900px) {
+  .recordMockHeroButtons,
+  .recordMockCards {
+    grid-template-columns: 1fr;
+  }
+
+  .recordMockHero {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .recordMockPage {
+    width: min(100% - 18px, 1060px);
+    padding-top: 1.25rem;
+  }
+
+  .recordMockHero,
+  .recordMockCard,
+  .recordMockNext,
+  .recordGateCard,
+  .recordMockPrepare {
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .recordMockHero h1,
+  .recordGateCard h1 {
+    font-size: clamp(3rem, 15vw, 4.5rem);
+  }
+
+  .recordTealHeroButton {
+    min-height: 68px;
+    font-size: 1.1rem;
+  }
+}
+/* Voice recording reading sheet */
+.recordScriptSheet {
+  margin-top: 1.35rem;
+  padding: 18px;
+  border-radius: 18px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 241, 0.86));
+  border: 1px solid rgba(216, 170, 99, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+}
+
+.recordScriptSheet > label:first-child {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: #083f52;
+  font-size: 0.92rem;
+  font-weight: 950;
+}
+
+.recordScriptSheet textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(8, 63, 82, 0.12);
+  background: rgba(255, 255, 255, 0.92);
+  color: #083f52;
+  font: inherit;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.recordScriptSheet textarea:focus {
+  outline: 2px solid rgba(15, 111, 120, 0.22);
+  border-color: rgba(15, 111, 120, 0.42);
+}
+
+.recordScriptToggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0.85rem;
+  color: rgba(8, 63, 82, 0.72);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.recordScriptToggle input {
+  width: 17px;
+  height: 17px;
+  accent-color: #0f6f78;
+}
+/* Rename memory button */
+.renameMemoryButton {
+  border-color: rgba(216, 170, 99, 0.32) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 236, 0.9)) !important;
+  color: #083f52 !important;
+}
+
+.renameMemoryButton:hover {
+  border-color: rgba(15, 111, 120, 0.42) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(240, 249, 248, 0.94)) !important;
+}
+/* VozEterna mobile usability pass */
+@media (max-width: 820px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  img,
+  video,
+  audio,
+  canvas,
+  iframe {
+    max-width: 100%;
+  }
+
+  /* App header */
+  .appHeader {
+    width: 100% !important;
+    padding: 0.85rem 1rem !important;
+    gap: 0.8rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+  }
+
+  .appLogoWithImage {
+    min-width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .appLogoImage {
+    height: 46px !important;
+    width: auto !important;
+  }
+
+  .appNav {
+    width: 100% !important;
+    display: flex !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    gap: 0.45rem !important;
+    padding: 0.35rem 0 0.2rem !important;
+    justify-content: flex-start !important;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .appNav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .appNav a,
+  .appNav button {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    font-size: 0.78rem !important;
+    padding: 0.55rem 0.75rem !important;
+    border-radius: 999px !important;
+  }
+
+  /* Global app containers */
+  .appShell,
+  .appDashboardV3,
+  .recordMockPage,
+  .recordPageClean,
+  .recordPageV2,
+  .dashboardRecommendedSection,
+  .personAlbumsSection {
+    width: min(100% - 20px, 1120px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  main {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Big title protection */
+  h1 {
+    overflow-wrap: anywhere;
+  }
+
+  .dashboardWelcomeRow h1,
+  .recordMockHero h1,
+  .recordHeroCard h1,
+  .recordHeroMainV2 h1,
+  .recordGateCard h1,
+  .personHero h1,
+  .collectionHero h1,
+  .appHero h1 {
+    font-size: clamp(2.65rem, 13vw, 4.1rem) !important;
+    line-height: 0.92 !important;
+    letter-spacing: -0.055em !important;
+  }
+
+  .dashboardWelcomeRow > div > p,
+  .recordMockHero > p:not(.appEyebrow),
+  .recordHeroText,
+  .appHero p,
+  .personHero p,
+  .collectionHero p {
+    font-size: 0.94rem !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Force major grids into one column */
+  .dashboardWelcomeRow,
+  .dashboardMainGrid,
+  .dashboardRecommendedGrid,
+  .dashboardStatsGrid,
+  .dashboardHeroStats,
+  .recordHeroGrid,
+  .recordMockCards,
+  .recordPrepareGrid,
+  .recordStudiosGrid,
+  .recordSetupGridV2,
+  .memoryGalleryGrid,
+  .collectionGrid,
+  .collectionsGrid,
+  .personGrid,
+  .personHeroGrid,
+  .libraryGrid,
+  .uploadGrid,
+  .accountGrid,
+  .consentGrid,
+  .profileGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Card tightening */
+  .dashboardHealthCard,
+  .progressOverviewCard,
+  .quickStatsCard,
+  .dashboardStatusCardV3,
+  .recordMockHero,
+  .recordMockCard,
+  .recordMockNext,
+  .recordMockPrepare,
+  .recordHeroCard,
+  .recordIdeasCard,
+  .recordFormCard,
+  .recordWarmCard,
+  .recordStudioCard,
+  .appCard,
+  .memoryGalleryCard,
+  .collectionCard,
+  .personCard,
+  .personHero,
+  .collectionHero,
+  .uploadCard,
+  .consentCard,
+  .accountCard {
+    border-radius: 22px !important;
+    padding: 20px !important;
+  }
+
+  .recordMockHero {
+    min-height: auto !important;
+  }
+
+  .recordMockPills,
+  .recordActionRow,
+  .recordControlRow,
+  .buttonRow,
+  .dashboardHeroActions,
+  .recordHeroActionsV2,
+  .profileActions,
+  .collectionActions {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.65rem !important;
+  }
+
+  .recordMockPills span,
+  .appButton,
+  .recordTealButton,
+  .recordTealHeroButton,
+  .recordPrimaryCta,
+  .recordSecondaryCta {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .recordTealHeroButton {
+    min-height: 62px !important;
+    font-size: 1rem !important;
+    border-radius: 14px !important;
+  }
+
+  .recordMockHeroButtons {
+    display: none !important;
+  }
+
+  /* Dashboard mobile */
+  .progressOverviewBody,
+  .progressHighlights {
+    grid-template-columns: 1fr !important;
+  }
+
+  .setupRing {
+    margin: 0 auto !important;
+  }
+
+  .dashboardHeroStats article,
+  .dashboardStatsGrid article {
+    min-height: auto !important;
+  }
+
+  .dashboardHeroStats article strong,
+  .dashboardStatsGrid article strong {
+    font-size: clamp(1.9rem, 9vw, 2.7rem) !important;
+  }
+
+  /* Record mobile */
+  .recordMockHero > p:not(.appEyebrow) {
+    margin-top: 1rem !important;
+  }
+
+  .recordMockPills {
+    margin-top: 1.2rem !important;
+  }
+
+  .recordMockCards {
+    margin-top: 20px !important;
+    gap: 18px !important;
+  }
+
+  .recordWaveBox,
+  .recordRecorderWrap video,
+  .recordVideoWrap video,
+  .recordVideoWrap .cameraPreview,
+  .recordRecorderWrap .cameraPreview {
+    width: 100% !important;
+  }
+
+  .tealWaveform {
+    height: 88px !important;
+  }
+
+  .recordMockCard > h3 {
+    font-size: clamp(1.75rem, 9vw, 2.45rem) !important;
+  }
+
+  .recordScriptSheet textarea {
+    min-height: 140px !important;
+  }
+
+  /* Collection/library mobile */
+  .memoryGalleryCard {
+    width: 100% !important;
+  }
+
+  .memoryGalleryCard img,
+  .memoryGalleryCard video {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 280px !important;
+    object-fit: cover !important;
+  }
+
+  .memoryGalleryCard audio {
+    width: 100% !important;
+  }
+
+  .memoryGalleryCard .appButton,
+  .collectionCard .appButton {
+    width: 100% !important;
+  }
+
+  /* Forms */
+  input,
+  select,
+  textarea,
+  .appInput,
+  .appTextarea,
+  .recordSelect,
+  .recordTextarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 16px !important;
+  }
+
+  textarea {
+    min-height: 110px;
+  }
+}
+
+@media (max-width: 430px) {
+  .appLogoImage {
+    height: 40px !important;
+  }
+
+  .appNav a,
+  .appNav button {
+    font-size: 0.72rem !important;
+    padding: 0.5rem 0.65rem !important;
+  }
+
+  .recordMockHero,
+  .recordMockCard,
+  .recordMockNext,
+  .recordMockPrepare,
+  .dashboardHealthCard,
+  .progressOverviewCard,
+  .quickStatsCard,
+  .dashboardStatusCardV3,
+  .appCard,
+  .memoryGalleryCard {
+    padding: 17px !important;
+  }
+
+  .recordMockHero h1,
+  .dashboardWelcomeRow h1,
+  .appHero h1 {
+    font-size: clamp(2.35rem, 15vw, 3.5rem) !important;
+  }
+
+  .appEyebrow {
+    font-size: 0.68rem !important;
+    letter-spacing: 0.22em !important;
+  }
+
+  .recordMockNext li {
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .recordMockNext li span {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .recordMockNext li strong {
+    font-size: 0.95rem !important;
+  }
+}
+/* Dedicated mobile dashboard */
+.mobileDashboardOnly {
+  display: none;
+}
+
+.desktopDashboardOnly {
+  display: block;
+}
+
+@media (max-width: 820px) {
+  .desktopDashboardOnly {
+    display: none !important;
+  }
+
+  .mobileDashboardOnly {
+    display: block !important;
+  }
+
+  body {
+    padding-bottom: 86px !important;
+  }
+
+  .appHeader {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 80 !important;
+    padding: 0.55rem 1rem 0.65rem !important;
+    background: rgba(255, 250, 241, 0.96) !important;
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(8, 63, 82, 0.08) !important;
+  }
+
+  .appLogoWithImage {
+    width: 100% !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+  }
+
+  .appLogoImage {
+    height: 38px !important;
+    width: auto !important;
+  }
+
+  .appNav {
+    position: fixed !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    z-index: 999 !important;
+
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+
+    padding: 8px !important;
+    border-radius: 24px !important;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(255, 249, 240, 0.94)) !important;
+    border: 1px solid rgba(8, 63, 82, 0.1) !important;
+    box-shadow: 0 18px 44px rgba(8, 63, 82, 0.18) !important;
+  }
+
+  .appNav a {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 46px !important;
+    padding: 0 !important;
+    border-radius: 16px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    color: #083f52 !important;
+    font-size: 0.64rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    background: transparent !important;
+  }
+
+  .appNav a[href="/app/collections"],
+  .appNav a[href="/app/upload"] {
+    display: none !important;
+  }
+
+  .appNav a.active,
+  .appNav a[aria-current="page"] {
+    color: #fffaf2 !important;
+    background: linear-gradient(145deg, #0f6f78, #083f52) !important;
+    box-shadow: 0 10px 20px rgba(8, 63, 82, 0.16) !important;
+  }
+
+  .mobileDashboard {
+    width: min(100% - 22px, 520px);
+    margin: 0 auto;
+    padding: 1rem 0 1.5rem;
+  }
+
+  .mobileHeroCard,
+  .mobileStatusCard,
+  .mobileProgressCard,
+  .mobileStatsCard,
+  .mobileStorageCard,
+  .mobileRecommended a {
+    border-radius: 24px;
+    border: 1px solid rgba(216, 170, 99, 0.14);
+    background:
+      radial-gradient(circle at 100% 0%, rgba(216, 170, 99, 0.1), transparent 34%),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 249, 240, 0.9));
+    box-shadow: 0 16px 34px rgba(76, 54, 31, 0.075);
+  }
+
+  .mobileHeroCard {
+    padding: 24px;
+  }
+
+  .mobileSmallLabel {
+    margin: 0 0 0.5rem;
+    color: #c88424;
+    font-size: 0.68rem;
+    font-weight: 950;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .mobileHeroCard h1 {
+    margin: 0;
+    color: #083f52;
+    font-size: clamp(2.55rem, 14vw, 4rem);
+    line-height: 0.94;
+    letter-spacing: -0.06em;
+  }
+
+  .mobileHeroCard p:not(.mobileSmallLabel) {
+    margin: 0.85rem 0 0;
+    color: rgba(8, 63, 82, 0.7);
+    line-height: 1.55;
+    font-size: 0.95rem;
+  }
+
+  .mobileHeroActions {
+    display: grid;
+    gap: 10px;
+    margin-top: 1.1rem;
+  }
+
+  .mobilePrimaryButton,
+  .mobileSecondaryButton {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 950;
+  }
+
+  .mobilePrimaryButton {
+    color: #fffaf2;
+    background: linear-gradient(145deg, #0f6f78, #083f52);
+    box-shadow: 0 12px 24px rgba(8, 63, 82, 0.14);
+  }
+
+  .mobileSecondaryButton {
+    color: #083f52;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(8, 63, 82, 0.11);
+  }
+
+  .mobileStatusCard,
+  .mobileProgressCard,
+  .mobileStatsCard,
+  .mobileStorageCard {
+    margin-top: 14px;
+    padding: 18px;
+  }
+
+  .mobileStatusTop {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mobileStatusTop strong {
+    color: #083f52;
+    font-size: 1.05rem;
+  }
+
+  .mobileStatusTop p,
+  .mobileStatusCard > p {
+    margin: 0.15rem 0 0;
+    color: rgba(8, 63, 82, 0.64);
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+
+  .mobileStatusDot {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: block;
+  }
+
+  .mobileStatusDot.good {
+    background: linear-gradient(145deg, #2bb673, #0f6f78);
+  }
+
+  .mobileStatusDot.attention {
+    background: linear-gradient(145deg, #d8aa63, #c88424);
+  }
+
+  .mobileCardHeader {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .mobileCardHeader h2 {
+    margin: 0;
+    color: #083f52;
+    font-size: 1.75rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .mobileCardHeader > span {
+    color: rgba(8, 63, 82, 0.56);
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .mobileProgressTrack {
+    height: 8px;
+    margin: 14px 0;
+    border-radius: 999px;
+    background: rgba(8, 63, 82, 0.08);
+    overflow: hidden;
+  }
+
+  .mobileProgressTrack div {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #0f6f78, #083f52);
+  }
+
+  .mobileChecklist {
+    display: grid;
+    gap: 8px;
+  }
+
+  .mobileChecklist span {
+    padding: 10px 12px;
+    border-radius: 14px;
+    color: rgba(8, 63, 82, 0.6);
+    font-size: 0.82rem;
+    font-weight: 850;
+    background: rgba(8, 63, 82, 0.045);
+  }
+
+  .mobileChecklist span.done {
+    color: #083f52;
+    background: rgba(15, 111, 120, 0.08);
+  }
+
+  .mobileStatsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .mobileStatsGrid article {
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(8, 63, 82, 0.07);
+  }
+
+  .mobileStatsGrid span {
+    display: block;
+    color: #c88424;
+    font-size: 0.65rem;
+    font-weight: 950;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .mobileStatsGrid strong {
+    display: block;
+    margin-top: 0.25rem;
+    color: #083f52;
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .mobileStorageCard {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .mobileStorageRing {
+    width: 68px;
+    height: 68px;
+    flex: 0 0 68px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background:
+      conic-gradient(#0f6f78 calc(var(--mobile-storage) * 1%), rgba(8, 63, 82, 0.08) 0);
+  }
+
+  .mobileStorageRing span {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    color: #083f52;
+    background: #fffaf2;
+    font-size: 0.8rem;
+    font-weight: 950;
+  }
+
+  .mobileStorageCard strong {
+    display: block;
+    color: #083f52;
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+
+  .mobileStorageCard span:not(.mobileStorageRing span) {
+    color: rgba(8, 63, 82, 0.55);
+    font-size: 0.82rem;
+  }
+
+  .mobileRecommended {
+    margin-top: 20px;
+  }
+
+  .mobileRecommended h2 {
+    margin: 0 0 12px;
+    color: #083f52;
+    font-size: 1.7rem;
+    letter-spacing: -0.045em;
+  }
+
+  .mobileStepList {
+    display: grid;
+    gap: 12px;
+  }
+
+  .mobileStepList a {
+    display: block;
+    padding: 18px;
+    text-decoration: none;
+  }
+
+  .mobileStepList a > span {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 12px;
+    border-radius: 999px;
+    color: #f5dfad;
+    background: linear-gradient(145deg, #0f6f78, #083f52);
+    font-size: 0.75rem;
+    font-weight: 950;
+  }
+
+  .mobileStepList strong {
+    display: block;
+    color: #083f52;
+    font-size: 1.25rem;
+  }
+
+  .mobileStepList p {
+    margin: 0.35rem 0 0;
+    color: rgba(8, 63, 82, 0.64);
+    line-height: 1.45;
+    font-size: 0.88rem;
+  }
+}
+
+@media (min-width: 821px) {
+  .desktopDashboardOnly {
+    display: block;
+  }
+
+  .mobileDashboardOnly {
+    display: none !important;
+  }
+}
+/* Mobile app shell final override */
+@media (max-width: 820px) {
+  body {
+    padding-bottom: 86px !important;
+    overflow-x: hidden !important;
+  }
+
+  .appHeader {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    min-height: auto !important;
+    padding: 0.5rem 0.75rem 0.6rem !important;
+    background: rgba(255, 250, 241, 0.97) !important;
+    backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid rgba(8, 63, 82, 0.08) !important;
+  }
+
+  .appLogoWithImage {
+    width: 100% !important;
+    justify-content: center !important;
+    margin: 0 !important;
+  }
+
+  .appLogoImage {
+    height: 34px !important;
+    width: auto !important;
+  }
+
+  .appNav {
+    position: fixed !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    z-index: 9999 !important;
+
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 8px !important;
+
+    border-radius: 24px !important;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 250, 241, 0.94)) !important;
+    border: 1px solid rgba(8, 63, 82, 0.1) !important;
+    box-shadow: 0 18px 44px rgba(8, 63, 82, 0.18) !important;
+  }
+
+  .appNav a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 46px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border-radius: 16px !important;
+    color: #083f52 !important;
+    background: transparent !important;
+    font-size: 0.62rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  .appNav a[href="/app/collections"],
+  .appNav a[href="/app/upload"] {
+    display: none !important;
+  }
+
+  .appNav a.active,
+  .appNav a[aria-current="page"] {
+    color: #fffaf2 !important;
+    background: linear-gradient(145deg, #0f6f78, #083f52) !important;
+    box-shadow: 0 10px 20px rgba(8, 63, 82, 0.16) !important;
+  }
+}
+/* Dedicated mobile app dashboard and bottom nav */
+@media (max-width: 820px) {
+  body {
+    padding-bottom: 92px !important;
+    overflow-x: hidden !important;
+  }
+
+  .appHeader {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    display: flex !important;
+    justify-content: center !important;
+    padding: 0.45rem 0.75rem 0.55rem !important;
+    min-height: auto !important;
+    background: rgba(255, 250, 241, 0.98) !important;
+    backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid rgba(8, 63, 82, 0.08) !important;
+  }
+
+  .appLogoWithImage {
+    width: 100% !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+    margin: 0 !important;
+  }
+
+  .appLogoImage {
+    height: 34px !important;
+    width: auto !important;
+  }
+
+  .appNav {
+    position: fixed !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    z-index: 9999 !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 8px !important;
+
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+
+    border-radius: 24px !important;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 250, 241, 0.94)) !important;
+    border: 1px solid rgba(8, 63, 82, 0.1) !important;
+    box-shadow: 0 18px 44px rgba(8, 63, 82, 0.18) !important;
+  }
+
+  .appNav::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .appNav a {
+    flex: 0 0 74px !important;
+    width: 74px !important;
+    min-width: 74px !important;
+    height: 46px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 6px !important;
+    margin: 0 !important;
+    border-radius: 16px !important;
+
+    color: #083f52 !important;
+    background: transparent !important;
+    font-size: 0.58rem !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  .appNav a.active,
+  .appNav a[aria-current="page"] {
+    color: #fffaf2 !important;
+    background: linear-gradient(145deg, #0f6f78, #083f52) !important;
+    box-shadow: 0 10px 20px rgba(8, 63, 82, 0.16) !important;
+  }
+
+  .mobileAppDashboard {
+    width: min(100% - 22px, 520px);
+    margin: 0 auto;
+    padding: 1rem 0 1.5rem;
+  }
+
+  .mobileVaultHero,
+  .mobileVaultStatus,
+  .mobileProgressPanel,
+  .mobileStatsPanel,
+  .mobileStoragePanel,
+  .mobileStepCards a {
+    border-radius: 24px;
+    border: 1px solid rgba(216, 170, 99, 0.14);
+    background:
+      radial-gradient(circle at 100% 0%, rgba(216, 170, 99, 0.11), transparent 34%),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 249, 240, 0.91));
+    box-shadow: 0 16px 34px rgba(76, 54, 31, 0.075);
+  }
+
+  .mobileVaultHero {
+    padding: 24px;
+  }
+
+  .mobileEyebrow {
+    margin: 0 0 0.5rem;
+    color: #c88424;
+    font-size: 0.68rem;
+    font-weight: 950;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .mobileVaultHero h1 {
+    margin: 0;
+    color: #083f52;
+    font-size: clamp(2.55rem, 14vw, 4rem);
+    line-height: 0.94;
+    letter-spacing: -0.06em;
+  }
+
+  .mobileVaultHero p:not(.mobileEyebrow) {
+    margin: 0.85rem 0 0;
+    color: rgba(8, 63, 82, 0.7);
+    line-height: 1.55;
+    font-size: 0.95rem;
+  }
+
+  .mobileHeroButtons {
+    display: grid;
+    gap: 10px;
+    margin-top: 1.1rem;
+  }
+
+  .mobilePrimaryCta,
+  .mobileSecondaryCta {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 950;
+  }
+
+  .mobilePrimaryCta {
+    color: #fffaf2;
+    background: linear-gradient(145deg, #0f6f78, #083f52);
+    box-shadow: 0 12px 24px rgba(8, 63, 82, 0.14);
+  }
+
+  .mobileSecondaryCta {
+    color: #083f52;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(8, 63, 82, 0.11);
+  }
+
+  .mobileVaultStatus,
+  .mobileProgressPanel,
+  .mobileStatsPanel,
+  .mobileStoragePanel {
+    margin-top: 14px;
+    padding: 18px;
+  }
+
+  .mobileStatusHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mobileStatusIcon {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    color: white;
+    font-weight: 950;
+  }
+
+  .mobileStatusIcon.ready {
+    background: linear-gradient(145deg, #2bb673, #0f6f78);
+  }
+
+  .mobileStatusIcon.attention {
+    background: linear-gradient(145deg, #d8aa63, #c88424);
+  }
+
+  .mobileStatusHeader strong,
+  .mobileStoragePanel strong {
+    color: #083f52;
+    font-size: 1.1rem;
+  }
+
+  .mobileStatusHeader p,
+  .mobileVaultStatus > p {
+    margin: 0.15rem 0 0;
+    color: rgba(8, 63, 82, 0.64);
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+
+  .mobilePanelHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .mobilePanelHeader h2 {
+    margin: 0;
+    color: #083f52;
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+
+  .mobilePanelHeader > span {
+    color: rgba(8, 63, 82, 0.56);
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .mobileProgressBar {
+    height: 8px;
+    margin: 14px 0;
+    border-radius: 999px;
+    background: rgba(8, 63, 82, 0.08);
+    overflow: hidden;
+  }
+
+  .mobileProgressBar div {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #0f6f78, #083f52);
+  }
+
+  .mobileChecklistGrid {
+    display: grid;
+    gap: 8px;
+  }
+
+  .mobileChecklistGrid span {
+    padding: 10px 12px;
+    border-radius: 14px;
+    color: rgba(8, 63, 82, 0.6);
+    font-size: 0.82rem;
+    font-weight: 850;
+    background: rgba(8, 63, 82, 0.045);
+  }
+
+  .mobileChecklistGrid span.done {
+    color: #083f52;
+    background: rgba(15, 111, 120, 0.08);
+  }
+
+  .mobileStatsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .mobileStatsGrid article {
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(8, 63, 82, 0.07);
+  }
+
+  .mobileStatsGrid span {
+    display: block;
+    color: #c88424;
+    font-size: 0.65rem;
+    font-weight: 950;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .mobileStatsGrid strong {
+    display: block;
+    margin-top: 0.25rem;
+    color: #083f52;
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .mobileStoragePanel {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .mobileStorageCircle {
+    width: 68px;
+    height: 68px;
+    flex: 0 0 68px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background:
+      conic-gradient(#0f6f78 calc(var(--storage-mobile) * 1%), rgba(8, 63, 82, 0.08) 0);
+  }
+
+  .mobileStorageCircle span {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    color: #083f52;
+    background: #fffaf2;
+    font-size: 0.8rem;
+    font-weight: 950;
+  }
+
+  .mobileStoragePanel span:not(.mobileStorageCircle span) {
+    color: rgba(8, 63, 82, 0.55);
+    font-size: 0.82rem;
+  }
+
+  .mobileNextSteps {
+    margin-top: 20px;
+  }
+
+  .mobileNextSteps h2 {
+    margin: 0 0 12px;
+    color: #083f52;
+    font-size: 1.7rem;
+    letter-spacing: -0.045em;
+  }
+
+  .mobileStepCards {
+    display: grid;
+    gap: 12px;
+  }
+
+  .mobileStepCards a {
+    display: block;
+    padding: 18px;
+    text-decoration: none;
+  }
+
+  .mobileStepCards a > span {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 12px;
+    border-radius: 999px;
+    color: #f5dfad;
+    background: linear-gradient(145deg, #0f6f78, #083f52);
+    font-size: 0.75rem;
+    font-weight: 950;
+  }
+
+  .mobileStepCards strong {
+    display: block;
+    color: #083f52;
+    font-size: 1.25rem;
+  }
+
+  .mobileStepCards p {
+    margin: 0.35rem 0 0;
+    color: rgba(8, 63, 82, 0.64);
+    line-height: 1.45;
+    font-size: 0.88rem;
+  }
+}

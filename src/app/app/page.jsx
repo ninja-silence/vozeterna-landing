@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import MobileDashboard from "../../components/app/dashboard/MobileDashboard";
 import { useEffect, useMemo, useState } from "react";
 import AppLanguageToggle from "../../components/app/AppLanguageToggle";
 import { getStoredAppLanguage } from "../../lib/appLanguage";
@@ -197,6 +198,7 @@ export default function AppHomePage() {
     storageBytes: 0,
   });
   const [loadingStats, setLoadingStats] = useState(true);
+  const [isMobileDashboard, setIsMobileDashboard] = useState(false);
 
   const t = copy[language] || copy.en;
   const storageLimitBytes = 50 * 1024 * 1024;
@@ -362,7 +364,9 @@ export default function AppHomePage() {
   ];
 
   return (
-    <main className="appDashboardV3">
+    <>
+      
+        <main className="appDashboardV3">
       <section className="dashboardWelcomeRow">
         <div>
           <p>{t.welcome}</p>
@@ -551,5 +555,18 @@ export default function AppHomePage() {
         </div>
       </section>
     </main>
+      </div>
+
+      
+        <MobileDashboard
+          language={language}
+          user={user}
+          stats={stats}
+          loadingStats={loadingStats}
+          storageDisplay={storageDisplay}
+          storagePercent={storagePercent}
+        />
+      </div>
+    </>
   );
 }
