@@ -124,19 +124,28 @@ export default function MobileProfilesPage() {
         )}
 
         {vaults.map((vault) => (
-          <Link href={`/mobile/profiles/${vault.id}`} className="mobileListCard" key={vault.id}>
+          <Link
+            href={`/mobile/profiles/${vault.id}`}
+            className="mobileListCard"
+            key={vault.id}
+          >
             <strong>{vault.subject_name || vault.title}</strong>
             <span>{vault.relationship_label || t.familyVault}</span>
             <p>{vault.description || t.privateArchive}</p>
 
-            <Link
-              href={`/mobile/connect?networkId=${vault.network_id}&vaultId=${vault.id}`}
+            <span
               className="mobileMiniAction"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                window.location.href = `/mobile/connect?networkId=${vault.network_id}&vaultId=${vault.id}`;
+              }}
             >
               <QrCode size={15} />
               {t.qr}
-            </Link>
-          </Link>`r`n        ))}
+            </span>
+          </Link>
+        ))}
       </section>
     </section>
   );
