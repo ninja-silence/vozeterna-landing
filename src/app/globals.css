@@ -8951,3 +8951,440 @@ select.appInput {
     height: 44px;
   }
 }
+/* Dashboard status orb emblem */
+.brandStatusOrb {
+  background:
+    radial-gradient(circle at 28% 20%, rgba(255, 255, 255, 0.55), transparent 28%),
+    linear-gradient(135deg, #fff9ef, #f2dfbd);
+  border: 1px solid rgba(8, 63, 82, 0.12);
+}
+
+.statusOrbEmblem {
+  width: 72%;
+  height: 72%;
+  object-fit: contain;
+  display: block;
+}
+/* Dashboard status shield */
+.statusShield {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin: 0 0 14px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #fffaf2, #f4e5c7);
+  border: 1px solid rgba(8, 63, 82, 0.12);
+  box-shadow: 0 10px 28px rgba(8, 63, 82, 0.08);
+}
+
+.statusShieldIcon {
+  flex: 0 0 56px;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #0e5b73, #0a4458);
+  box-shadow: 0 10px 20px rgba(8, 63, 82, 0.18);
+}
+
+.statusShieldSvg {
+  width: 28px;
+  height: 28px;
+}
+
+.statusShieldSvg path:first-child {
+  fill: #ffffff;
+}
+
+.statusShieldSvg path:last-child {
+  fill: none;
+  stroke: #d7aa63;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.statusShieldText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.15;
+}
+
+.statusShieldText strong {
+  font-size: 0.98rem;
+  color: #083f52;
+}
+
+.statusShieldText span {
+  font-size: 0.82rem;
+  color: rgba(8, 63, 82, 0.72);
+}
+
+/* Hide old orb-only styling */
+.brandStatusOrb,
+.statusOrbEmblem {
+  display: none !important;
+}
+
+/* Tighten the right-side status section spacing */
+.statusShield + .statusEyebrow,
+.statusShield + .dashboardEyebrow,
+.statusShield + .sectionEyebrow,
+.statusShield + .eyebrow,
+.statusShield + p {
+  margin-top: 0 !important;
+  margin-bottom: 8px !important;
+}
+
+.statusShield + * + h2,
+.statusShield + * + h3 {
+  margin-top: 0 !important;
+  margin-bottom: 10px !important;
+}
+
+.statusShield + * + h2 + p,
+.statusShield + * + h3 + p {
+  margin-top: 0 !important;
+  margin-bottom: 14px !important;
+}
+
+@media (max-width: 768px) {
+  .statusShield {
+    padding: 10px 12px;
+    gap: 10px;
+    border-radius: 16px;
+  }
+
+  .statusShieldIcon {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+  }
+
+  .statusShieldSvg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .statusShieldText strong {
+    font-size: 0.92rem;
+  }
+
+  .statusShieldText span {
+    font-size: 0.78rem;
+  }
+}
+/* Premium metallic trust shield refinement */
+.statusShield {
+  margin-bottom: 10px !important;
+}
+
+.statusShieldIcon {
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.42), transparent 34%),
+    linear-gradient(145deg, #0e5b73, #07394b 58%, #052d3c);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    inset 0 -10px 18px rgba(0, 0, 0, 0.12),
+    0 12px 24px rgba(8, 63, 82, 0.2);
+}
+
+.statusShieldSvg {
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18));
+}
+
+.statusShieldMetal {
+  fill: url(#metalShieldGradient);
+  stroke: rgba(255, 255, 255, 0.72);
+  stroke-width: 0.75;
+}
+
+.statusShieldShine {
+  fill: url(#metalShieldHighlight);
+}
+
+.statusShieldCheck {
+  fill: none;
+  stroke: #f0c878;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 1px 1px rgba(8, 63, 82, 0.3));
+}
+
+/* Tighten dashboard status card spacing */
+.dashboardStatusCard .appEyebrow {
+  margin-top: 48px !important;
+  margin-bottom: 8px !important;
+}
+
+.dashboardStatusCard h2 {
+  margin-top: 0 !important;
+  margin-bottom: 18px !important;
+}
+
+.dashboardStatusCard h2 + p {
+  margin-top: 0 !important;
+  margin-bottom: 34px !important;
+}
+
+.dashboardStatusCard .vaultProgressList {
+  margin-top: 0 !important;
+}
+/* Tighten dashboard right status card */
+.dashboardStatusCard {
+  padding-top: 28px !important;
+  padding-bottom: 28px !important;
+}
+
+.dashboardStatusCard .appLanguageToggle {
+  margin-bottom: 26px !important;
+}
+
+.dashboardStatusCard .statusShield {
+  margin-bottom: 34px !important;
+}
+
+.dashboardStatusCard .appEyebrow {
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+}
+
+.dashboardStatusCard h2 {
+  margin-top: 0 !important;
+  margin-bottom: 18px !important;
+  line-height: 1.05 !important;
+}
+
+.dashboardStatusCard h2 + p {
+  margin-top: 0 !important;
+  margin-bottom: 30px !important;
+  line-height: 1.5 !important;
+}
+
+.dashboardStatusCard .vaultProgressList {
+  margin-top: 0 !important;
+  gap: 8px !important;
+}
+
+.dashboardStatusCard .vaultProgressItem {
+  padding: 8px 10px !important;
+  min-height: 42px !important;
+}
+
+@media (max-width: 768px) {
+  .dashboardStatusCard {
+    padding-top: 22px !important;
+    padding-bottom: 22px !important;
+  }
+
+  .dashboardStatusCard .appLanguageToggle {
+    margin-bottom: 20px !important;
+  }
+
+  .dashboardStatusCard .statusShield {
+    margin-bottom: 24px !important;
+  }
+}
+/* Tighten dashboard hero metrics */
+.dashboardHeroStats {
+  gap: 14px !important;
+  margin-top: 22px !important;
+  align-items: stretch !important;
+}
+
+.dashboardHeroStats article {
+  min-height: 118px !important;
+  padding: 18px 20px !important;
+  border-radius: 22px !important;
+  display: grid !important;
+  align-content: start !important;
+  gap: 4px !important;
+}
+
+.dashboardHeroStats article span {
+  margin-bottom: 4px !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.18em !important;
+}
+
+.dashboardHeroStats article strong {
+  font-size: clamp(2.1rem, 4vw, 3rem) !important;
+  line-height: 0.9 !important;
+  margin: 0 !important;
+}
+
+.dashboardHeroStats article h2 {
+  margin: 4px 0 0 !important;
+  font-size: 1rem !important;
+  line-height: 1.15 !important;
+}
+
+.dashboardHeroStats article p {
+  margin: 2px 0 0 !important;
+  font-size: 0.78rem !important;
+  line-height: 1.35 !important;
+  max-width: 220px !important;
+}
+
+/* Slightly tighten hero text area without touching bottom cards */
+.dashboardHeroText > p:not(.appEyebrow) {
+  margin-bottom: 18px !important;
+}
+
+.dashboardHeroActions {
+  margin-bottom: 0 !important;
+}
+
+/* Tighten right panel a bit more */
+.dashboardStatusCard .statusShield {
+  margin-bottom: 24px !important;
+}
+
+.dashboardStatusCard .appEyebrow {
+  margin-bottom: 8px !important;
+}
+
+.dashboardStatusCard h2 {
+  margin-bottom: 14px !important;
+}
+
+.dashboardStatusCard h2 + p {
+  margin-bottom: 24px !important;
+}
+
+.dashboardStatusCard .vaultProgressList {
+  gap: 7px !important;
+}
+
+.dashboardStatusCard .vaultProgressItem {
+  min-height: 38px !important;
+  padding: 7px 10px !important;
+}
+
+.dashboardStatusCard .vaultProgressItem span {
+  width: 26px !important;
+  height: 26px !important;
+}
+
+@media (max-width: 900px) {
+  .dashboardHeroStats {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboardHeroStats article {
+    min-height: auto !important;
+  }
+}
+/* Privacy metric card polish */
+.dashboardHeroStats .privacyMetricCard {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 250, 241, 0.78)),
+    radial-gradient(circle at 100% 0%, rgba(8, 63, 82, 0.08), transparent 34%) !important;
+}
+
+.dashboardHeroStats .privacyMetricCard strong {
+  font-size: clamp(1.8rem, 3vw, 2.45rem) !important;
+  letter-spacing: -0.04em !important;
+}
+/* Dashboard storage meter */
+.storageMeterCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0 24px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(8, 63, 82, 0.1);
+}
+
+.storageRing {
+  --storage-percent: 0%;
+  width: 76px;
+  height: 76px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background:
+    conic-gradient(#0b5268 var(--storage-percent), rgba(8, 63, 82, 0.09) 0),
+    linear-gradient(135deg, #fffaf2, #f4e5c7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 12px 28px rgba(8, 63, 82, 0.1);
+}
+
+.storageRingInner {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #fffaf2;
+  border: 1px solid rgba(8, 63, 82, 0.08);
+}
+
+.storageRingInner strong {
+  color: #083f52;
+  font-size: 0.94rem;
+  font-weight: 950;
+}
+
+.storageMeterText {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.storageMeterText span {
+  color: #c88424;
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.storageMeterText strong {
+  color: #083f52;
+  font-size: 1.22rem;
+  line-height: 1;
+}
+
+.storageMeterText p {
+  margin: 0;
+  color: rgba(8, 63, 82, 0.66);
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+/* Move Vault Progress closer to the checklist */
+.dashboardStatusCard .storageMeterCard + .appEyebrow {
+  margin-top: 0 !important;
+  margin-bottom: 8px !important;
+}
+
+.dashboardStatusCard .appEyebrow + h2 {
+  margin-bottom: 10px !important;
+}
+
+.dashboardStatusCard .appEyebrow + h2 + p {
+  margin-bottom: 18px !important;
+}
+
+@media (max-width: 768px) {
+  .storageMeterCard {
+    margin: 14px 0 20px;
+  }
+
+  .storageRing {
+    width: 68px;
+    height: 68px;
+  }
+
+  .storageRingInner {
+    width: 50px;
+    height: 50px;
+  }
+}

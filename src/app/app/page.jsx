@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import AppLanguageToggle from "../../components/app/AppLanguageToggle";
 import { supabase } from "../../lib/supabaseClient";
@@ -207,32 +208,75 @@ export default function AppHomePage() {
 
   const t = copy[language];
 
+  function formatStorage(bytes) {
+    const safeBytes = Number(bytes) || 0;
+
+    if (safeBytes <= 0) {
+      return "0 KB";
+    }
+
+    if (safeBytes < 1024 * 1024) {
+      return `${(safeBytes / 1024).toFixed(1)} KB`;
+    }
+
+    return `${(safeBytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  const storageLimitBytes = 50 * 1024 * 1024;
+  const storageBytes = Number(stats.storageBytes) || 0;
+  const storagePercent = Math.min(
+    100,
+    Math.max(0, Math.round((storageBytes / storageLimitBytes) * 100))
+  );
+  const storageDisplay = loadingStats ? "—" : formatStorage(storageBytes);
+
   useEffect(() => {
     setLanguage(getStoredAppLanguage());
   }, []);
 
   useEffect(() => {
     async function loadDashboardStats() {
+      setLoadingStats(true);
+
       const { data: userData } = await supabase.auth.getUser();
       const currentUser = userData.user;
       setUser(currentUser);
 
       if (!currentUser) {
+        setStats({
+          profiles: 0,
+          memories: 0,
+          publicMemorials: 0,
+          consentRecords: 0,
+          albums: 0,
+          storageBytes: 0,
+        });
         setLoadingStats(false);
         return;
       }
 
-      const [profilesResult, memoriesResult, publicMemorialsResult, consentResult, albumsResult] =
-        await Promise.all([
-          supabase.from("loved_ones").select("id", { count: "exact", head: true }),
-          supabase.from("media_assets").select("id", { count: "exact", head: true }),
-          supabase
-            .from("loved_ones")
-            .select("id", { count: "exact", head: true })
-            .eq("memorial_public", true),
-          supabase.from("consent_records").select("id", { count: "exact", head: true }),
-          supabase.from("memory_collections").select("id", { count: "exact", head: true }),
-        ]);
+      const [
+        profilesResult,
+        memoriesResult,
+        publicMemorialsResult,
+        consentResult,
+        albumsResult,
+        storageResult,
+      ] = await Promise.all([
+        supabase.from("loved_ones").select("id", { count: "exact", head: true }),
+        supabase.from("media_assets").select("id", { count: "exact", head: true }),
+        supabase
+          .from("loved_ones")
+          .select("id", { count: "exact", head: true })
+          .eq("memorial_public", true),
+        supabase.from("consent_records").select("id", { count: "exact", head: true }),
+        supabase.from("memory_collections").select("id", { count: "exact", head: true }),
+        supabase.from("media_assets").select("file_size"),
+      ]);
+
+      const storageBytes = (storageResult.data || []).reduce((total, item) => {
+        return total + (Number(item.file_size) || 0);
+      }, 0);
 
       setStats({
         profiles: profilesResult.count || 0,
@@ -240,6 +284,7 @@ export default function AppHomePage() {
         publicMemorials: publicMemorialsResult.count || 0,
         consentRecords: consentResult.count || 0,
         albums: albumsResult.count || 0,
+        storageBytes,
       });
 
       setLoadingStats(false);
@@ -321,8 +366,50 @@ export default function AppHomePage() {
         <div className="dashboardStatusCard">
           <AppLanguageToggle language={language} setLanguage={setLanguage} />
 
-          <div className="statusOrb">
-            <span>{user ? "VE" : "?"}</span>
+                    <div className="statusShield" aria-label={language === "es" ? "Bóveda protegida" : "Protected Vault"}>
+            <div className="statusShieldIcon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" className="statusShieldSvg" aria-hidden="true">
+                <defs>
+                  <linearGradient id="metalShieldGradient" x1="5" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="18%" stopColor="#dfe8eb" />
+                    <stop offset="42%" stopColor="#0e5b73" />
+                    <stop offset="70%" stopColor="#083f52" />
+                    <stop offset="100%" stopColor="#c8943c" />
+                  </linearGradient>
+                  <radialGradient id="metalShieldHighlight" cx="35%" cy="18%" r="55%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+                    <stop offset="38%" stopColor="#ffffff" stopOpacity="0.28" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                  </radialGradient>
+                </defs>
+                <path className="statusShieldMetal" d="M12 2 4 5.5V11c0 5.2 3.4 9.9 8 11 4.6-1.1 8-5.8 8-11V5.5L12 2Z" />
+                <path className="statusShieldShine" d="M12 2 4 5.5V11c0 5.2 3.4 9.9 8 11 4.6-1.1 8-5.8 8-11V5.5L12 2Z" />
+                <path className="statusShieldCheck" d="M9.5 12.2l1.8 1.8 3.7-4.2" />
+              </svg>
+            </div>
+            <div className="statusShieldText">
+              <strong>{language === "es" ? "Bóveda protegida" : "Protected Vault"}</strong>
+              <span>{language === "es" ? "Privada por defecto" : "Private by default"}</span>
+            </div>
+          </div>
+
+          <div className="storageMeterCard">
+            <div
+              className="storageRing"
+              style={{ "--storage-percent": `${storagePercent}%` }}
+              aria-label={`${t.storageLabel}: ${storageDisplay} ${t.storageLimitLabel}`}
+            >
+              <div className="storageRingInner">
+                <strong>{storagePercent}%</strong>
+              </div>
+            </div>
+
+            <div className="storageMeterText">
+              <span>{t.storageLabel}</span>
+              <strong>{storageDisplay}</strong>
+              <p>{t.storageLimitLabel}</p>
+            </div>
           </div>
 
           <p className="appEyebrow">{t.vaultStatus}</p>
