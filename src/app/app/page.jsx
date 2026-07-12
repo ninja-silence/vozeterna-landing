@@ -363,10 +363,21 @@ export default function AppHomePage() {
     },
   ];
 
+  if (isMobileDashboard) {
+    return (
+      <MobileDashboard
+        language={language}
+        user={user}
+        stats={stats}
+        loadingStats={loadingStats}
+        storageDisplay={storageDisplay}
+        storagePercent={storagePercent}
+      />
+    );
+  }
+
   return (
-    <>
-      
-        <main className="appDashboardV3">
+    <main className="appShell appDashboardV3">
       <section className="dashboardWelcomeRow">
         <div>
           <p>{t.welcome}</p>
