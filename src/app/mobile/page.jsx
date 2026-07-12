@@ -3,97 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "../../lib/supabaseClient";
-import { getStoredAppLanguage } from "../../lib/appLanguage";
 
 function formatStorage(bytes) {
   const safeBytes = Number(bytes) || 0;
-
   if (safeBytes <= 0) return "0 KB";
-
-  if (safeBytes < 1024 * 1024) {
-    return `${(safeBytes / 1024).toFixed(1)} KB`;
-  }
-
+  if (safeBytes < 1024 * 1024) return `${(safeBytes / 1024).toFixed(1)} KB`;
   return `${(safeBytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-const copy = {
-  en: {
-    back: "Back to VozEterna App",
-    familyLegacy: "Family Legacy",
-    title: "Family Legacy Vault",
-    subtitle:
-      "Preserve voice memories, video messages, photos, prayers, stories, and family-approved memorial moments in one private legacy vault.",
-    createProfile: "Create profile",
-    recordMemory: "Record memory",
-    protectedVault: "Protected Vault",
-    privateDefault: "Private by default",
-    storageUsed: "Storage used",
-    storageLimit: "of 50 MB",
-    vaultProgress: "Vault Progress",
-    profiles: "Loved Ones",
-    memories: "Saved Items",
-    publicPages: "Memorial Pages",
-    albums: "Albums",
-    consent: "Consent",
-    privacy: "Privacy",
-    active: "Active",
-    protected: "Protected",
-    profileText: "Manage profiles for family and close friends.",
-    memoryText: "Photos, audio, video, notes, and keepsakes saved.",
-    publicText: "Public memorial pages enabled for sharing.",
-    albumsText: "Curated memory collections.",
-    consentText: "Signed consent records.",
-    privacyText: "Private by default.",
-    checklist: [
-      "Consent signed",
-      "Loved One profiles",
-      "Add first memory",
-      "Enable public page",
-      "Review recordings",
-      "Approve for public page",
-    ],
-  },
-  es: {
-    back: "Volver a VozEterna App",
-    familyLegacy: "Legado Familiar",
-    title: "Bóveda de Legado Familiar",
-    subtitle:
-      "Preserva recuerdos de voz, mensajes en video, fotos, oraciones, historias y momentos aprobados por la familia en una bóveda privada.",
-    createProfile: "Crear perfil",
-    recordMemory: "Grabar recuerdo",
-    protectedVault: "Bóveda protegida",
-    privateDefault: "Privada por defecto",
-    storageUsed: "Almacenamiento usado",
-    storageLimit: "de 50 MB",
-    vaultProgress: "Progreso de la bóveda",
-    profiles: "Seres queridos",
-    memories: "Recuerdos",
-    publicPages: "Páginas memoriales",
-    albums: "Álbumes",
-    consent: "Consentimiento",
-    privacy: "Privacidad",
-    active: "Activa",
-    protected: "Protegida",
-    profileText: "Administra perfiles de familia y amigos cercanos.",
-    memoryText: "Fotos, audio, video, notas y recuerdos guardados.",
-    publicText: "Páginas memoriales públicas habilitadas.",
-    albumsText: "Colecciones de recuerdos.",
-    consentText: "Registros de consentimiento firmados.",
-    privacyText: "Privada por defecto.",
-    checklist: [
-      "Consentimiento firmado",
-      "Perfiles de seres queridos",
-      "Agregar primer recuerdo",
-      "Activar página pública",
-      "Revisar grabaciones",
-      "Aprobar para página pública",
-    ],
-  },
-};
-
-export default function MobileAppPage() {
-  const [language, setLanguage] = useState("en");
+export default function MobileDashboardPage() {
   const [user, setUser] = useState(null);
   const [loadingStats, setLoadingStats] = useState(true);
   const [stats, setStats] = useState({
@@ -105,19 +23,10 @@ export default function MobileAppPage() {
     storageBytes: 0,
   });
 
-  const t = copy[language] || copy.en;
-
   const storageLimitBytes = 50 * 1024 * 1024;
   const storageBytes = Number(stats.storageBytes) || 0;
-  const storagePercent = Math.min(
-    100,
-    Math.max(0, Math.round((storageBytes / storageLimitBytes) * 100))
-  );
+  const storagePercent = Math.min(100, Math.max(0, Math.round((storageBytes / storageLimitBytes) * 100)));
   const storageDisplay = loadingStats ? "—" : formatStorage(storageBytes);
-
-  useEffect(() => {
-    setLanguage(getStoredAppLanguage());
-  }, []);
 
   useEffect(() => {
     async function loadStats() {
@@ -170,74 +79,41 @@ export default function MobileAppPage() {
   }, []);
 
   const statCards = [
-    {
-      label: language === "es" ? "Perfiles" : "Profiles",
-      value: stats.profiles,
-      title: t.profiles,
-      text: t.profileText,
-    },
-    {
-      label: language === "es" ? "Recuerdos" : "Memories",
-      value: stats.memories,
-      title: t.memories,
-      text: t.memoryText,
-    },
-    {
-      label: language === "es" ? "Álbumes" : "Albums",
-      value: stats.albums,
-      title: t.albums,
-      text: t.albumsText,
-    },
-    {
-      label: language === "es" ? "Consent." : "Consent",
-      value: stats.consent,
-      title: t.consent,
-      text: t.consentText,
-    },
+    { label: "Profiles", value: stats.profiles, title: "Loved Ones", text: "Manage profiles for family and close friends." },
+    { label: "Memories", value: stats.memories, title: "Saved Items", text: "Photos, audio, video, notes, and keepsakes saved." },
+    { label: "Albums", value: stats.albums, title: "Albums", text: "Curated memory collections." },
+    { label: "Consent", value: stats.consent, title: "Consent", text: "Signed consent records." },
   ];
 
   const checklist = [
-    { label: t.checklist[0], done: stats.consent > 0 },
-    { label: t.checklist[1], done: stats.profiles > 0 },
-    { label: t.checklist[2], done: stats.memories > 0 },
-    { label: t.checklist[3], done: stats.publicPages > 0 },
-    { label: t.checklist[4], done: false },
-    { label: t.checklist[5], done: false },
+    { label: "Consent signed", done: stats.consent > 0 },
+    { label: "Loved One profiles", done: stats.profiles > 0 },
+    { label: "Add first memory", done: stats.memories > 0 },
+    { label: "Enable public page", done: stats.publicPages > 0 },
+    { label: "Review recordings", done: false },
+    { label: "Approve for public page", done: false },
   ];
 
   return (
-    <main className="standaloneMobileApp">
-      <header className="standaloneMobileTop">
-        <div className="standaloneMobileBrand">
-          <img src="/brand/logo-emblem.png" alt="VozEterna" />
-          <span>VozEterna</span>
-        </div>
-
-        <button type="button" className="standaloneMobileMenu" aria-label="Menu">
-          ☰
-        </button>
-      </header>
-
-      <section className="standaloneMobileGrid">
-        <div className="standaloneMobileMain">
-          <Link href="/" className="standaloneBackLink">
-            {t.back} <strong>MVP</strong>
+    <>
+      <section className="mobileDashboardHeroGrid">
+        <div className="mobileHeroMainCard">
+          <Link href="/" className="mobileBackLink">
+            Back to VozEterna App <strong>MVP</strong>
           </Link>
 
-          <p className="standaloneEyebrow">{t.familyLegacy}</p>
-          <h1>{t.title}</h1>
-          <p className="standaloneSubtitle">{t.subtitle}</p>
+          <p className="mobileCapsLabel">Family Legacy</p>
+          <h1>Family Legacy Vault</h1>
+          <p className="mobileHeroText">
+            Preserve voice memories, video messages, photos, prayers, stories, and family-approved memorial moments in one private legacy vault.
+          </p>
 
-          <div className="standaloneHeroActions">
-            <Link href={user ? "/app/loved-ones/new" : "/app/login"}>
-              {t.createProfile}
-            </Link>
-            <Link href={user ? "/app/record" : "/app/login"}>
-              {t.recordMemory}
-            </Link>
+          <div className="mobileHeroActions">
+            <Link href={user ? "/app/loved-ones/new" : "/app/login"}>Create profile</Link>
+            <Link href={user ? "/mobile/record" : "/app/login"}>Record memory</Link>
           </div>
 
-          <div className="standaloneStatsGrid">
+          <div className="mobileStatGrid">
             {statCards.map((card) => (
               <article key={card.label}>
                 <p>{card.label}</p>
@@ -249,38 +125,36 @@ export default function MobileAppPage() {
           </div>
         </div>
 
-        <aside className="standaloneMobileSide">
-          <div className="standaloneLang">
-            <span className={language === "en" ? "active" : ""}>EN</span>
-            <span className={language === "es" ? "active" : ""}>ES</span>
+        <aside className="mobileHeroStatusCard">
+          <div className="mobileLangPill">
+            <span className="active">EN</span>
+            <span>ES</span>
           </div>
 
-          <div className="standaloneShield">
+          <div className="mobileProtectedCard">
             <span>🛡</span>
             <div>
-              <strong>{t.protectedVault}</strong>
-              <p>{t.privateDefault}</p>
+              <strong>Protected Vault</strong>
+              <p>Private by default</p>
             </div>
           </div>
 
-          <div className="standaloneStorage">
-            <div
-              className="standaloneStorageRing"
-              style={{ "--mobile-storage": `${storagePercent}%` }}
-            >
+          <div className="mobileStorageCard">
+            <div className="mobileStorageRing" style={{ "--mobile-storage": `${storagePercent}%` }}>
               <span>{storagePercent}%</span>
             </div>
 
             <div>
-              <p>{t.storageUsed}</p>
+              <p>Storage used</p>
               <strong>{storageDisplay}</strong>
-              <small>{t.storageLimit}</small>
+              <small>of 50 MB</small>
             </div>
           </div>
 
-          <p className="standaloneEyebrow">{t.vaultProgress}</p>
+          <p className="mobileCapsLabel">Vault Progress</p>
+          <h2>Vault Progress</h2>
 
-          <div className="standaloneChecklist">
+          <div className="mobileProgressChecklist">
             {checklist.map((item) => (
               <div key={item.label} className={item.done ? "done" : ""}>
                 <span>{item.done ? "✓" : "○"}</span>
@@ -291,13 +165,19 @@ export default function MobileAppPage() {
         </aside>
       </section>
 
-      <nav className="standaloneBottomNav" aria-label="Mobile navigation">
-        <Link href="/mobile">Dashboard</Link>
-        <Link href="/app/loved-ones">Profile</Link>
-        <Link href="/app/library">Library</Link>
-        <Link href="/app/collections">Collections</Link>
-        <Link href="/app/record">Record</Link>
-      </nav>
-    </main>
+      <section className="mobileFeatureGrid">
+        <Link href="/mobile/consent">
+          <p>Start Here</p>
+          <h2>Consent & Agreements</h2>
+          <span>Manage family consents and permissions.</span>
+        </Link>
+
+        <Link href="/mobile/profiles">
+          <p>Profiles</p>
+          <h2>Loved One Profiles</h2>
+          <span>Care pages for the people who matter.</span>
+        </Link>
+      </section>
+    </>
   );
 }
