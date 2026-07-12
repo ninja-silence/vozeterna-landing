@@ -27,11 +27,11 @@ const copy = {
     emptyText:
       "This private feed will come alive when you or invited family members add the first memory, photo, voice note, or reflection.",
     recordFirst: "Record the first memory",
-    familyVault: "Family vault",
     justNow: "Just now",
     agoMinute: "m ago",
     agoHour: "h ago",
     agoDay: "d ago",
+    noDescription: "No description yet.",
     labels: {
       reflection_added: "New reflection",
       voice_added: "Voice memory",
@@ -61,11 +61,11 @@ const copy = {
     emptyText:
       "Este feed privado cobrará vida cuando tú o tus familiares invitados agreguen el primer recuerdo, foto, nota de voz o reflexión.",
     recordFirst: "Grabar el primer recuerdo",
-    familyVault: "Bóveda familiar",
     justNow: "Ahora mismo",
     agoMinute: "min",
     agoHour: "h",
     agoDay: "d",
+    noDescription: "Sin descripción todavía.",
     labels: {
       reflection_added: "Nueva reflexión",
       voice_added: "Recuerdo de voz",
@@ -135,13 +135,10 @@ function FamilyFeedSkeleton({ t }) {
       </div>
 
       <div className="familyFeedList">
-        {[1, 2, 3, 4].map((item) => (
-          <div className="familyFeedItem skeletonItem" key={item}>
-            <span className="familyFeedIcon skeletonCircle" />
-            <div>
-              <span className="skeletonLine skeletonTextStrong" />
-              <span className="skeletonLine skeletonText" />
-            </div>
+        {[1, 2, 3].map((item) => (
+          <div className="familyFeedMemoryCard skeletonItem" key={item}>
+            <span className="skeletonLine skeletonTitle" />
+            <span className="skeletonLine skeletonText" />
           </div>
         ))}
       </div>
@@ -152,6 +149,7 @@ function FamilyFeedSkeleton({ t }) {
 export default function FamilyActivityFeed({ limit = 20 }) {
   const [language, setLanguage] = useState("en");
   const [activities, setActivities] = useState([]);
+  const [signedUrls, setSignedUrls] = useState({});
   const [loading, setLoading] = useState(true);
   const [feedError, setFeedError] = useState("");
 
@@ -190,7 +188,22 @@ export default function FamilyActivityFeed({ limit = 20 }) {
         created_at,
         memory_id,
         vault_id,
-        network_id
+        network_id,
+        memories (
+          id,
+          title,
+          body,
+          type,
+          media_path,
+          media_mime_type,
+          created_at
+        ),
+        vaults (
+          id,
+          title,
+          subject_name,
+          relationship_label
+        )
       `)
       .order("created_at", { ascending: false })
       .limit(limit);
@@ -203,7 +216,26 @@ export default function FamilyActivityFeed({ limit = 20 }) {
       return;
     }
 
-    setActivities(data || []);
+    const rows = data || [];
+    const urls = {};
+
+    await Promise.all(
+      rows.map(async (activity) => {
+        const path = activity.memories?.media_path;
+        if (!path) return;
+
+        const { data: signed } = await supabase.storage
+          .from("family-media")
+          .createSignedUrl(path, 3600);
+
+        if (signed?.signedUrl) {
+          urls[activity.id] = signed.signedUrl;
+        }
+      })
+    );
+
+    setSignedUrls(urls);
+    setActivities(rows);
     setLoading(false);
   }
 
@@ -234,28 +266,25 @@ export default function FamilyActivityFeed({ limit = 20 }) {
           </span>
 
           <strong>{t.emptyTitle}</strong>
-
           <p>{t.emptyText}</p>
-
           <Link href="/mobile/record">{t.recordFirst}</Link>
         </div>
       ) : (
         <div className="familyFeedList">
           {activities.map((activity) => {
+            const memory = activity.memories;
             const Icon = getActivityIcon(activity.activity_type);
-            const activityTitle = activity.title || getActivityLabel(activity.activity_type, t);
-            const activityPath = activity.memory_id
-              ? `/app/memories/${activity.memory_id}`
-              : "/mobile/feed";
-
-            const memoryUrl =
-              typeof window !== "undefined"
-                ? `${window.location.origin}${activityPath}`
-                : "";
+            const activityTitle =
+              memory?.title ||
+              activity.title ||
+              getActivityLabel(activity.activity_type, t);
+            const description = memory?.body || t.noDescription;
+            const url = signedUrls[activity.id];
+            const memoryType = memory?.type;
 
             return (
-              <article className="familyFeedItem" key={activity.id}>
-                <Link href={activityPath} className="familyFeedMainLink">
+              <article className="familyFeedMemoryCard" key={activity.id}>
+                <div className="familyFeedMemoryTop">
                   <span className="familyFeedIcon">
                     <Icon size={18} strokeWidth={2.2} />
                   </span>
@@ -264,13 +293,31 @@ export default function FamilyActivityFeed({ limit = 20 }) {
                     <strong>{activityTitle}</strong>
                     <p>{formatActivityDate(activity.created_at, t, language)}</p>
                   </div>
-                </Link>
+                </div>
+
+                {memoryType === "photo" && url && (
+                  <img className="familyFeedMediaPreview" src={url} alt={activityTitle} />
+                )}
+
+                {memoryType === "video" && url && (
+                  <video className="familyFeedMediaPreview" src={url} controls playsInline />
+                )}
+
+                {memoryType === "audio" && url && (
+                  <audio className="familyFeedAudioPreview" src={url} controls />
+                )}
+
+                <p className="familyFeedDescription">{description}</p>
 
                 <ShareMemoryButton
                   className="familyFeedShare"
                   title={activityTitle}
                   text={`${t.share.textPrefix} ${activityTitle}`}
-                  url={memoryUrl}
+                  url={
+                    typeof window !== "undefined"
+                      ? `${window.location.origin}/mobile/feed`
+                      : ""
+                  }
                   labels={t.share}
                 />
               </article>

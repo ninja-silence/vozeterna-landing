@@ -124,7 +124,7 @@ export default function MobileProfilesPage() {
         )}
 
         {vaults.map((vault) => (
-          <article className="mobileListCard" key={vault.id}>
+          <Link href={`/mobile/profiles/${vault.id}`} className="mobileListCard" key={vault.id}>
             <strong>{vault.subject_name || vault.title}</strong>
             <span>{vault.relationship_label || t.familyVault}</span>
             <p>{vault.description || t.privateArchive}</p>
@@ -136,8 +136,7 @@ export default function MobileProfilesPage() {
               <QrCode size={15} />
               {t.qr}
             </Link>
-          </article>
-        ))}
+          </Link>`r`n        ))}
       </section>
     </section>
   );
