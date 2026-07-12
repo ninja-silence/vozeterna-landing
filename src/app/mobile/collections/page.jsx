@@ -28,7 +28,7 @@ export default function MobileCollectionsPage() {
         <p className="mobileCapsLabel">Collections</p>
         <h1>Memory Albums</h1>
         <p>Organize photos, voices, videos, and stories into curated family collections.</p>
-        <Link href="/app/collections/new" className="mobilePrimaryButton">Create album</Link>
+        <Link href="/mobile/collections/new" className="mobilePrimaryButton">Create album</Link>
       </div>
 
       <div className="mobileCardList">
@@ -42,7 +42,7 @@ export default function MobileCollectionsPage() {
         )}
 
         {collections.map((collection) => (
-          <Link href={`/app/collections/${collection.id}`} className="mobileListCard" key={collection.id}>
+          <Link href={`/mobile/collections/${collection.id}`} className="mobileListCard" key={collection.id}>
             <strong>{collection.title}</strong>
             <span>{collection.loved_ones?.full_name || "General family collection"}</span>
             <p>{collection.memory_collection_items?.length || 0} memories</p>

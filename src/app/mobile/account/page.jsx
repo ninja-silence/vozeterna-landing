@@ -28,7 +28,7 @@ export default function MobileAccountPage() {
       </div>
 
       <div className="mobileActionGrid">
-        <Link href="/app/account" className="mobileActionCard">
+        <Link href="/mobile/account" className="mobileActionCard">
           <strong>Account settings</strong>
           <p>Manage your profile and legal name.</p>
         </Link>

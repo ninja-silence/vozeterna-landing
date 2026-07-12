@@ -28,7 +28,7 @@ export default function MobileProfilesPage() {
         <p className="mobileCapsLabel">Profiles</p>
         <h1>Loved One Profiles</h1>
         <p>Create and manage the people connected to your private family vault.</p>
-        <Link href="/app/loved-ones/new" className="mobilePrimaryButton">Create profile</Link>
+        <Link href="/mobile/profiles/new" className="mobilePrimaryButton">Create profile</Link>
       </div>
 
       <div className="mobileCardList">
@@ -42,7 +42,7 @@ export default function MobileProfilesPage() {
         )}
 
         {profiles.map((profile) => (
-          <Link href={`/app/loved-ones/${profile.id}`} className="mobileListCard" key={profile.id}>
+          <Link href={`/mobile/profiles/${profile.id}`} className="mobileListCard" key={profile.id}>
             <strong>{profile.full_name}</strong>
             <span>{profile.relationship || "Family profile"}</span>
             <p>{profile.memorial_public ? "Public page enabled" : "Private profile"}</p>
