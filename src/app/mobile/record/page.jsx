@@ -14,6 +14,7 @@ import {
   Video,
 } from "lucide-react";
 import { supabase } from "../../../lib/supabaseClient";
+import { saveMobileMemoryToV2 } from "../../../lib/mobileVault";
 import { getInitialMobileLanguage } from "../../../components/mobile/mobileLanguage";
 
 const copy = {
@@ -298,64 +299,46 @@ export default function MobileRecordPage() {
 
     setSaving(true);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    if (!user) {
-      setSaving(false);
-      setMessage(t.signIn);
-      return;
-    }
+      if (!user) {
+        setMessage(t.signIn);
+        setSaving(false);
+        return;
+      }
 
-    const extension = recordingKind === "video" ? "webm" : "webm";
-    const folder = recordingKind === "video" ? "mobile-videos" : "mobile-recordings";
-    const fileName = `mobile-${recordingKind}-${Date.now()}.${extension}`;
-    const filePath = `${user.id}/${folder}/${fileName}`;
+      const extension = recordingKind === "video" ? "webm" : "webm";
+      const fileName = `mobile-${recordingKind}-${Date.now()}.${extension}`;
 
-    const uploadResult = await supabase.storage
-      .from("family-media")
-      .upload(filePath, recordingBlob, {
-        contentType: recordingBlob.type || (recordingKind === "video" ? "video/webm" : "audio/webm"),
-        upsert: false,
+      const file = new File([recordingBlob], fileName, {
+        type: recordingBlob.type || (recordingKind === "video" ? "video/webm" : "audio/webm"),
       });
 
-    if (uploadResult.error) {
+      await saveMobileMemoryToV2({
+        supabase,
+        user,
+        file,
+        title:
+          script?.trim()
+            ? script.trim().slice(0, 80)
+            : recordingKind === "video"
+              ? "Mobile selfie video memory"
+              : "Mobile voice memory",
+        note: script,
+        folder: recordingKind === "video" ? "mobile-videos" : "mobile-recordings",
+        forcedType: recordingKind === "video" ? "video" : "audio",
+      });
+
+      setMessage(t.saved);
+    } catch (error) {
+      setMessage(error.message || "Could not save memory.");
+    } finally {
       setSaving(false);
-      setMessage(uploadResult.error.message);
-      return;
     }
-
-    const title =
-      script?.trim()
-        ? script.trim().slice(0, 80)
-        : recordingKind === "video"
-          ? "Mobile selfie video memory"
-          : "Mobile voice memory";
-
-    const insertResult = await supabase.from("media_assets").insert({
-      user_id: user.id,
-      file_name: fileName,
-      file_path: filePath,
-      file_type: recordingBlob.type || (recordingKind === "video" ? "video/webm" : "audio/webm"),
-      file_size: recordingBlob.size,
-      title,
-      description: script?.trim() || null,
-      visibility: "private",
-      memory_type: recordingKind === "video" ? "video" : "voice",
-      memory_note: script?.trim() || null,
-    });
-
-    setSaving(false);
-
-    if (insertResult.error) {
-      setMessage(insertResult.error.message);
-      return;
-    }
-
-    setMessage(t.saved);
   }
-
   return (
     <section className="mobileScreenStack">
       <div className="mobileScreenHero mobileRecorderHero">

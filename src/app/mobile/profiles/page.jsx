@@ -2,53 +2,78 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Plus, QrCode, UserRound } from "lucide-react";
 import { supabase } from "../../../lib/supabaseClient";
 
 export default function MobileProfilesPage() {
-  const [profiles, setProfiles] = useState([]);
+  const [vaults, setVaults] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadProfiles() {
-      const { data } = await supabase
-        .from("loved_ones")
-        .select("*")
-        .order("created_at", { ascending: false });
+    loadVaults();
+  }, []);
 
-      setProfiles(data || []);
+  async function loadVaults() {
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from("vaults")
+      .select("id, title, subject_name, relationship_label, description, created_at")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Mobile profiles error:", error.message);
+      setVaults([]);
       setLoading(false);
+      return;
     }
 
-    loadProfiles();
-  }, []);
+    setVaults(data || []);
+    setLoading(false);
+  }
 
   return (
     <section className="mobileScreenStack">
       <div className="mobileScreenHero">
         <p className="mobileCapsLabel">Profiles</p>
-        <h1>Loved One Profiles</h1>
-        <p>Create and manage the people connected to your private family vault.</p>
-        <Link href="/mobile/profiles/new" className="mobilePrimaryButton">Create profile</Link>
+        <h1>Family vaults</h1>
+        <p>Manage the loved one vaults and private family archives connected to your account.</p>
       </div>
 
-      <div className="mobileCardList">
+      <section className="mobileActionGrid">
+        <Link href="/mobile/profiles/new" className="mobileActionCard primary">
+          <Plus size={20} />
+          <strong>Create profile</strong>
+          <p>Add a new loved one or family vault.</p>
+        </Link>
+
+        <Link href="/mobile/connect" className="mobileActionCard">
+          <QrCode size={20} />
+          <strong>Connect family</strong>
+          <p>Create a private invite link or QR code.</p>
+        </Link>
+      </section>
+
+      <section className="mobileCardList">
         {loading && <p className="mobileEmptyText">Loading profiles...</p>}
 
-        {!loading && profiles.length === 0 && (
+        {!loading && vaults.length === 0 && (
           <div className="mobileEmptyCard">
-            <h2>No profiles yet</h2>
-            <p>Start by creating a profile for a loved one or yourself.</p>
+            <UserRound size={24} />
+            <h2>No family vaults yet</h2>
+            <p>Create your first profile or upload a memory to automatically start your family vault.</p>
+            <Link href="/mobile/upload" className="mobileRecorderPrimary">Upload first memory</Link>
           </div>
         )}
 
-        {profiles.map((profile) => (
-          <Link href={`/mobile/profiles/${profile.id}`} className="mobileListCard" key={profile.id}>
-            <strong>{profile.full_name}</strong>
-            <span>{profile.relationship || "Family profile"}</span>
-            <p>{profile.memorial_public ? "Public page enabled" : "Private profile"}</p>
-          </Link>
+        {vaults.map((vault) => (
+          <article className="mobileListCard" key={vault.id}>
+            <strong>{vault.subject_name || vault.title}</strong>
+            <span>{vault.relationship_label || "Family vault"}</span>
+            <p>{vault.description || "Private family archive."}</p>
+          </article>
         ))}
-      </div>
+      </section>
     </section>
   );
 }

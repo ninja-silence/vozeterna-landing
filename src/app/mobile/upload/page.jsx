@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, FileUp, ImagePlus, UploadCloud } from "lucide-react";
 import { supabase } from "../../../lib/supabaseClient";
 import { getInitialMobileLanguage } from "../../../components/mobile/mobileLanguage";
+import { saveMobileMemoryToV2 } from "../../../lib/mobileVault";
 
 const copy = {
   en: {
@@ -19,7 +20,7 @@ const copy = {
     saved: "Memory uploaded.",
     signIn: "Please sign in before uploading.",
     noFile: "Choose a file first.",
-    privateNote: "Files are private by default and stored in your protected family vault.",
+    privateNote: "Files are private by default and saved inside your family network vault.",
   },
   es: {
     label: "Subida móvil",
@@ -34,7 +35,7 @@ const copy = {
     saved: "Recuerdo subido.",
     signIn: "Inicia sesión antes de subir.",
     noFile: "Primero elige un archivo.",
-    privateNote: "Los archivos son privados por defecto y se guardan en tu bóveda familiar protegida.",
+    privateNote: "Los archivos son privados por defecto y se guardan dentro de tu bóveda familiar.",
   },
 };
 
@@ -74,64 +75,37 @@ export default function MobileUploadPage() {
 
     setSaving(true);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    if (!user) {
-      setSaving(false);
-      setMessage(t.signIn);
-      return;
-    }
+      if (!user) {
+        setMessage(t.signIn);
+        setSaving(false);
+        return;
+      }
 
-    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-");
-    const filePath = `${user.id}/mobile-uploads/${Date.now()}-${safeName}`;
-
-    const uploadResult = await supabase.storage
-      .from("family-media")
-      .upload(filePath, file, {
-        contentType: file.type || "application/octet-stream",
-        upsert: false,
+      await saveMobileMemoryToV2({
+        supabase,
+        user,
+        file,
+        title: note.trim() ? note.trim().slice(0, 80) : file.name,
+        note,
+        folder: "mobile-uploads",
       });
 
-    if (uploadResult.error) {
+      setMessage(t.saved);
+      setFile(null);
+      setNote("");
+
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+    } catch (error) {
+      setMessage(error.message || "Upload failed.");
+    } finally {
       setSaving(false);
-      setMessage(uploadResult.error.message);
-      return;
-    }
-
-    const insertResult = await supabase.from("media_assets").insert({
-      user_id: user.id,
-      file_name: file.name,
-      file_path: filePath,
-      file_type: file.type || "application/octet-stream",
-      file_size: file.size,
-      title: note.trim() ? note.trim().slice(0, 80) : file.name,
-      description: note.trim() || null,
-      visibility: "private",
-      memory_type: file.type?.startsWith("image/")
-        ? "photo"
-        : file.type?.startsWith("audio/")
-          ? "voice"
-          : file.type?.startsWith("video/")
-            ? "video"
-            : "file",
-      memory_note: note.trim() || null,
-    });
-
-    setSaving(false);
-
-    if (insertResult.error) {
-      setMessage(insertResult.error.message);
-      return;
-    }
-
-    setMessage(t.saved);
-    setFile(null);
-    setNote("");
-
-    if (inputRef.current) {
-      inputRef.current.value = "";
     }
   }
 

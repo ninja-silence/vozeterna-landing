@@ -11,6 +11,7 @@ import {
   Home,
   LibraryBig,
   Menu,
+  QrCode,
   Mic2,
   Moon,
   Sun,
@@ -39,6 +40,7 @@ const copy = {
     upload: "Upload",
     consent: "Consent",
     account: "Account",
+    connect: "Connect",
     website: "Website",
     menuTitle: "VozEterna",
     menuText: "Preserve family memories in one private vault.",
@@ -64,6 +66,7 @@ const copy = {
     upload: "Subir",
     consent: "Consentimiento",
     account: "Cuenta",
+    connect: "Conectar",
     website: "Sitio web",
     menuTitle: "VozEterna",
     menuText: "Preserva recuerdos familiares en una bóveda privada.",
@@ -97,6 +100,7 @@ function getMenuItems(t) {
     { href: mobileRoutes.upload, label: t.upload, icon: BookOpen },
     { href: mobileRoutes.consent, label: t.consent, icon: BookOpen },
     { href: mobileRoutes.account, label: t.account, icon: UserRound },
+    { href: "/mobile/connect", label: t.connect, icon: QrCode },
     { href: "/", label: t.website, icon: Globe2 },
   ];
 }
