@@ -109,8 +109,8 @@ export default function MobileDashboardPage() {
           </p>
 
           <div className="mobileHeroActions">
-            <Link href={user ? "/app/loved-ones/new" : "/app/login"}>Create profile</Link>
-            <Link href={user ? "/mobile/record" : "/app/login"}>Record memory</Link>
+            <Link href={user ? "/mobile/profiles/new" : "/mobile/account"}>Create profile</Link>
+            <Link href={user ? "/mobile/record" : "/mobile/account"}>Record memory</Link>
           </div>
 
           <div className="mobileStatGrid">
