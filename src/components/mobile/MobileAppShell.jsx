@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
+  Activity,
   BookOpen,
   FolderHeart,
   Home,
@@ -27,6 +26,7 @@ const copy = {
     menu: "Menu",
     close: "Close",
     dashboard: "Dashboard",
+    feed: "Feed",
     profile: "Profile",
     library: "Library",
     collections: "Collections",
@@ -48,6 +48,7 @@ const copy = {
     menu: "Menú",
     close: "Cerrar",
     dashboard: "Inicio",
+    feed: "Actividad",
     profile: "Perfil",
     library: "Biblioteca",
     collections: "Álbumes",
@@ -68,9 +69,9 @@ const copy = {
 function getNavItems(t) {
   return [
     { href: "/mobile", label: t.dashboard, icon: Home },
-    { href: "/mobile/profiles", label: t.profile, icon: UserRound },
+    { href: "/mobile/feed", label: t.feed, icon: Activity },
     { href: "/mobile/library", label: t.library, icon: LibraryBig },
-    { href: "/mobile/collections", label: t.collections, icon: FolderHeart },
+    { href: "/mobile/profiles", label: t.profile, icon: UserRound },
     { href: "/mobile/record", label: t.record, icon: Mic2 },
   ];
 }
