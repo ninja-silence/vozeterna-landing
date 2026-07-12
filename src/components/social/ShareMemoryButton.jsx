@@ -8,6 +8,12 @@ export default function ShareMemoryButton({
   text = "A private family memory was shared with you through VozEterna.",
   url,
   className = "",
+  labels = {
+    share: "Share",
+    shared: "Shared",
+    copied: "Copied",
+    copyManually: "Copy manually",
+  },
 }) {
   const [status, setStatus] = useState("");
   const [canNativeShare, setCanNativeShare] = useState(false);
@@ -63,12 +69,21 @@ export default function ShareMemoryButton({
     }
   }
 
+  const buttonText =
+    status === "shared"
+      ? labels.shared
+      : status === "copied"
+        ? labels.copied
+        : status === "copy manually"
+          ? labels.copyManually
+          : labels.share;
+
   return (
     <button
       type="button"
       className={`nativeShareButton ${className}`}
       onClick={handleShare}
-      aria-label="Share memory"
+      aria-label={labels.share}
     >
       {status === "shared" || status === "copied" ? (
         <Check size={15} strokeWidth={2.4} />
@@ -78,13 +93,7 @@ export default function ShareMemoryButton({
         <Copy size={15} strokeWidth={2.4} />
       )}
 
-      <span>
-        {status === "shared"
-          ? "Shared"
-          : status === "copied"
-            ? "Copied"
-            : "Share"}
-      </span>
+      <span>{buttonText}</span>
     </button>
   );
 }
