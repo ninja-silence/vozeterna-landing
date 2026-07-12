@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
+  ArrowLeft,
   BookOpen,
   FolderHeart,
   Globe2,
@@ -20,6 +21,7 @@ import {
   getInitialMobileLanguage,
   setStoredMobileLanguage,
 } from "./mobileLanguage";
+import { mobileRoutes } from "./mobileRoutes";
 
 const copy = {
   en: {
@@ -27,11 +29,12 @@ const copy = {
     themeLight: "Light",
     menu: "Menu",
     close: "Close",
+    back: "Back",
     dashboard: "Home",
     feed: "Feed",
     profile: "Profile",
     library: "Library",
-    collections: "Collections",
+    collections: "Albums",
     record: "Record",
     upload: "Upload",
     consent: "Consent",
@@ -51,6 +54,7 @@ const copy = {
     themeLight: "Claro",
     menu: "Menú",
     close: "Cerrar",
+    back: "Atrás",
     dashboard: "Inicio",
     feed: "Red",
     profile: "Perfil",
@@ -74,31 +78,32 @@ const copy = {
 
 function getNavItems(t) {
   return [
-    { href: "/mobile", label: t.dashboard, icon: Home },
-    { href: "/mobile/feed", label: t.feed, icon: Globe2 },
-    { href: "/mobile/library", label: t.library, icon: LibraryBig },
-    { href: "/mobile/profiles", label: t.profile, icon: UserRound },
-    { href: "/mobile/record", label: t.record, icon: Mic2 },
+    { href: mobileRoutes.home, label: t.dashboard, icon: Home },
+    { href: mobileRoutes.feed, label: t.feed, icon: Globe2 },
+    { href: mobileRoutes.library, label: t.library, icon: LibraryBig },
+    { href: mobileRoutes.profiles, label: t.profile, icon: UserRound },
+    { href: mobileRoutes.record, label: t.record, icon: Mic2 },
   ];
 }
 
 function getMenuItems(t) {
   return [
-    { href: "/mobile", label: t.dashboard, icon: Home },
-    { href: "/mobile/feed", label: t.feed, icon: Globe2 },
-    { href: "/mobile/library", label: t.library, icon: LibraryBig },
-    { href: "/mobile/profiles", label: t.profile, icon: UserRound },
-    { href: "/mobile/collections", label: t.collections, icon: FolderHeart },
-    { href: "/mobile/record", label: t.record, icon: Mic2 },
-    { href: "/mobile/upload", label: t.upload, icon: BookOpen },
-    { href: "/mobile/consent", label: t.consent, icon: BookOpen },
-    { href: "/mobile/account", label: t.account, icon: UserRound },
+    { href: mobileRoutes.home, label: t.dashboard, icon: Home },
+    { href: mobileRoutes.feed, label: t.feed, icon: Globe2 },
+    { href: mobileRoutes.library, label: t.library, icon: LibraryBig },
+    { href: mobileRoutes.profiles, label: t.profile, icon: UserRound },
+    { href: mobileRoutes.collections, label: t.collections, icon: FolderHeart },
+    { href: mobileRoutes.record, label: t.record, icon: Mic2 },
+    { href: mobileRoutes.upload, label: t.upload, icon: BookOpen },
+    { href: mobileRoutes.consent, label: t.consent, icon: BookOpen },
+    { href: mobileRoutes.account, label: t.account, icon: UserRound },
     { href: "/", label: t.website, icon: Globe2 },
   ];
 }
 
 export default function MobileAppShell({ children }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [theme, setTheme] = useState("light");
   const [language, setLanguage] = useState("en");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -108,6 +113,7 @@ export default function MobileAppShell({ children }) {
   const t = copy[language] || copy.en;
   const navItems = getNavItems(t);
   const menuItems = getMenuItems(t);
+  const showBack = pathname !== mobileRoutes.home;
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("vozeterna-mobile-theme");
@@ -166,6 +172,15 @@ export default function MobileAppShell({ children }) {
     localStorage.setItem("vozeterna-simple-view", String(nextValue));
   }
 
+  function goBack() {
+    if (window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.push(mobileRoutes.home);
+  }
+
   return (
     <div
       className={simpleView ? "mobileAppExperience simpleView" : "mobileAppExperience"}
@@ -173,10 +188,19 @@ export default function MobileAppShell({ children }) {
       data-mobile-language={language}
     >
       <header className="mobileNativeHeader">
-        <Link href="/mobile" className="mobileNativeBrand" onClick={() => setMenuOpen(false)}>
-          <img src="/brand/logo-emblem.png" alt="VozEterna" />
-          <span>VozEterna</span>
-        </Link>
+        <div className="mobileHeaderLeft">
+          {showBack && (
+            <button type="button" className="mobileBackButton" onClick={goBack}>
+              <ArrowLeft size={18} />
+              <span>{t.back}</span>
+            </button>
+          )}
+
+          <Link href={mobileRoutes.home} className="mobileNativeBrand" onClick={() => setMenuOpen(false)}>
+            <img src="/brand/logo-emblem.png" alt="VozEterna" />
+            <span>VozEterna</span>
+          </Link>
+        </div>
 
         <div className="mobileHeaderActions">
           <button type="button" onClick={toggleTheme} className="mobileThemeButton">
@@ -261,8 +285,8 @@ export default function MobileAppShell({ children }) {
       <nav className="mobileNativeBottomNav premiumBottomNav" aria-label="Mobile app navigation">
         {navItems.map((item) => {
           const active =
-            item.href === "/mobile"
-              ? pathname === "/mobile"
+            item.href === mobileRoutes.home
+              ? pathname === mobileRoutes.home
               : pathname.startsWith(item.href);
 
           const Icon = item.icon;

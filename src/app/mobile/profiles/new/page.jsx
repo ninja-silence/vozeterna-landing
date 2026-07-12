@@ -33,7 +33,7 @@ export default function MobileCreateProfilePage() {
 
     if (!user) {
       setSaving(false);
-      router.push("/app/login");
+      router.push("/mobile/account");
       return;
     }
 

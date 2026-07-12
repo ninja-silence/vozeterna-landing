@@ -107,7 +107,7 @@ export default function MobileConsentPage() {
           </div>
         )}
 
-        <Link href="/app/consent" className="mobileRecorderPrimary">
+        <Link href="/mobile/consent" className="mobileRecorderPrimary">
           <FileSignature size={17} />
           {t.openFull}
         </Link>

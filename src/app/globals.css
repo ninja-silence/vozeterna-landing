@@ -16350,3 +16350,110 @@ select.appInput {
   color: var(--mobile-muted);
   font-size: 0.78rem;
 }
+/* Mobile route lock, back button, and native upload polish */
+.mobileHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.mobileBackButton {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+  border: 1px solid var(--mobile-faint);
+  border-radius: 13px;
+  color: var(--mobile-text);
+  background: var(--mobile-card);
+  font-size: 0.72rem;
+  font-weight: 950;
+  box-shadow: 0 10px 22px rgba(8, 63, 82, 0.08);
+}
+
+.mobileBackButton span {
+  line-height: 1;
+}
+
+.mobileUploadCard {
+  gap: 14px !important;
+}
+
+.mobileUploadPicker {
+  min-height: 190px;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 22px;
+  border: 1px dashed rgba(216, 170, 99, 0.46);
+  border-radius: 24px;
+  color: var(--mobile-text);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216, 170, 99, 0.14), transparent 34%),
+    var(--mobile-bg-soft);
+  text-align: center;
+}
+
+.mobileUploadPicker strong {
+  display: block;
+  color: var(--mobile-text);
+  font-size: 1.15rem;
+}
+
+.mobileUploadPicker span {
+  display: block;
+  max-width: 280px;
+  color: var(--mobile-muted);
+  line-height: 1.4;
+}
+
+.mobileSelectedFile {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 18px;
+  background: var(--mobile-bg-soft);
+  border: 1px solid var(--mobile-faint);
+}
+
+.mobileSelectedFile strong {
+  display: block;
+  color: var(--mobile-text);
+}
+
+.mobileSelectedFile span {
+  display: block;
+  max-width: 100%;
+  color: var(--mobile-muted);
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 430px) {
+  .mobileNativeHeader {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .mobileHeaderLeft {
+    gap: 6px;
+  }
+
+  .mobileBackButton {
+    padding: 0 8px;
+  }
+
+  .mobileBackButton span {
+    display: none;
+  }
+
+  .mobileNativeBrand span {
+    font-size: 1.06rem;
+  }
+}
