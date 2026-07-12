@@ -9,6 +9,7 @@ export const mobileRoutes = {
   upload: "/mobile/upload",
   consent: "/mobile/consent",
   account: "/mobile/account",
+  connect: "/mobile/connect",
 };
 
 export function toMobileRoute(path) {

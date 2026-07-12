@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { CheckCircle2, FileSignature, ShieldCheck } from "lucide-react";
 import { supabase } from "../../../lib/supabaseClient";
 import { getInitialMobileLanguage } from "../../../components/mobile/mobileLanguage";
@@ -15,9 +14,11 @@ const copy = {
     current: "Current consent records",
     loading: "Loading consent records...",
     empty: "No consent records yet.",
-    openFull: "Open full consent form",
+    sign: "Confirm mobile consent",
+    signing: "Saving consent...",
+    signed: "Consent saved.",
     protected: "Private by default. Consent helps keep your family memories authorized and secure.",
-    signed: "Signed",
+    signIn: "Please sign in before saving consent.",
   },
   es: {
     label: "Consentimiento",
@@ -27,9 +28,11 @@ const copy = {
     current: "Registros actuales",
     loading: "Cargando registros...",
     empty: "Todavía no hay registros de consentimiento.",
-    openFull: "Abrir formulario completo",
+    sign: "Confirmar consentimiento móvil",
+    signing: "Guardando consentimiento...",
+    signed: "Consentimiento guardado.",
     protected: "Privado por defecto. El consentimiento ayuda a mantener tus recuerdos autorizados y seguros.",
-    signed: "Firmado",
+    signIn: "Inicia sesión antes de guardar consentimiento.",
   },
 };
 
@@ -37,6 +40,8 @@ export default function MobileConsentPage() {
   const [language, setLanguage] = useState("en");
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
 
   const t = copy[language] || copy.en;
 
@@ -57,21 +62,69 @@ export default function MobileConsentPage() {
   }, []);
 
   useEffect(() => {
-    async function loadConsent() {
-      setLoading(true);
-
-      const { data } = await supabase
-        .from("consent_records")
-        .select("id, full_name, consent_type, agreement_version, language, accepted_at")
-        .order("accepted_at", { ascending: false })
-        .limit(10);
-
-      setRecords(data || []);
-      setLoading(false);
-    }
-
     loadConsent();
   }, []);
+
+  async function loadConsent() {
+    setLoading(true);
+
+    const { data } = await supabase
+      .from("consent_records")
+      .select("id, full_name, consent_type, agreement_version, language, accepted_at")
+      .order("accepted_at", { ascending: false })
+      .limit(10);
+
+    setRecords(data || []);
+    setLoading(false);
+  }
+
+  async function signConsent() {
+    setSaving(true);
+    setMessage("");
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setSaving(false);
+      setMessage(t.signIn);
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("display_name, legal_name")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const fullName =
+      profile?.legal_name ||
+      profile?.display_name ||
+      user.email ||
+      "Mobile user";
+
+    const { error } = await supabase.from("consent_records").insert({
+      user_id: user.id,
+      full_name: fullName,
+      consent_type: "mobile_family_vault_participation",
+      agreement_version: "Mobile Consent v1",
+      language,
+      accepted: true,
+      accepted_at: new Date().toISOString(),
+      signer_profile_name: fullName,
+    });
+
+    setSaving(false);
+
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    setMessage(t.signed);
+    loadConsent();
+  }
 
   return (
     <section className="mobileScreenStack">
@@ -107,10 +160,17 @@ export default function MobileConsentPage() {
           </div>
         )}
 
-        <Link href="/mobile/consent" className="mobileRecorderPrimary">
+        <button type="button" onClick={signConsent} disabled={saving}>
           <FileSignature size={17} />
-          {t.openFull}
-        </Link>
+          {saving ? t.signing : t.sign}
+        </button>
+
+        {message && (
+          <p className={message === t.signed ? "mobileSuccessMessage" : "mobileFormMessage"}>
+            {message === t.signed && <CheckCircle2 size={16} />}
+            <span>{message}</span>
+          </p>
+        )}
       </section>
     </section>
   );

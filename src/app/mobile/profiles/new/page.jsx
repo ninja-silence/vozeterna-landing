@@ -1,124 +1,172 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle2, Save } from "lucide-react";
 import { supabase } from "../../../../lib/supabaseClient";
+import { createMobileVault } from "../../../../lib/mobileVault";
+import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
+
+const copy = {
+  en: {
+    label: "Create Profile",
+    title: "New loved one vault",
+    subtitle: "Create a private family profile that can hold memories, photos, videos, and reflections.",
+    name: "Name",
+    namePlaceholder: "Example: Maria Lopez",
+    relationship: "Relationship",
+    relationshipPlaceholder: "Mother, father, brother, friend...",
+    description: "Short description",
+    descriptionPlaceholder: "Write a short note about this person or vault.",
+    save: "Create profile",
+    saving: "Creating...",
+    saved: "Profile created.",
+    signIn: "Please sign in before creating a profile.",
+    required: "Please enter a name.",
+  },
+  es: {
+    label: "Crear perfil",
+    title: "Nueva bóveda familiar",
+    subtitle: "Crea un perfil privado para guardar recuerdos, fotos, videos y reflexiones.",
+    name: "Nombre",
+    namePlaceholder: "Ejemplo: Maria Lopez",
+    relationship: "Relación",
+    relationshipPlaceholder: "Mamá, papá, hermano, amigo...",
+    description: "Descripción corta",
+    descriptionPlaceholder: "Escribe una nota corta sobre esta persona o bóveda.",
+    save: "Crear perfil",
+    saving: "Creando...",
+    saved: "Perfil creado.",
+    signIn: "Inicia sesión antes de crear un perfil.",
+    required: "Escribe un nombre.",
+  },
+};
 
 export default function MobileCreateProfilePage() {
   const router = useRouter();
+  const [language, setLanguage] = useState("en");
+  const [subjectName, setSubjectName] = useState("");
+  const [relationship, setRelationship] = useState("");
+  const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
-  const [form, setForm] = useState({
-    full_name: "",
-    relationship: "",
-    bio: "",
-    memorial_public: false,
-  });
 
-  function updateField(field, value) {
-    setForm((current) => ({
-      ...current,
-      [field]: value,
-    }));
-  }
+  const t = copy[language] || copy.en;
 
-  async function saveProfile(event) {
+  useEffect(() => {
+    setLanguage(getInitialMobileLanguage());
+
+    function handleLanguageChange(event) {
+      if (event.detail === "en" || event.detail === "es") {
+        setLanguage(event.detail);
+      }
+    }
+
+    window.addEventListener("vozeterna-language-change", handleLanguageChange);
+
+    return () => {
+      window.removeEventListener("vozeterna-language-change", handleLanguageChange);
+    };
+  }, []);
+
+  async function createProfile(event) {
     event.preventDefault();
-    setSaving(true);
     setMessage("");
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    if (!subjectName.trim()) {
+      setMessage(t.required);
+      return;
+    }
 
-    if (!user) {
+    setSaving(true);
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setMessage(t.signIn);
+        setSaving(false);
+        return;
+      }
+
+      await createMobileVault({
+        supabase,
+        user,
+        subjectName,
+        relationshipLabel: relationship,
+        description,
+      });
+
+      setMessage(t.saved);
+
+      window.setTimeout(() => {
+        router.push("/mobile/profiles");
+      }, 650);
+    } catch (error) {
+      setMessage(error.message || "Could not create profile.");
+    } finally {
       setSaving(false);
-      router.push("/mobile/account");
-      return;
     }
-
-    if (!form.full_name.trim()) {
-      setSaving(false);
-      setMessage("Please enter a name.");
-      return;
-    }
-
-    const slugBase = form.full_name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-
-    const { error } = await supabase.from("loved_ones").insert({
-      user_id: user.id,
-      full_name: form.full_name.trim(),
-      relationship: form.relationship.trim() || null,
-      bio: form.bio.trim() || null,
-      memorial_public: form.memorial_public,
-      memorial_slug: `${slugBase || "profile"}-${Date.now()}`,
-      frame_style: "warm_wood",
-    });
-
-    setSaving(false);
-
-    if (error) {
-      setMessage(error.message || "Could not save profile.");
-      return;
-    }
-
-    router.push("/mobile/profiles");
   }
 
   return (
     <section className="mobileScreenStack">
       <div className="mobileScreenHero">
-        <p className="mobileCapsLabel">Create Profile</p>
-        <h1>New Loved One Profile</h1>
-        <p>Create a private profile for a loved one, family member, or yourself.</p>
+        <p className="mobileCapsLabel">{t.label}</p>
+        <h1>{t.title}</h1>
+        <p>{t.subtitle}</p>
       </div>
 
-      <form className="mobileFormCard" onSubmit={saveProfile}>
+      <form className="mobileFormCard" onSubmit={createProfile}>
         <label>
-          Full name
+          {t.name}
           <input
-            value={form.full_name}
-            onChange={(event) => updateField("full_name", event.target.value)}
-            placeholder="Example: Maria Lopez"
+            value={subjectName}
+            onChange={(event) => setSubjectName(event.target.value)}
+            placeholder={t.namePlaceholder}
           />
         </label>
 
         <label>
-          Relationship
+          {t.relationship}
           <input
-            value={form.relationship}
-            onChange={(event) => updateField("relationship", event.target.value)}
-            placeholder="Mother, father, brother, friend..."
+            value={relationship}
+            onChange={(event) => setRelationship(event.target.value)}
+            placeholder={t.relationshipPlaceholder}
           />
         </label>
 
         <label>
-          Short bio
+          {t.description}
           <textarea
-            value={form.bio}
-            onChange={(event) => updateField("bio", event.target.value)}
-            placeholder="Write a short note about this person."
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            placeholder={t.descriptionPlaceholder}
           />
         </label>
-
-        <label className="mobileCheckboxRow">
-          <input
-            type="checkbox"
-            checked={form.memorial_public}
-            onChange={(event) => updateField("memorial_public", event.target.checked)}
-          />
-          Enable public memorial page
-        </label>
-
-        {message && <p className="mobileFormMessage">{message}</p>}
 
         <button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Create profile"}
+          {saving ? (
+            <>
+              <Save size={17} />
+              {t.saving}
+            </>
+          ) : (
+            <>
+              <Save size={17} />
+              {t.save}
+            </>
+          )}
         </button>
+
+        {message && (
+          <p className={message === t.saved ? "mobileSuccessMessage" : "mobileFormMessage"}>
+            {message === t.saved && <CheckCircle2 size={16} />}
+            <span>{message}</span>
+          </p>
+        )}
       </form>
     </section>
   );

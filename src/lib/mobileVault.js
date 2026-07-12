@@ -47,7 +47,7 @@ export async function ensureDefaultNetworkAndVault(supabase, user) {
       id: vaultId,
       network_id: networkId,
       created_by: user.id,
-      title: "My Family Vault",
+      title: "Family Memories",
       subject_name: "Family Memories",
       relationship_label: "Family",
       description: "Private mobile family vault.",
@@ -96,7 +96,7 @@ export async function ensureDefaultNetworkAndVault(supabase, user) {
     id: vaultId,
     network_id: networkId,
     created_by: user.id,
-    title: "My Family Vault",
+    title: "Family Memories",
     subject_name: "Family Memories",
     relationship_label: "Family",
     description: "Private mobile family vault.",
@@ -107,6 +107,57 @@ export async function ensureDefaultNetworkAndVault(supabase, user) {
   if (vaultResult.error) {
     throw new Error(vaultResult.error.message);
   }
+
+  return {
+    networkId,
+    vaultId,
+  };
+}
+
+export async function createMobileVault({
+  supabase,
+  user,
+  subjectName,
+  relationshipLabel,
+  description,
+}) {
+  if (!user?.id) {
+    throw new Error("Please sign in first.");
+  }
+
+  const { networkId } = await ensureDefaultNetworkAndVault(supabase, user);
+  const vaultId = crypto.randomUUID();
+
+  const cleanName = subjectName?.trim() || "Loved One";
+  const cleanRelationship = relationshipLabel?.trim() || "Family";
+
+  const result = await supabase.from("vaults").insert({
+    id: vaultId,
+    network_id: networkId,
+    created_by: user.id,
+    title: cleanName,
+    subject_name: cleanName,
+    relationship_label: cleanRelationship,
+    description: description?.trim() || "Private family vault.",
+    visibility: "private",
+    is_loved_one_vault: true,
+  });
+
+  if (result.error) {
+    throw new Error(result.error.message);
+  }
+
+  await supabase.from("network_activity").insert({
+    network_id: networkId,
+    vault_id: vaultId,
+    actor_id: user.id,
+    activity_type: "profile_added",
+    title: `New profile: ${cleanName}`,
+    metadata: {
+      source: "mobile",
+      relationship_label: cleanRelationship,
+    },
+  });
 
   return {
     networkId,

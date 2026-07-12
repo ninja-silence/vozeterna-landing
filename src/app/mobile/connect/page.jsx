@@ -12,6 +12,12 @@ export default function MobileConnectPage() {
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState("viewer");
 
+  function readNetworkIdFromUrl() {
+    if (typeof window === "undefined") return "";
+
+    return new URLSearchParams(window.location.search).get("networkId") || "";
+  }
+
   useEffect(() => {
     createInvite();
   }, []);
@@ -31,7 +37,12 @@ export default function MobileConnectPage() {
         return;
       }
 
-      const { networkId } = await ensureDefaultNetworkAndVault(supabase, user);
+      const queryNetworkId = readNetworkIdFromUrl();
+      const ensured = queryNetworkId
+        ? { networkId: queryNetworkId }
+        : await ensureDefaultNetworkAndVault(supabase, user);
+
+      const networkId = ensured.networkId;
 
       const { data, error } = await supabase.rpc("create_sharable_link", {
         target_network_id: networkId,
