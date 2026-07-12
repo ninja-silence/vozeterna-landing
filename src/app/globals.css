@@ -12993,3 +12993,123 @@ select.appInput {
     font-size: 0.88rem;
   }
 }
+/* Final dedicated mobile dashboard switch */
+.mobileDashboardRender {
+  display: none;
+}
+
+.desktopDashboardRender {
+  display: block;
+}
+
+@media (max-width: 820px) {
+  .desktopDashboardRender {
+    display: none !important;
+  }
+
+  .mobileDashboardRender {
+    display: block !important;
+  }
+
+  body {
+    padding-bottom: 96px !important;
+    overflow-x: hidden !important;
+  }
+
+  .appHeader {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0.45rem 0.75rem 0.55rem !important;
+    min-height: auto !important;
+    background: rgba(255, 250, 241, 0.98) !important;
+    backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid rgba(8, 63, 82, 0.08) !important;
+  }
+
+  .appLogoWithImage {
+    width: 100% !important;
+    justify-content: center !important;
+    margin: 0 !important;
+  }
+
+  .appLogoImage {
+    height: 34px !important;
+    width: auto !important;
+  }
+
+  .appNav {
+    position: fixed !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    z-index: 9999 !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 8px !important;
+
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+
+    border-radius: 24px !important;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 250, 241, 0.94)) !important;
+    border: 1px solid rgba(8, 63, 82, 0.1) !important;
+    box-shadow: 0 18px 44px rgba(8, 63, 82, 0.18) !important;
+  }
+
+  .appNav::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .appNav a {
+    flex: 0 0 74px !important;
+    width: 74px !important;
+    min-width: 74px !important;
+    height: 46px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 6px !important;
+    margin: 0 !important;
+    border-radius: 16px !important;
+
+    color: #083f52 !important;
+    background: transparent !important;
+    font-size: 0.58rem !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  .appNav a.active,
+  .appNav a[aria-current="page"] {
+    color: #fffaf2 !important;
+    background: linear-gradient(145deg, #0f6f78, #083f52) !important;
+    box-shadow: 0 10px 20px rgba(8, 63, 82, 0.16) !important;
+  }
+}
+
+@media (min-width: 821px) {
+  .mobileDashboardRender {
+    display: none !important;
+  }
+
+  .desktopDashboardRender {
+    display: block !important;
+  }
+}

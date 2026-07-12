@@ -363,21 +363,21 @@ export default function AppHomePage() {
     },
   ];
 
-  if (isMobileDashboard) {
-    return (
-      <MobileDashboard
-        language={language}
-        user={user}
-        stats={stats}
-        loadingStats={loadingStats}
-        storageDisplay={storageDisplay}
-        storagePercent={storagePercent}
-      />
-    );
-  }
-
   return (
-    <main className="appShell appDashboardV3">
+    <>
+      <div className="mobileDashboardRender">
+        <MobileDashboard
+          language={language}
+          user={user}
+          stats={stats}
+          loadingStats={loadingStats}
+          storageDisplay={storageDisplay}
+          storagePercent={storagePercent}
+        />
+      </div>
+
+      <div className="desktopDashboardRender">
+        <main className="appShell appDashboardV3">
       <section className="dashboardWelcomeRow">
         <div>
           <p>{t.welcome}</p>
@@ -566,5 +566,7 @@ export default function AppHomePage() {
         </div>
       </section>
     </main>
+      </div>
+    </>
   );
 }
