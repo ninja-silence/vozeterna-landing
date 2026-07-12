@@ -13599,3 +13599,349 @@ select.appInput {
     background: linear-gradient(145deg, #0f6f78, #083f52) !important;
   }
 }
+/* Standalone VozEterna mobile app route */
+.standaloneMobileApp {
+  min-height: 100vh;
+  padding-bottom: 90px;
+  background:
+    radial-gradient(circle at 0% 16%, rgba(216, 170, 99, 0.16), transparent 30%),
+    radial-gradient(circle at 100% 2%, rgba(15, 111, 120, 0.11), transparent 32%),
+    #fff9ef;
+  color: #083f52;
+}
+
+.standaloneMobileTop {
+  height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px;
+  background: rgba(255, 250, 241, 0.96);
+  border-bottom: 1px solid rgba(8, 63, 82, 0.08);
+}
+
+.standaloneMobileBrand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #083f52;
+  font-size: 1.45rem;
+  font-weight: 500;
+}
+
+.standaloneMobileBrand img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.standaloneMobileMenu {
+  width: 38px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  color: #083f52;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 8px 18px rgba(8, 63, 82, 0.08);
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.standaloneMobileGrid {
+  display: grid;
+  grid-template-columns: 1.18fr 0.88fr;
+  gap: 14px;
+  padding: 20px 14px 0;
+}
+
+.standaloneMobileMain,
+.standaloneMobileSide {
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216, 170, 99, 0.1), transparent 30%),
+    rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(216, 170, 99, 0.13);
+  box-shadow: 0 14px 32px rgba(76, 54, 31, 0.075);
+}
+
+.standaloneMobileMain {
+  padding: 18px 14px;
+}
+
+.standaloneMobileSide {
+  padding: 16px 12px;
+}
+
+.standaloneBackLink {
+  color: rgba(8, 63, 82, 0.65);
+  font-size: 0.76rem;
+  text-decoration: none;
+}
+
+.standaloneEyebrow {
+  margin: 0.8rem 0 0.7rem;
+  color: #083f52;
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.standaloneMobileMain h1 {
+  margin: 0;
+  color: #083f52;
+  font-size: clamp(2.25rem, 13.2vw, 4.1rem);
+  line-height: 0.88;
+  letter-spacing: -0.065em;
+}
+
+.standaloneSubtitle {
+  margin: 1rem 0 0;
+  color: rgba(8, 63, 82, 0.7);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.standaloneHeroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.standaloneHeroActions a {
+  min-height: 40px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  font-size: 0.78rem;
+  font-weight: 950;
+  text-decoration: none;
+}
+
+.standaloneHeroActions a:first-child {
+  color: #fffaf2;
+  background: linear-gradient(145deg, #0f6f78, #083f52);
+  box-shadow: 0 10px 20px rgba(8, 63, 82, 0.16);
+}
+
+.standaloneHeroActions a:last-child {
+  color: #083f52;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(216, 170, 99, 0.32);
+}
+
+.standaloneStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.standaloneStatsGrid article {
+  min-height: 132px;
+  padding: 13px;
+  border-radius: 17px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216, 170, 99, 0.16), transparent 36%),
+    rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(8, 63, 82, 0.06);
+  box-shadow: 0 10px 22px rgba(76, 54, 31, 0.055);
+}
+
+.standaloneStatsGrid article p {
+  margin: 0;
+  color: #c88424;
+  font-size: 0.56rem;
+  font-weight: 950;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.standaloneStatsGrid article strong {
+  display: block;
+  margin-top: 0.45rem;
+  color: #083f52;
+  font-size: 2.15rem;
+  line-height: 1;
+}
+
+.standaloneStatsGrid article h2 {
+  margin: 0.25rem 0 0;
+  color: #083f52;
+  font-size: 0.85rem;
+  line-height: 1.1;
+}
+
+.standaloneStatsGrid article span {
+  display: block;
+  margin-top: 0.35rem;
+  color: rgba(8, 63, 82, 0.62);
+  font-size: 0.68rem;
+  line-height: 1.3;
+}
+
+.standaloneLang {
+  height: 35px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(8, 63, 82, 0.08);
+}
+
+.standaloneLang span {
+  width: 33px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #083f52;
+  font-size: 0.67rem;
+  font-weight: 950;
+}
+
+.standaloneLang .active {
+  color: #fffaf2;
+  background: linear-gradient(145deg, #0f6f78, #083f52);
+}
+
+.standaloneShield,
+.standaloneStorage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px;
+  border-radius: 16px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(255, 242, 214, 0.78));
+  border: 1px solid rgba(216, 170, 99, 0.18);
+  box-shadow: 0 10px 24px rgba(76, 54, 31, 0.08);
+}
+
+.standaloneShield > span {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #0f6f78, #083f52);
+}
+
+.standaloneShield strong,
+.standaloneStorage strong {
+  display: block;
+  color: #083f52;
+  font-size: 0.78rem;
+  line-height: 1.1;
+}
+
+.standaloneShield p,
+.standaloneStorage p,
+.standaloneStorage small {
+  margin: 0.15rem 0 0;
+  color: rgba(8, 63, 82, 0.58);
+  font-size: 0.62rem;
+  line-height: 1.25;
+}
+
+.standaloneStorageRing {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: conic-gradient(#0f6f78 calc(var(--mobile-storage) * 1%), rgba(8, 63, 82, 0.1) 0);
+}
+
+.standaloneStorageRing span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #fffaf2;
+  color: #083f52;
+  font-size: 0.65rem;
+  font-weight: 950;
+}
+
+.standaloneChecklist {
+  display: grid;
+  gap: 7px;
+  margin-top: 0.8rem;
+}
+
+.standaloneChecklist div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 7px 8px;
+  border-radius: 12px;
+  background: rgba(8, 63, 82, 0.045);
+  border: 1px solid rgba(8, 63, 82, 0.055);
+}
+
+.standaloneChecklist div span {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #083f52;
+  background: rgba(255, 255, 255, 0.86);
+  font-size: 0.7rem;
+  font-weight: 950;
+}
+
+.standaloneChecklist div.done span {
+  color: #fffaf2;
+  background: linear-gradient(145deg, #0f6f78, #083f52);
+}
+
+.standaloneChecklist div strong {
+  color: #083f52;
+  font-size: 0.67rem;
+  line-height: 1.15;
+}
+
+.standaloneBottomNav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  padding: 8px 8px 14px;
+  background: rgba(255, 255, 255, 0.97);
+  border-top: 1px solid rgba(8, 63, 82, 0.12);
+  box-shadow: 0 -16px 36px rgba(8, 63, 82, 0.14);
+}
+
+.standaloneBottomNav a {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #083f52;
+  text-decoration: none;
+  border-radius: 16px;
+  font-size: 0.66rem;
+  font-weight: 950;
+  text-align: center;
+}
+
+.standaloneBottomNav a:first-child {
+  color: #fffaf2;
+  background: linear-gradient(145deg, #0f6f78, #083f52);
+}
