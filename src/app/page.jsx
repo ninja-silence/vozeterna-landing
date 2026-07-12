@@ -447,7 +447,7 @@ export default function Home() {
           <div><strong>{t.footerCompany}</strong><a href="/about">{t.about}</a><a href="/careers">{t.careers}</a><a href="/press">{t.press}</a></div>
           <div><strong>{t.footerSupport}</strong><a href="/help-center">{t.help}</a><a href="/privacy-policy">{t.privacy}</a><a href="/terms">{t.terms}</a></div>
           <div><strong>{t.footerResources}</strong><a href="/blog">{t.blog}</a><a href="/guides">{t.guides}</a><a href="/contact">{t.contact}</a></div>
-          <div><strong>{t.footerContact}</strong><a href="mailto:felipe.frias.pcs@gmail.com">felipe.frias.pcs@gmail.com</a><a>{t.location}</a></div>
+          <div><strong>{t.footerContact}</strong><a href="mailto:hello@vozeterna.com">hello@vozeterna.com</a><a>{t.location}</a></div>
         </div>
       </footer>
     </main>
