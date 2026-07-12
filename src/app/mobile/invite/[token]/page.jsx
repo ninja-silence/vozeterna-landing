@@ -3,16 +3,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, ShieldCheck, UsersRound } from "lucide-react";
+import { useParams } from "next/navigation";
 import { supabase } from "../../../../lib/supabaseClient";
 import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
 
 const copy = {
   en: {
     label: "Private Invite",
-    title: "Join family network",
-    subtitle: "This invite gives access only to the private family network selected by the owner.",
-    checking: "Checking invite...",
-    success: "You joined the family network.",
+    title: "Join private network",
+    subtitle: "Someone invited you to connect inside VozEterna.",
+    question: "Do you want to accept this private connection?",
+    accept: "Accept invite",
+    accepting: "Connecting...",
+    success: "You joined the private network.",
     error: "This invite could not be accepted.",
     signIn: "Please sign in before accepting this invite.",
     goFeed: "Go to feed",
@@ -21,10 +24,12 @@ const copy = {
   },
   es: {
     label: "Invitación privada",
-    title: "Unirse a red familiar",
-    subtitle: "Esta invitación da acceso solo a la red familiar privada seleccionada por el dueño.",
-    checking: "Revisando invitación...",
-    success: "Te uniste a la red familiar.",
+    title: "Unirse a red privada",
+    subtitle: "Alguien te invitó a conectarte dentro de VozEterna.",
+    question: "¿Quieres aceptar esta conexión privada?",
+    accept: "Aceptar invitación",
+    accepting: "Conectando...",
+    success: "Te uniste a la red privada.",
     error: "No se pudo aceptar esta invitación.",
     signIn: "Inicia sesión antes de aceptar esta invitación.",
     goFeed: "Ir al feed",
@@ -33,9 +38,12 @@ const copy = {
   },
 };
 
-export default function MobileInvitePage({ params }) {
+export default function MobileInvitePage() {
+  const params = useParams();
+  const token = params?.token;
+
   const [language, setLanguage] = useState("en");
-  const [status, setStatus] = useState("checking");
+  const [status, setStatus] = useState("ready");
   const [message, setMessage] = useState("");
 
   const t = copy[language] || copy.en;
@@ -56,12 +64,8 @@ export default function MobileInvitePage({ params }) {
     };
   }, []);
 
-  useEffect(() => {
-    acceptInvite();
-  }, []);
-
   async function acceptInvite() {
-    setStatus("checking");
+    setStatus("accepting");
     setMessage("");
 
     const {
@@ -73,8 +77,6 @@ export default function MobileInvitePage({ params }) {
       setMessage(t.signIn);
       return;
     }
-
-    const token = params?.token;
 
     if (!token) {
       setStatus("error");
@@ -110,17 +112,29 @@ export default function MobileInvitePage({ params }) {
         </div>
 
         <h2>
-          {status === "checking"
-            ? t.checking
-            : status === "success"
-              ? t.success
-              : message}
+          {status === "success"
+            ? t.success
+            : status === "signin" || status === "error"
+              ? message
+              : t.question}
         </h2>
 
         <div className="mobileConsentNotice">
           <ShieldCheck size={20} />
           <p>{t.privacy}</p>
         </div>
+
+        {status === "ready" && (
+          <button type="button" onClick={acceptInvite} className="mobileRecorderPrimary">
+            {t.accept}
+          </button>
+        )}
+
+        {status === "accepting" && (
+          <button type="button" disabled className="mobileRecorderPrimary">
+            {t.accepting}
+          </button>
+        )}
 
         {status === "success" && (
           <Link href="/mobile/feed" className="mobileRecorderPrimary">

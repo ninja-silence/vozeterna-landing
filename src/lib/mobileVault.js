@@ -10,59 +10,94 @@ export function getSafeFileName(name = "memory") {
   return String(name || "memory").replace(/[^a-zA-Z0-9.\-_]/g, "-");
 }
 
-export async function ensureDefaultNetworkAndVault(supabase, user) {
+function networkLabels(networkType = "family") {
+  if (networkType === "friend") {
+    return {
+      networkName: "My Friend Network",
+      networkDescription: "Private friend network created from the mobile app.",
+      vaultTitle: "Friend Memories",
+      vaultDescription: "Private mobile friend vault.",
+      relationship: "Friends",
+    };
+  }
+
+  return {
+    networkName: "My Family Network",
+    networkDescription: "Private family network created from the mobile app.",
+    vaultTitle: "Family Memories",
+    vaultDescription: "Private mobile family vault.",
+    relationship: "Family",
+  };
+}
+
+export async function ensureNetworkAndVaultByType(supabase, user, networkType = "family") {
   if (!user?.id) {
     throw new Error("Please sign in first.");
   }
 
-  const existingMembership = await supabase
+  const desiredType = networkType === "friend" ? "friend" : "family";
+  const labels = networkLabels(desiredType);
+
+  const membershipsResult = await supabase
     .from("network_members")
     .select("network_id")
     .eq("user_id", user.id)
-    .not("accepted_at", "is", null)
-    .limit(1)
-    .maybeSingle();
+    .not("accepted_at", "is", null);
 
-  if (existingMembership.data?.network_id) {
-    const networkId = existingMembership.data.network_id;
+  const membershipIds = (membershipsResult.data || []).map((item) => item.network_id);
 
-    const existingVault = await supabase
-      .from("vaults")
-      .select("id")
-      .eq("network_id", networkId)
-      .order("created_at", { ascending: true })
+  if (membershipIds.length > 0) {
+    const existingNetwork = await supabase
+      .from("networks")
+      .select("id, type")
+      .in("id", membershipIds)
+      .eq("type", desiredType)
       .limit(1)
       .maybeSingle();
 
-    if (existingVault.data?.id) {
+    if (existingNetwork.data?.id) {
+      const networkId = existingNetwork.data.id;
+
+      const existingVault = await supabase
+        .from("vaults")
+        .select("id")
+        .eq("network_id", networkId)
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (existingVault.data?.id) {
+        return {
+          networkId,
+          vaultId: existingVault.data.id,
+          networkType: desiredType,
+        };
+      }
+
+      const vaultId = crypto.randomUUID();
+
+      const vaultResult = await supabase.from("vaults").insert({
+        id: vaultId,
+        network_id: networkId,
+        created_by: user.id,
+        title: labels.vaultTitle,
+        subject_name: labels.vaultTitle,
+        relationship_label: labels.relationship,
+        description: labels.vaultDescription,
+        visibility: "private",
+        is_loved_one_vault: true,
+      });
+
+      if (vaultResult.error) {
+        throw new Error(vaultResult.error.message);
+      }
+
       return {
         networkId,
-        vaultId: existingVault.data.id,
+        vaultId,
+        networkType: desiredType,
       };
     }
-
-    const vaultId = crypto.randomUUID();
-
-    const vaultResult = await supabase.from("vaults").insert({
-      id: vaultId,
-      network_id: networkId,
-      created_by: user.id,
-      title: "Family Memories",
-      subject_name: "Family Memories",
-      relationship_label: "Family",
-      description: "Private mobile family vault.",
-      visibility: "private",
-      is_loved_one_vault: true,
-    });
-
-    if (vaultResult.error) {
-      throw new Error(vaultResult.error.message);
-    }
-
-    return {
-      networkId,
-      vaultId,
-    };
   }
 
   const networkId = crypto.randomUUID();
@@ -71,9 +106,9 @@ export async function ensureDefaultNetworkAndVault(supabase, user) {
   const networkResult = await supabase.from("networks").insert({
     id: networkId,
     created_by: user.id,
-    name: "My Family Network",
-    type: "family",
-    description: "Private family network created from the mobile app.",
+    name: labels.networkName,
+    type: desiredType,
+    description: labels.networkDescription,
   });
 
   if (networkResult.error) {
@@ -96,10 +131,10 @@ export async function ensureDefaultNetworkAndVault(supabase, user) {
     id: vaultId,
     network_id: networkId,
     created_by: user.id,
-    title: "Family Memories",
-    subject_name: "Family Memories",
-    relationship_label: "Family",
-    description: "Private mobile family vault.",
+    title: labels.vaultTitle,
+    subject_name: labels.vaultTitle,
+    relationship_label: labels.relationship,
+    description: labels.vaultDescription,
     visibility: "private",
     is_loved_one_vault: true,
   });
@@ -111,7 +146,12 @@ export async function ensureDefaultNetworkAndVault(supabase, user) {
   return {
     networkId,
     vaultId,
+    networkType: desiredType,
   };
+}
+
+export async function ensureDefaultNetworkAndVault(supabase, user) {
+  return ensureNetworkAndVaultByType(supabase, user, "family");
 }
 
 export async function createMobileVault({
@@ -120,16 +160,17 @@ export async function createMobileVault({
   subjectName,
   relationshipLabel,
   description,
+  networkType = "family",
 }) {
   if (!user?.id) {
     throw new Error("Please sign in first.");
   }
 
-  const { networkId } = await ensureDefaultNetworkAndVault(supabase, user);
+  const { networkId } = await ensureNetworkAndVaultByType(supabase, user, networkType);
   const vaultId = crypto.randomUUID();
 
   const cleanName = subjectName?.trim() || "Loved One";
-  const cleanRelationship = relationshipLabel?.trim() || "Family";
+  const cleanRelationship = relationshipLabel?.trim() || (networkType === "friend" ? "Friend" : "Family");
 
   const result = await supabase.from("vaults").insert({
     id: vaultId,
@@ -156,6 +197,7 @@ export async function createMobileVault({
     metadata: {
       source: "mobile",
       relationship_label: cleanRelationship,
+      network_type: networkType,
     },
   });
 
@@ -173,6 +215,7 @@ export async function saveMobileMemoryToV2({
   note,
   folder = "mobile-uploads",
   forcedType,
+  networkType = "family",
 }) {
   if (!user?.id) {
     throw new Error("Please sign in first.");
@@ -182,7 +225,7 @@ export async function saveMobileMemoryToV2({
     throw new Error("Choose or record a file first.");
   }
 
-  const { networkId, vaultId } = await ensureDefaultNetworkAndVault(supabase, user);
+  const { networkId, vaultId } = await ensureNetworkAndVaultByType(supabase, user, networkType);
 
   const fileName = getSafeFileName(file.name || `memory-${Date.now()}.webm`);
   const filePath = `${user.id}/${folder}/${Date.now()}-${fileName}`;
@@ -245,6 +288,7 @@ export async function saveMobileMemoryToV2({
       source: "mobile",
       media_path: filePath,
       media_mime_type: mimeType,
+      network_type: networkType,
     },
   });
 

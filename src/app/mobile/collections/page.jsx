@@ -2,53 +2,100 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { FolderHeart, Plus } from "lucide-react";
 import { supabase } from "../../../lib/supabaseClient";
+import { getInitialMobileLanguage } from "../../../components/mobile/mobileLanguage";
+
+const copy = {
+  en: {
+    label: "Albums",
+    title: "Memory albums",
+    subtitle: "Organize memories into private collections for your family or friends.",
+    loading: "Loading albums...",
+    emptyTitle: "No albums yet",
+    emptyText: "Albums help organize memories by person, event, blessing, or story.",
+    add: "Add memory first",
+  },
+  es: {
+    label: "Álbumes",
+    title: "Álbumes de recuerdos",
+    subtitle: "Organiza recuerdos en colecciones privadas para tu familia o amistades.",
+    loading: "Cargando álbumes...",
+    emptyTitle: "Todavía no hay álbumes",
+    emptyText: "Los álbumes ayudan a organizar recuerdos por persona, evento, bendición o historia.",
+    add: "Agregar recuerdo primero",
+  },
+};
 
 export default function MobileCollectionsPage() {
-  const [collections, setCollections] = useState([]);
+  const [language, setLanguage] = useState("en");
+  const [albums, setAlbums] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const t = copy[language] || copy.en;
+
   useEffect(() => {
-    async function loadCollections() {
+    setLanguage(getInitialMobileLanguage());
+
+    function handleLanguageChange(event) {
+      if (event.detail === "en" || event.detail === "es") {
+        setLanguage(event.detail);
+      }
+    }
+
+    window.addEventListener("vozeterna-language-change", handleLanguageChange);
+
+    return () => {
+      window.removeEventListener("vozeterna-language-change", handleLanguageChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    async function loadAlbums() {
+      setLoading(true);
+
       const { data } = await supabase
         .from("memory_collections")
-        .select("*, loved_ones(full_name), memory_collection_items(id)")
+        .select("id, title, description, created_at")
         .order("created_at", { ascending: false });
 
-      setCollections(data || []);
+      setAlbums(data || []);
       setLoading(false);
     }
 
-    loadCollections();
+    loadAlbums();
   }, []);
 
   return (
     <section className="mobileScreenStack">
       <div className="mobileScreenHero">
-        <p className="mobileCapsLabel">Collections</p>
-        <h1>Memory Albums</h1>
-        <p>Organize photos, voices, videos, and stories into curated family collections.</p>
-        <Link href="/mobile/collections/new" className="mobilePrimaryButton">Create album</Link>
+        <p className="mobileCapsLabel">{t.label}</p>
+        <h1>{t.title}</h1>
+        <p>{t.subtitle}</p>
       </div>
 
-      <div className="mobileCardList">
-        {loading && <p className="mobileEmptyText">Loading albums...</p>}
+      <section className="mobileCardList">
+        {loading && <p className="mobileEmptyText">{t.loading}</p>}
 
-        {!loading && collections.length === 0 && (
+        {!loading && albums.length === 0 && (
           <div className="mobileEmptyCard">
-            <h2>No albums yet</h2>
-            <p>Create your first album to organize family memories.</p>
+            <FolderHeart size={24} />
+            <h2>{t.emptyTitle}</h2>
+            <p>{t.emptyText}</p>
+            <Link href="/mobile/upload" className="mobileRecorderPrimary">
+              <Plus size={17} />
+              {t.add}
+            </Link>
           </div>
         )}
 
-        {collections.map((collection) => (
-          <Link href={`/mobile/collections/${collection.id}`} className="mobileListCard" key={collection.id}>
-            <strong>{collection.title}</strong>
-            <span>{collection.loved_ones?.full_name || "General family collection"}</span>
-            <p>{collection.memory_collection_items?.length || 0} memories</p>
-          </Link>
+        {albums.map((album) => (
+          <article className="mobileListCard" key={album.id}>
+            <strong>{album.title}</strong>
+            {album.description && <p>{album.description}</p>}
+          </article>
         ))}
-      </div>
+      </section>
     </section>
   );
 }

@@ -43,23 +43,20 @@ const copy = {
     promptLabel: "Memory Starter",
     promptTitle: "Today’s prompt",
     promptCta: "Record this memory",
-    storageTipGood: "Plenty of space available.",
-    storageTipMid: "Storage is growing. Consider uploading shorter clips.",
-    storageTipHigh: "Storage is almost full. Compress videos or remove duplicates.",
     featuresStart: "Start here",
     featuresConsent: "Consent & Agreements",
     featuresConsentText: "Manage family consents and permissions.",
     featuresProfiles: "Profiles",
     featuresProfilesTitle: "Loved One Profiles",
     featuresProfilesText: "Care pages for the people who matter.",
+    storageTipGood: "Plenty of space available.",
+    storageTipMid: "Storage is growing. Consider uploading shorter clips.",
+    storageTipHigh: "Storage is almost full. Compress videos or remove duplicates.",
     prompts: [
       "Tell a favorite childhood memory.",
       "Share a family recipe and who taught it to you.",
       "Describe a tradition you want your family to remember.",
       "Record a blessing for someone you love.",
-      "Tell the story behind an old photo.",
-      "Share advice you wish someone had given you earlier.",
-      "Describe the home, town, or place where your family started.",
     ],
   },
   es: {
@@ -96,23 +93,20 @@ const copy = {
     promptLabel: "Idea para recordar",
     promptTitle: "Pregunta de hoy",
     promptCta: "Grabar este recuerdo",
-    storageTipGood: "Todavía tienes buen espacio disponible.",
-    storageTipMid: "El almacenamiento está creciendo. Considera subir videos más cortos.",
-    storageTipHigh: "El almacenamiento casi está lleno. Comprime videos o elimina duplicados.",
     featuresStart: "Empieza aquí",
     featuresConsent: "Consentimiento",
     featuresConsentText: "Administra permisos y autorizaciones familiares.",
     featuresProfiles: "Perfiles",
     featuresProfilesTitle: "Perfiles de seres queridos",
     featuresProfilesText: "Páginas privadas para las personas importantes.",
+    storageTipGood: "Todavía tienes buen espacio disponible.",
+    storageTipMid: "El almacenamiento está creciendo. Considera subir videos más cortos.",
+    storageTipHigh: "El almacenamiento casi está lleno. Comprime videos o elimina duplicados.",
     prompts: [
       "Cuenta un recuerdo favorito de tu infancia.",
       "Comparte una receta familiar y quién te la enseñó.",
       "Describe una tradición que quieres que tu familia recuerde.",
       "Graba una bendición para alguien que amas.",
-      "Cuenta la historia detrás de una foto antigua.",
-      "Comparte un consejo que te hubiera gustado recibir antes.",
-      "Describe el hogar, pueblo o lugar donde empezó tu familia.",
     ],
   },
 };
@@ -189,27 +183,25 @@ export default function MobileDashboardPage() {
       const [
         profilesResult,
         memoriesResult,
-        publicResult,
         albumsResult,
         consentResult,
         storageResult,
       ] = await Promise.all([
-        supabase.from("loved_ones").select("id", { count: "exact", head: true }),
-        supabase.from("media_assets").select("id", { count: "exact", head: true }),
-        supabase.from("loved_ones").select("id", { count: "exact", head: true }).eq("memorial_public", true),
+        supabase.from("vaults").select("id", { count: "exact", head: true }),
+        supabase.from("memories").select("id", { count: "exact", head: true }),
         supabase.from("memory_collections").select("id", { count: "exact", head: true }),
         supabase.from("consent_records").select("id", { count: "exact", head: true }),
-        supabase.from("media_assets").select("file_size"),
+        supabase.from("memories").select("media_size_bytes"),
       ]);
 
       const storageBytes = (storageResult.data || []).reduce((total, item) => {
-        return total + (Number(item.file_size) || 0);
+        return total + (Number(item.media_size_bytes) || 0);
       }, 0);
 
       setStats({
         profiles: profilesResult.count || 0,
         memories: memoriesResult.count || 0,
-        publicPages: publicResult.count || 0,
+        publicPages: 0,
         albums: albumsResult.count || 0,
         consent: consentResult.count || 0,
         storageBytes,
@@ -227,10 +219,10 @@ export default function MobileDashboardPage() {
   }
 
   const statCards = [
-    { label: t.profiles, value: stats.profiles, title: t.lovedOnes, text: t.profilesText },
-    { label: t.memories, value: stats.memories, title: t.savedItems, text: t.memoriesText },
-    { label: t.albums, value: stats.albums, title: t.albumsTitle, text: t.albumsText },
-    { label: t.consent, value: stats.consent, title: t.consentTitle, text: t.consentText },
+    { href: "/mobile/profiles", label: t.profiles, value: stats.profiles, title: t.lovedOnes, text: t.profilesText },
+    { href: "/mobile/library", label: t.memories, value: stats.memories, title: t.savedItems, text: t.memoriesText },
+    { href: "/mobile/collections", label: t.albums, value: stats.albums, title: t.albumsTitle, text: t.albumsText },
+    { href: "/mobile/consent", label: t.consent, value: stats.consent, title: t.consentTitle, text: t.consentText },
   ];
 
   const checklist = [
@@ -261,12 +253,12 @@ export default function MobileDashboardPage() {
 
           <div className="mobileStatGrid">
             {statCards.map((card) => (
-              <article key={card.label}>
+              <Link href={card.href} className="mobileStatCardLink" key={card.label}>
                 <p>{card.label}</p>
                 <strong>{loadingStats ? "—" : card.value}</strong>
                 <h2>{card.title}</h2>
                 <span>{card.text}</span>
-              </article>
+              </Link>
             ))}
           </div>
         </div>
