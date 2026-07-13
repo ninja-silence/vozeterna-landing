@@ -15,6 +15,12 @@ export default function AuthModal({ onClose }) {
 
     const cleanEmail = email.trim().toLowerCase();
 
+    if (!cleanEmail) {
+      setStatusMsg("Ingresa tu correo.");
+      setLoading(false);
+      return;
+    }
+
     const origin =
       typeof window !== "undefined"
         ? window.location.origin
@@ -28,7 +34,7 @@ export default function AuthModal({ onClose }) {
     });
 
     if (error) {
-      setStatusMsg("No se pudo enviar el enlace. Inténtalo de nuevo.");
+      setStatusMsg(error.message || "No se pudo enviar el enlace. Inténtalo de nuevo.");
     } else {
       setStatusMsg("Enlace enviado. Revisa tu correo.");
     }

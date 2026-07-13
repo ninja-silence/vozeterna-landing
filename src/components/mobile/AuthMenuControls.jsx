@@ -106,12 +106,20 @@ export default function AuthMenuControls({ language = "en", onNavigate }) {
             </div>
           </div>
 
-          <button type="button" className="mobileMenuAuthSecondary" onClick={(event) => goTo(event, "/mobile/account")}>
+          <button
+            type="button"
+            className="mobileMenuAuthSecondary"
+            onClick={(event) => goTo(event, "/mobile/account")}
+          >
             <UserRound size={17} />
             {t.account}
           </button>
 
-          <button type="button" className="mobileMenuAuthSecondary" onClick={(event) => goTo(event, "/mobile/kyc")}>
+          <button
+            type="button"
+            className="mobileMenuAuthSecondary"
+            onClick={(event) => goTo(event, "/mobile/kyc")}
+          >
             <ShieldCheck size={17} />
             {t.kyc}
           </button>
