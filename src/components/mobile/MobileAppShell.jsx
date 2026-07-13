@@ -23,6 +23,7 @@ import {
   setStoredMobileLanguage,
 } from "./mobileLanguage";
 import { mobileRoutes } from "./mobileRoutes";
+import AuthMenuControls from "./AuthMenuControls";
 
 const copy = {
   en: {

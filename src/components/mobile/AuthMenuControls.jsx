@@ -54,7 +54,10 @@ export default function AuthMenuControls({ language = "en", onNavigate }) {
     };
   }, []);
 
-  async function handleLogout() {
+  async function handleLogout(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
     await supabase.auth.signOut();
     setSession(null);
 
@@ -65,11 +68,16 @@ export default function AuthMenuControls({ language = "en", onNavigate }) {
     window.location.href = "/mobile";
   }
 
-  function openAuthModal() {
+  function openAuthModal(event) {
+    event.preventDefault();
+    event.stopPropagation();
     setAuthOpen(true);
   }
 
-  function goTo(path) {
+  function goTo(event, path) {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (typeof onNavigate === "function") {
       onNavigate();
     }
@@ -77,9 +85,7 @@ export default function AuthMenuControls({ language = "en", onNavigate }) {
     window.location.href = path;
   }
 
-  if (loading) {
-    return null;
-  }
+  if (loading) return null;
 
   const email = session?.user?.email || "";
 
@@ -100,12 +106,12 @@ export default function AuthMenuControls({ language = "en", onNavigate }) {
             </div>
           </div>
 
-          <button type="button" className="mobileMenuAuthSecondary" onClick={() => goTo("/mobile/account")}>
+          <button type="button" className="mobileMenuAuthSecondary" onClick={(event) => goTo(event, "/mobile/account")}>
             <UserRound size={17} />
             {t.account}
           </button>
 
-          <button type="button" className="mobileMenuAuthSecondary" onClick={() => goTo("/mobile/kyc")}>
+          <button type="button" className="mobileMenuAuthSecondary" onClick={(event) => goTo(event, "/mobile/kyc")}>
             <ShieldCheck size={17} />
             {t.kyc}
           </button>
