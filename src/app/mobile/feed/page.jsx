@@ -51,17 +51,19 @@ export default function MobileFeedPage() {
   }, []);
 
   return (
-    <section className="mobileScreenStack">
+    <section className="mobileScreenStack mobileFeedScreen">
       <div className="mobileScreenHero">
         <p className="mobileCapsLabel">{t.label}</p>
         <h1>{t.title}</h1>
         <p>{t.subtitle}</p>
       </div>
 
-      <div className="mobileFeedSwitch">
+      <div className="mobileFeedTabs" role="tablist" aria-label="Feed type">
         <button
           type="button"
-          className={feedType === "family" ? "active" : ""}
+          role="tab"
+          aria-selected={feedType === "family"}
+          className={feedType === "family" ? "mobileFeedTabButton active" : "mobileFeedTabButton"}
           onClick={() => setFeedType("family")}
         >
           {t.family}
@@ -69,7 +71,9 @@ export default function MobileFeedPage() {
 
         <button
           type="button"
-          className={feedType === "friend" ? "active" : ""}
+          role="tab"
+          aria-selected={feedType === "friend"}
+          className={feedType === "friend" ? "mobileFeedTabButton active" : "mobileFeedTabButton"}
           onClick={() => setFeedType("friend")}
         >
           {t.friends}

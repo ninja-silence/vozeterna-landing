@@ -16,12 +16,6 @@ import MobileMemoryActions from "../mobile/MobileMemoryActions";
 
 const copy = {
   en: {
-    family: "Family Feed",
-    friend: "Friend Feed",
-    titleFamily: "Family activity",
-    titleFriend: "Friend activity",
-    subtitleFamily: "Private updates from your family network.",
-    subtitleFriend: "Private updates from your friend network.",
     loading: "Loading feed...",
     emptyFamily: "No family feed activity yet.",
     emptyFriend: "No friend feed activity yet.",
@@ -54,30 +48,24 @@ const copy = {
     },
   },
   es: {
-    family: "Feed familiar",
-    friend: "Feed de amigos",
-    titleFamily: "Actividad familiar",
-    titleFriend: "Actividad de amigos",
-    subtitleFamily: "Actualizaciones privadas de tu red familiar.",
-    subtitleFriend: "Actualizaciones privadas de tu red de amigos.",
     loading: "Cargando feed...",
-    emptyFamily: "Todavía no hay actividad familiar.",
-    emptyFriend: "Todavía no hay actividad de amigos.",
+    emptyFamily: "Todavia no hay actividad en el feed familiar.",
+    emptyFriend: "Todavia no hay actividad en el feed de amigos.",
     recordFirst: "Grabar primer recuerdo",
     comments: "Comentarios",
-    noDescription: "Sin descripción todavía.",
+    noDescription: "Sin descripcion todavia.",
     justNow: "Ahora mismo",
     agoMinute: "min",
     agoHour: "h",
     agoDay: "d",
     labels: {
-      reflection_added: "Nueva reflexión",
+      reflection_added: "Nueva reflexion",
       voice_added: "Recuerdo de voz",
       video_added: "Recuerdo en video",
       photo_added: "Recuerdo con foto",
-      profile_added: "Actualización de perfil",
-      memory_added: "Actualización de recuerdo",
-      default: "Actualización de red",
+      profile_added: "Actualizacion de perfil",
+      memory_added: "Actualizacion de recuerdo",
+      default: "Actualizacion de red",
     },
     actions: {
       view: "Ver",
@@ -87,7 +75,7 @@ const copy = {
       share: "Compartir",
       copied: "Copiado",
       comments: "Comentarios",
-      confirmDelete: "¿Eliminar este recuerdo? Esto no se puede deshacer.",
+      confirmDelete: "Eliminar este recuerdo? Esto no se puede deshacer.",
       deleteFailed: "No se pudo eliminar el recuerdo.",
     },
   },
@@ -141,6 +129,15 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
 
   const t = copy[language] || copy.en;
   const resolvedType = feedType === "friend" ? "friend" : "family";
+  const filteredActivities = activities.filter((activity) => {
+    const relationshipType = activity.relationship_type;
+
+    if (resolvedType === "friend") {
+      return relationshipType === "friend";
+    }
+
+    return relationshipType === "family" || !relationshipType;
+  });
 
   useEffect(() => {
     setLanguage(getInitialMobileLanguage());
@@ -176,7 +173,11 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
       return;
     }
 
-    const networkIds = (networks || []).map((network) => network.id);
+    const networkRows = networks || [];
+    const networkTypeById = new Map(
+      networkRows.map((network) => [network.id, network.type === "friend" ? "friend" : "family"])
+    );
+    const networkIds = networkRows.map((network) => network.id);
 
     if (networkIds.length === 0) {
       setActivities([]);
@@ -228,7 +229,13 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
       return;
     }
 
-    const rows = data || [];
+    const rows = (data || []).map((activity) => ({
+      ...activity,
+      relationship_type:
+        activity.relationship_type ||
+        activity.memories?.relationship_type ||
+        networkTypeById.get(activity.network_id),
+    }));
     const urls = {};
 
     await Promise.all(
@@ -257,35 +264,29 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
 
   return (
     <section className="familyFeedPanel">
-      <div className="familyFeedHeader">
-        <p>{resolvedType === "family" ? t.family : t.friend}</p>
-        <h2>{resolvedType === "family" ? t.titleFamily : t.titleFriend}</h2>
-        <span>{resolvedType === "family" ? t.subtitleFamily : t.subtitleFriend}</span>
-      </div>
-
       {loading ? (
-        <div className="familyFeedEmpty">
+        <div className="mobileFeedEmptyState">
           <p>{t.loading}</p>
         </div>
       ) : feedError ? (
-        <div className="familyFeedEmpty">
+        <div className="mobileFeedEmptyState">
           <strong>Feed error</strong>
           <p>{feedError}</p>
           <button type="button" onClick={loadActivity} className="familyFeedRetry">
             Retry
           </button>
         </div>
-      ) : activities.length === 0 ? (
-        <div className="familyFeedEmpty familyFeedFirstMemory">
-          <span className="familyFeedEmptyIcon">
-            <Mic2 size={22} strokeWidth={2.35} />
-          </span>
+      ) : filteredActivities.length === 0 ? (
+        <div className="mobileFeedEmptyState familyFeedFirstMemory">
           <strong>{resolvedType === "family" ? t.emptyFamily : t.emptyFriend}</strong>
-          <Link href="/mobile/record">{t.recordFirst}</Link>
+          <Link href="/mobile/record" className="mobileFeedEmptyAction">
+            <Mic2 size={22} strokeWidth={2.35} />
+            <span>{t.recordFirst}</span>
+          </Link>
         </div>
       ) : (
         <div className="familyFeedList">
-          {activities.map((activity) => {
+          {filteredActivities.map((activity) => {
             const memory = activity.memories;
             const Icon = getActivityIcon(activity.activity_type);
             const activityTitle =
