@@ -302,6 +302,8 @@ export async function saveMobileMemoryToV2({
     media_path: filePath,
     media_mime_type: mimeType,
     media_size_bytes: file.size || 0,
+    feed_visibility: "network",
+    show_on_public_page: false,
     is_family_visible: true,
     is_public_approved: false,
     requires_admin_approval: false,
@@ -325,6 +327,8 @@ export async function saveMobileMemoryToV2({
             ? "voice_added"
             : "memory_added",
     title: cleanTitle,
+    feed_visibility: "network",
+    is_commentable: true,
     metadata: {
       source: "mobile",
       media_path: filePath,

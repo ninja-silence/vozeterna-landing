@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Image as ImageIcon,
+  ImageOff,
   MessageCircle,
   Mic2,
   UploadCloud,
@@ -94,6 +95,26 @@ function getActivityLabel(type, t) {
   return t.labels[type] || t.labels.default;
 }
 
+function getMemoryMediaKind(memory = {}) {
+  const type = memory.type || "";
+  const mimeType = memory.media_mime_type || "";
+  const mediaPath = String(memory.media_path || "").toLowerCase();
+
+  if (type === "photo" || mimeType.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp|avif)$/.test(mediaPath)) {
+    return "photo";
+  }
+
+  if (type === "video" || mimeType.startsWith("video/") || /\.(mp4|mov|webm|m4v)$/.test(mediaPath)) {
+    return "video";
+  }
+
+  if (type === "audio" || mimeType.startsWith("audio/") || /\.(mp3|wav|webm|m4a|aac|ogg)$/.test(mediaPath)) {
+    return "audio";
+  }
+
+  return "file";
+}
+
 function formatActivityDate(dateString, t, language) {
   if (!dateString) return "";
 
@@ -124,6 +145,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
   const [language, setLanguage] = useState("en");
   const [activities, setActivities] = useState([]);
   const [signedUrls, setSignedUrls] = useState({});
+  const [failedMediaIds, setFailedMediaIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [feedError, setFeedError] = useState("");
 
@@ -159,16 +181,55 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
   async function loadActivity() {
     setLoading(true);
     setFeedError("");
+    setFailedMediaIds([]);
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user?.id) {
+      setActivities([]);
+      setSignedUrls({});
+      setLoading(false);
+      return;
+    }
+
+    const { data: memberships, error: membershipError } = await supabase
+      .from("network_members")
+      .select("network_id")
+      .eq("user_id", user.id);
+
+    if (membershipError) {
+      setFeedError(membershipError.message);
+      setActivities([]);
+      setSignedUrls({});
+      setLoading(false);
+      return;
+    }
+
+    const membershipNetworkIds = [
+      ...new Set((memberships || []).map((membership) => membership.network_id).filter(Boolean)),
+    ];
+
+    if (membershipNetworkIds.length === 0) {
+      setActivities([]);
+      setSignedUrls({});
+      setLoading(false);
+      return;
+    }
 
     const { data: networks, error: networkError } = await supabase
       .from("networks")
       .select("id, type, name")
+      .in("id", membershipNetworkIds)
       .eq("type", resolvedType)
       .eq("is_archived", false);
 
     if (networkError) {
       setFeedError(networkError.message);
       setActivities([]);
+      setSignedUrls({});
       setLoading(false);
       return;
     }
@@ -243,11 +304,11 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
         const path = activity.memories?.media_path;
         if (!path) return;
 
-        const { data: signed } = await supabase.storage
+        const { data: signed, error: signedError } = await supabase.storage
           .from("family-media")
           .createSignedUrl(path, 3600);
 
-        if (signed?.signedUrl) {
+        if (!signedError && signed?.signedUrl) {
           urls[activity.id] = signed.signedUrl;
         }
       })
@@ -260,6 +321,10 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
 
   function removeDeleted(memoryId) {
     setActivities((current) => current.filter((activity) => activity.memory_id !== memoryId));
+  }
+
+  function markMediaFailed(activityId) {
+    setFailedMediaIds((current) => (current.includes(activityId) ? current : [...current, activityId]));
   }
 
   return (
@@ -295,7 +360,10 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
               getActivityLabel(activity.activity_type, t);
             const description = memory?.body || t.noDescription;
             const url = signedUrls[activity.id];
-            const memoryType = memory?.type;
+            const mediaKind = getMemoryMediaKind(memory);
+            const hasMedia = Boolean(memory?.media_path);
+            const mediaFailed = failedMediaIds.includes(activity.id);
+            const showMediaFallback = hasMedia && (!url || mediaFailed || mediaKind === "file");
 
             return (
               <article className="familyFeedMemoryCard" key={activity.id}>
@@ -321,16 +389,39 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
                   )}
                 </div>
 
-                {memoryType === "photo" && url && (
-                  <img className="familyFeedMediaPreview" src={url} alt={activityTitle} />
+                {mediaKind === "photo" && url && !mediaFailed && (
+                  <img
+                    className="familyFeedMediaPreview"
+                    src={url}
+                    alt={activityTitle}
+                    onError={() => markMediaFailed(activity.id)}
+                  />
                 )}
 
-                {memoryType === "video" && url && (
-                  <video className="familyFeedMediaPreview" src={url} controls playsInline />
+                {mediaKind === "video" && url && !mediaFailed && (
+                  <video
+                    className="familyFeedMediaPreview"
+                    src={url}
+                    controls
+                    playsInline
+                    onError={() => markMediaFailed(activity.id)}
+                  />
                 )}
 
-                {memoryType === "audio" && url && (
-                  <audio className="familyFeedAudioPreview" src={url} controls />
+                {mediaKind === "audio" && url && !mediaFailed && (
+                  <audio
+                    className="familyFeedAudioPreview"
+                    src={url}
+                    controls
+                    onError={() => markMediaFailed(activity.id)}
+                  />
+                )}
+
+                {showMediaFallback && (
+                  <div className="familyFeedMediaFallback">
+                    <ImageOff size={20} />
+                    <strong>Media unavailable</strong>
+                  </div>
                 )}
 
                 <p className="familyFeedDescription">{description}</p>

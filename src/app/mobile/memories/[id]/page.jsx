@@ -25,6 +25,26 @@ function MediaFallback() {
   );
 }
 
+function getMemoryMediaKind(memory = {}) {
+  const type = memory.type || "";
+  const mimeType = memory.media_mime_type || "";
+  const mediaPath = String(memory.media_path || "").toLowerCase();
+
+  if (type === "photo" || mimeType.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp|avif)$/.test(mediaPath)) {
+    return "photo";
+  }
+
+  if (type === "video" || mimeType.startsWith("video/") || /\.(mp4|mov|webm|m4v)$/.test(mediaPath)) {
+    return "video";
+  }
+
+  if (type === "audio" || mimeType.startsWith("audio/") || /\.(mp3|wav|webm|m4a|aac|ogg)$/.test(mediaPath)) {
+    return "audio";
+  }
+
+  return "document";
+}
+
 export default function MobileMemoryViewPage() {
   const params = useParams();
   const router = useRouter();
@@ -57,7 +77,7 @@ export default function MobileMemoryViewPage() {
       const { data, error } = await supabase
         .from("memories")
         .select(
-          "id, title, body, type, media_path, feed_visibility, show_on_public_page, vault_id, network_id, narration_audio_path, created_at"
+          "id, title, body, type, media_path, media_mime_type, feed_visibility, show_on_public_page, vault_id, network_id, narration_audio_path, created_at"
         )
         .eq("id", id)
         .maybeSingle();
@@ -169,7 +189,7 @@ export default function MobileMemoryViewPage() {
     );
   }
 
-  const type = memory.type || "document";
+  const mediaKind = getMemoryMediaKind(memory);
 
   return (
     <section className="mobileScreenStack">
@@ -184,7 +204,7 @@ export default function MobileMemoryViewPage() {
       </div>
 
       <section className="mobileMemoryDetailCard">
-        {type === "photo" && mediaUrl && !mediaFailed && (
+        {mediaKind === "photo" && mediaUrl && !mediaFailed && (
           <img
             src={mediaUrl}
             alt={memory.title || "Memory"}
@@ -193,7 +213,7 @@ export default function MobileMemoryViewPage() {
           />
         )}
 
-        {type === "video" && mediaUrl && !mediaFailed && (
+        {mediaKind === "video" && mediaUrl && !mediaFailed && (
           <video
             src={mediaUrl}
             controls
@@ -203,7 +223,7 @@ export default function MobileMemoryViewPage() {
           />
         )}
 
-        {type === "audio" && mediaUrl && !mediaFailed && (
+        {mediaKind === "audio" && mediaUrl && !mediaFailed && (
           <audio
             src={mediaUrl}
             controls
