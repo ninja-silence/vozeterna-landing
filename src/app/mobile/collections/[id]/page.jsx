@@ -15,7 +15,6 @@ const copy = {
     notFoundText: "This album may not exist or you may not have access to it.",
     back: "Back to albums",
     edit: "Edit album",
-    addMemories: "Add memories",
     uploadMemory: "Upload memory",
     linkedTo: "Linked to",
     general: "General family album",
@@ -29,28 +28,29 @@ const copy = {
     removeConfirm: "Remove this memory from the album? The original memory will stay in your library.",
     removed: "Memory removed from album.",
     saved: "Saved",
+    noDescription: "Private memory album",
   },
   es: {
-    label: "Ãlbum",
-    loading: "Cargando Ã¡lbum...",
-    notFound: "Ãlbum no encontrado",
-    notFoundText: "Este Ã¡lbum puede no existir o quizÃ¡ no tienes acceso.",
-    back: "Volver a Ã¡lbumes",
-    edit: "Editar Ã¡lbum",
-    addMemories: "Agregar recuerdos",
+    label: "Álbum",
+    loading: "Cargando álbum...",
+    notFound: "Álbum no encontrado",
+    notFoundText: "Este álbum puede no existir o quizá no tienes acceso.",
+    back: "Volver a álbumes",
+    edit: "Editar álbum",
     uploadMemory: "Subir recuerdo",
     linkedTo: "Conectado con",
-    general: "Ãlbum familiar general",
+    general: "Álbum familiar general",
     private: "Privado",
-    public: "PÃºblico",
+    public: "Público",
     memories: "Recuerdos",
-    emptyTitle: "TodavÃ­a no hay recuerdos en este Ã¡lbum",
-    emptyText: "Agrega fotos, grabaciones de voz, videos, historias o recuerdos especiales para comenzar este Ã¡lbum.",
+    emptyTitle: "Todavía no hay recuerdos en este álbum",
+    emptyText: "Agrega fotos, grabaciones de voz, videos, historias o recuerdos especiales para comenzar este álbum.",
     openMemory: "Abrir recuerdo",
     removeMemory: "Quitar",
-    removeConfirm: "Â¿Quitar este recuerdo del Ã¡lbum? El recuerdo original permanecerÃ¡ en tu biblioteca.",
-    removed: "Recuerdo quitado del Ã¡lbum.",
+    removeConfirm: "¿Quitar este recuerdo del álbum? El recuerdo original permanecerá en tu biblioteca.",
+    removed: "Recuerdo quitado del álbum.",
     saved: "Guardado",
+    noDescription: "Álbum privado de recuerdos",
   },
 };
 
@@ -176,27 +176,27 @@ export default function MobileCollectionDetailPage() {
 
   if (loading) {
     return (
-      <section className="mobileScreenStack">
-        <div className="mobileScreenHero">
+      <section className="mobileScreenStack mobileAlbumsPolish">
+        <section className="mobileAlbumHeroCard">
           <p className="mobileCapsLabel">{t.label}</p>
           <h1>{t.loading}</h1>
-        </div>
+        </section>
       </section>
     );
   }
 
   if (!collection) {
     return (
-      <section className="mobileScreenStack">
-        <div className="mobileScreenHero">
+      <section className="mobileScreenStack mobileAlbumsPolish">
+        <section className="mobileAlbumHeroCard">
           <p className="mobileCapsLabel">{t.label}</p>
           <h1>{t.notFound}</h1>
-          <p>{t.notFoundText}</p>
+          <p className="mobileAlbumSubtitle">{t.notFoundText}</p>
 
-          <Link href="/mobile/collections" className="mobileRecorderPrimary">
+          <Link href="/mobile/collections" className="mobileAlbumPrimaryBtn">
             {t.back}
           </Link>
-        </div>
+        </section>
       </section>
     );
   }
@@ -204,83 +204,112 @@ export default function MobileCollectionDetailPage() {
   const lovedOneName = collection.loved_ones?.full_name || t.general;
 
   return (
-    <section className="mobileScreenStack">
-      <div className="mobileScreenHero">
-        <p className="mobileCapsLabel">{t.label}</p>
-        <h1>{collection.title}</h1>
-        <p>{collection.description || lovedOneName}</p>
+    <section className="mobileScreenStack mobileAlbumsPolish">
+      <section className="mobileAlbumHeroCard">
+        <div className="mobileAlbumHeroTop">
+          <p className="mobileCapsLabel">{t.label}</p>
 
-        <div className="mobileMetaRow">
-          <span>{t.linkedTo}: {lovedOneName}</span>
-          <span className={collection.is_public ? "mobileStatusPill public" : "mobileStatusPill"}>
+          <span className={collection.is_public ? "mobileAlbumBadge isPublic" : "mobileAlbumBadge isPrivate"}>
             {collection.is_public ? t.public : t.private}
           </span>
         </div>
 
-        <div className="mobileActionRow">
-          <Link href="/mobile/collections" className="mobileSecondaryButton">
-            {t.back}
-          </Link>
+        <div className="mobileAlbumStack">
+          <h1>{collection.title}</h1>
 
-          <Link href={`/mobile/collections/${collection.id}/edit`} className="mobileSecondaryButton">
+          <p className="mobileAlbumSubtitle">
+            {t.linkedTo} {lovedOneName}
+          </p>
+
+          <p className="mobileAlbumHelpText">
+            {collection.description || t.noDescription}
+          </p>
+        </div>
+
+        <div className="mobileAlbumActionRow">
+          <Link href={`/mobile/collections/${collection.id}/edit`} className="mobileAlbumSecondaryBtn">
             <Pencil size={16} />
             {t.edit}
           </Link>
 
-          <Link href={`/mobile/upload?collectionId=${collection.id}`} className="mobileRecorderPrimary">
+          <Link href={`/mobile/upload?collectionId=${collection.id}`} className="mobileAlbumPrimaryBtn">
             <Plus size={16} />
             {t.uploadMemory}
           </Link>
+
+          <Link href="/mobile/collections" className="mobileAlbumGhostBtn">
+            {t.back}
+          </Link>
         </div>
-      </div>
+      </section>
 
       {message && <p className="mobileFormMessage">{message}</p>}
 
-      <section className="mobileCardList">
-        <p className="mobileCapsLabel">{t.memories}</p>
+      <section className="mobileAlbumPanel">
+        <div className="mobileAlbumSectionTitle">
+          <h2>{t.memories}</h2>
+          <span className="mobileAlbumSectionHint">
+            {items.length} item{items.length === 1 ? "" : "s"}
+          </span>
+        </div>
 
         {items.length === 0 ? (
-          <div className="mobileEmptyCard">
-            <FolderHeart size={24} />
-            <h2>{t.emptyTitle}</h2>
+          <div className="mobileAlbumEmptyCard">
+            <FolderHeart size={26} className="mobileAlbumMemoryEmptyIcon" />
+            <h3>{t.emptyTitle}</h3>
             <p>{t.emptyText}</p>
-            <Link href={`/mobile/upload?collectionId=${collection.id}`} className="mobileRecorderPrimary">
+
+            <Link href={`/mobile/upload?collectionId=${collection.id}`} className="mobileAlbumPrimaryBtn">
               <Plus size={17} />
               {t.uploadMemory}
             </Link>
           </div>
         ) : (
-          items.map((item) => {
-            const memory = item.media_assets;
-            if (!memory) return null;
+          <div className="mobileAlbumMemoryList">
+            {items.map((item) => {
+              const memory = item.media_assets;
+              if (!memory) return null;
 
-            const kind = getFileKind(memory.file_name, memory.file_type);
-            const url = signedUrls[memory.id];
+              const kind = getFileKind(memory.file_name, memory.file_type);
+              const url = signedUrls[memory.id];
 
-            return (
-              <article className="mobileListCard" key={item.id}>
-                {kind === "image" && url && <img src={url} alt={memory.file_name || "Memory"} className="mobileMemoryPreviewImage" />}
-                {kind === "audio" && url && <audio controls src={url} />}
-                {kind === "video" && url && <video controls src={url} className="mobileMemoryPreviewVideo" />}
+              return (
+                <article className="mobileAlbumMemoryCard" key={item.id}>
+                  {kind === "image" && url && (
+                    <img src={url} alt={memory.file_name || "Memory"} className="mobileMemoryPreviewImage" />
+                  )}
 
-                <strong>{memory.memory_note || memory.title || memory.file_name || "Memory"}</strong>
+                  {kind === "audio" && url && <audio controls src={url} />}
 
-                <small>
-                  {t.saved}: {formatDate(memory.created_at)}
-                </small>
+                  {kind === "video" && url && (
+                    <video controls src={url} className="mobileMemoryPreviewVideo" />
+                  )}
 
-                <div className="mobileActionRow">
-                  <Link href={`/app/memories/${memory.id}`} className="mobileSecondaryButton">
-                    {t.openMemory}
-                  </Link>
+                  <h3 className="mobileAlbumMemoryCardTitle">
+                    {memory.memory_note || memory.title || memory.file_name || "Memory"}
+                  </h3>
 
-                  <button type="button" className="mobileSecondaryButton" onClick={() => removeMemoryFromCollection(item.id)}>
-                    {t.removeMemory}
-                  </button>
-                </div>
-              </article>
-            );
-          })
+                  <p className="mobileAlbumMemoryCardMeta">
+                    {t.saved}: {formatDate(memory.created_at)}
+                  </p>
+
+                  <div className="mobileAlbumActionRow compact">
+                    <Link href={`/mobile/memories/${memory.id}`} className="mobileAlbumSecondaryBtn">
+                      {t.openMemory}
+                    </Link>
+
+                    <button
+                      type="button"
+                      className="mobileAlbumGhostBtn"
+                      onClick={() => removeMemoryFromCollection(item.id)}
+                    >
+                      {t.removeMemory}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         )}
       </section>
     </section>

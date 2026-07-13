@@ -22,7 +22,6 @@ const copy = {
     publicHelp: "For now, this only labels the album. Keep family albums private unless you are sure.",
     save: "Save changes",
     saving: "Saving...",
-    cancel: "Cancel",
     back: "Back to album",
     saved: "Album updated.",
     deleteAlbum: "Delete album",
@@ -33,29 +32,28 @@ const copy = {
     missingTitle: "Add an album title.",
   },
   es: {
-    label: "Editar Ã¡lbum",
-    loading: "Cargando Ã¡lbum...",
-    title: "Editar detalles del Ã¡lbum",
-    subtitle: "Actualiza el tÃ­tulo, descripciÃ³n, conexiÃ³n con ser querido y etiqueta de privacidad.",
-    albumTitle: "TÃ­tulo del Ã¡lbum",
-    titlePlaceholder: "Ejemplo: Mensajes de voz de mamÃ¡",
-    description: "DescripciÃ³n",
-    descriptionPlaceholder: "Â¿QuÃ© tipo de recuerdos pertenecen en este Ã¡lbum?",
+    label: "Editar álbum",
+    loading: "Cargando álbum...",
+    title: "Editar detalles del álbum",
+    subtitle: "Actualiza el título, descripción, conexión con ser querido y etiqueta de privacidad.",
+    albumTitle: "Título del álbum",
+    titlePlaceholder: "Ejemplo: Mensajes de voz de mamá",
+    description: "Descripción",
+    descriptionPlaceholder: "¿Qué tipo de recuerdos pertenecen en este álbum?",
     lovedOne: "Ser querido",
-    general: "Ãlbum familiar general",
-    publicStatus: "Marcar como pÃºblico despuÃ©s",
-    publicHelp: "Por ahora, esto solo etiqueta el Ã¡lbum. MantÃ©n los Ã¡lbumes familiares privados salvo que estÃ©s seguro.",
+    general: "Álbum familiar general",
+    publicStatus: "Marcar como público después",
+    publicHelp: "Por ahora, esto solo etiqueta el álbum. Mantén los álbumes familiares privados salvo que estés seguro.",
     save: "Guardar cambios",
     saving: "Guardando...",
-    cancel: "Cancelar",
-    back: "Volver al Ã¡lbum",
-    saved: "Ãlbum actualizado.",
-    deleteAlbum: "Eliminar Ã¡lbum",
-    deleteConfirm: "Â¿Eliminar este Ã¡lbum? Los recuerdos permanecerÃ¡n en tu biblioteca, pero el Ã¡lbum serÃ¡ eliminado.",
-    deleted: "Ãlbum eliminado.",
-    error: "Algo saliÃ³ mal. IntÃ©ntalo de nuevo.",
-    notFound: "Ãlbum no encontrado",
-    missingTitle: "Agrega un tÃ­tulo para el Ã¡lbum.",
+    back: "Volver al álbum",
+    saved: "Álbum actualizado.",
+    deleteAlbum: "Eliminar álbum",
+    deleteConfirm: "¿Eliminar este álbum? Los recuerdos permanecerán en tu biblioteca, pero el álbum será eliminado.",
+    deleted: "Álbum eliminado.",
+    error: "Algo salió mal. Inténtalo de nuevo.",
+    notFound: "Álbum no encontrado",
+    missingTitle: "Agrega un título para el álbum.",
   },
 };
 
@@ -187,67 +185,70 @@ export default function MobileEditCollectionPage() {
 
   if (loading) {
     return (
-      <section className="mobileScreenStack">
-        <div className="mobileScreenHero">
+      <section className="mobileScreenStack mobileAlbumsPolish">
+        <section className="mobileAlbumHeroCard">
           <p className="mobileCapsLabel">{t.label}</p>
           <h1>{t.loading}</h1>
-        </div>
+        </section>
       </section>
     );
   }
 
   if (!found) {
     return (
-      <section className="mobileScreenStack">
-        <div className="mobileScreenHero">
+      <section className="mobileScreenStack mobileAlbumsPolish">
+        <section className="mobileAlbumHeroCard">
           <p className="mobileCapsLabel">{t.label}</p>
           <h1>{t.notFound}</h1>
 
-          <Link href="/mobile/collections" className="mobileRecorderPrimary">
-            {t.cancel}
+          <Link href="/mobile/collections" className="mobileAlbumPrimaryBtn">
+            {t.back}
           </Link>
-        </div>
+        </section>
       </section>
     );
   }
 
   return (
-    <section className="mobileScreenStack">
-      <div className="mobileScreenHero">
+    <section className="mobileScreenStack mobileAlbumsPolish">
+      <section className="mobileAlbumHeroCard">
         <p className="mobileCapsLabel">{t.label}</p>
         <h1>{t.title}</h1>
-        <p>{t.subtitle}</p>
-      </div>
+        <p className="mobileAlbumSubtitle">{t.subtitle}</p>
+      </section>
 
-      <section className="mobileFormCard">
+      <form onSubmit={handleSubmit} className="mobileAlbumFormCard">
         {message && <p className="mobileFormMessage">{message}</p>}
 
-        <form onSubmit={handleSubmit} className="mobileFormStack">
-          <label>
-            {t.albumTitle}
+        <div className="mobileAlbumStack">
+          <div className="mobileAlbumField">
+            <label>{t.albumTitle}</label>
             <input
               type="text"
               value={form.title}
               onChange={(event) => updateField("title", event.target.value)}
               placeholder={t.titlePlaceholder}
+              className="mobileAlbumInput"
             />
-          </label>
+          </div>
 
-          <label>
-            {t.description}
+          <div className="mobileAlbumField">
+            <label>{t.description}</label>
             <textarea
               value={form.description}
               onChange={(event) => updateField("description", event.target.value)}
               placeholder={t.descriptionPlaceholder}
-              rows={4}
+              rows={5}
+              className="mobileAlbumTextarea"
             />
-          </label>
+          </div>
 
-          <label>
-            {t.lovedOne}
+          <div className="mobileAlbumField">
+            <label>{t.lovedOne}</label>
             <select
               value={form.loved_one_id}
               onChange={(event) => updateField("loved_one_id", event.target.value)}
+              className="mobileAlbumSelect"
             >
               <option value="">{t.general}</option>
 
@@ -257,9 +258,9 @@ export default function MobileEditCollectionPage() {
                 </option>
               ))}
             </select>
-          </label>
+          </div>
 
-          <label className="mobileCheckboxRow">
+          <label className="mobileAlbumToggleRow">
             <input
               type="checkbox"
               checked={form.is_public}
@@ -272,19 +273,21 @@ export default function MobileEditCollectionPage() {
             </span>
           </label>
 
-          <button type="submit" className="mobileRecorderPrimary" disabled={saving}>
-            {saving ? t.saving : t.save}
-          </button>
+          <div className="mobileAlbumActionRow">
+            <button type="submit" className="mobileAlbumPrimaryBtn" disabled={saving}>
+              {saving ? t.saving : t.save}
+            </button>
 
-          <Link href={`/mobile/collections/${id}`} className="mobileSecondaryButton">
-            {t.back}
-          </Link>
+            <Link href={`/mobile/collections/${id}`} className="mobileAlbumGhostBtn">
+              {t.back}
+            </Link>
 
-          <button type="button" className="mobileDangerButton" onClick={deleteCollection} disabled={saving}>
-            {t.deleteAlbum}
-          </button>
-        </form>
-      </section>
+            <button type="button" className="mobileAlbumDangerBtn" onClick={deleteCollection} disabled={saving}>
+              {t.deleteAlbum}
+            </button>
+          </div>
+        </div>
+      </form>
     </section>
   );
 }

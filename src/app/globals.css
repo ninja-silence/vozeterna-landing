@@ -18085,3 +18085,331 @@ select.appInput {
 .mobileFormCard {
   overflow: visible;
 }
+/* ===== Mobile Albums Polish v1 ===== */
+
+.mobileAlbumsPolish {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-bottom: 120px;
+}
+
+.mobileAlbumHeroCard,
+.mobileAlbumPanel,
+.mobileAlbumFormCard,
+.mobileAlbumEmptyCard,
+.mobileAlbumMemoryCard,
+.mobileAlbumListCard {
+  background: linear-gradient(135deg, rgba(19, 44, 55, 0.96), rgba(8, 31, 42, 0.94));
+  border: 1px solid rgba(120, 210, 220, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.mobileAlbumHeroCard {
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.mobileAlbumHeroCard h1 {
+  margin: 0;
+}
+
+.mobileAlbumHeroTop,
+.mobileAlbumMetaRow,
+.mobileAlbumActionRow,
+.mobileAlbumListFooter,
+.mobileAlbumSectionTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mobileAlbumActionRow {
+  justify-content: flex-start;
+}
+
+.mobileAlbumActionRow.compact {
+  margin-top: 12px;
+}
+
+.mobileAlbumSubtitle {
+  color: rgba(230, 240, 245, 0.74);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  margin: 6px 0 0;
+}
+
+.mobileAlbumHelpText {
+  color: rgba(230, 240, 245, 0.66);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.mobileAlbumBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mobileAlbumBadge.isPrivate {
+  background: rgba(255, 210, 120, 0.14);
+  color: #ffd88a;
+}
+
+.mobileAlbumBadge.isPublic {
+  background: rgba(102, 232, 192, 0.14);
+  color: #7df0d1;
+}
+
+.mobileAlbumStack {
+  display: grid;
+  gap: 16px;
+}
+
+.mobileAlbumPanel,
+.mobileAlbumFormCard,
+.mobileAlbumEmptyCard,
+.mobileAlbumMemoryCard,
+.mobileAlbumListCard {
+  padding: 20px;
+}
+
+.mobileAlbumSectionTitle {
+  margin-bottom: 16px;
+}
+
+.mobileAlbumSectionTitle h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.mobileAlbumSectionHint {
+  color: rgba(230, 240, 245, 0.58);
+  font-size: 0.88rem;
+}
+
+.mobileAlbumListLink {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.mobileAlbumListCard {
+  display: grid;
+  gap: 10px;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.mobileAlbumListCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(120, 210, 220, 0.25);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.25);
+}
+
+.mobileAlbumListTitle {
+  margin: 0;
+  font-size: 1.24rem;
+  font-weight: 900;
+}
+
+.mobileAlbumListDesc {
+  margin: 0;
+  color: rgba(230, 240, 245, 0.68);
+  line-height: 1.5;
+}
+
+.mobileAlbumListFooter {
+  margin-top: 6px;
+  color: rgba(230, 240, 245, 0.72);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.mobileAlbumField {
+  display: grid;
+  gap: 8px;
+}
+
+.mobileAlbumField label {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: rgba(240, 246, 248, 0.96);
+}
+
+.mobileAlbumInput,
+.mobileAlbumTextarea,
+.mobileAlbumSelect {
+  width: 100%;
+  border-radius: 18px;
+  border: 1px solid rgba(120, 210, 220, 0.14);
+  background: rgba(6, 25, 35, 0.64);
+  color: #f3f8fa;
+  padding: 14px 16px;
+  font: inherit;
+  outline: none;
+}
+
+.mobileAlbumInput:focus,
+.mobileAlbumTextarea:focus,
+.mobileAlbumSelect:focus {
+  border-color: rgba(104, 228, 228, 0.45);
+  box-shadow: 0 0 0 3px rgba(104, 228, 228, 0.12);
+}
+
+.mobileAlbumTextarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.mobileAlbumToggleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(120, 210, 220, 0.09);
+}
+
+.mobileAlbumToggleRow input {
+  margin-top: 4px;
+}
+
+.mobileAlbumToggleRow span {
+  display: grid;
+  gap: 6px;
+}
+
+.mobileAlbumToggleRow small {
+  color: rgba(230, 240, 245, 0.62);
+  line-height: 1.45;
+}
+
+.mobileAlbumPrimaryBtn,
+.mobileAlbumSecondaryBtn,
+.mobileAlbumDangerBtn,
+.mobileAlbumGhostBtn {
+  min-height: 46px;
+  border-radius: 16px;
+  padding: 0 16px;
+  font-weight: 900;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.16s ease, opacity 0.16s ease, box-shadow 0.16s ease;
+}
+
+.mobileAlbumPrimaryBtn:hover,
+.mobileAlbumSecondaryBtn:hover,
+.mobileAlbumDangerBtn:hover,
+.mobileAlbumGhostBtn:hover {
+  transform: translateY(-1px);
+}
+
+.mobileAlbumPrimaryBtn {
+  background: linear-gradient(135deg, #63dbe7, #2ea7b8);
+  color: #06222a;
+  box-shadow: 0 12px 24px rgba(56, 191, 210, 0.18);
+}
+
+.mobileAlbumSecondaryBtn {
+  background: rgba(255, 255, 255, 0.07);
+  color: #eef7f8;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.mobileAlbumGhostBtn {
+  background: transparent;
+  color: rgba(236, 244, 247, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.mobileAlbumDangerBtn {
+  background: rgba(255, 86, 86, 0.14);
+  color: #ffaaaa;
+  border: 1px solid rgba(255, 120, 120, 0.22);
+}
+
+.mobileAlbumEmptyCard {
+  display: grid;
+  gap: 12px;
+}
+
+.mobileAlbumEmptyCard h2,
+.mobileAlbumEmptyCard h3,
+.mobileAlbumEmptyCard p {
+  margin: 0;
+}
+
+.mobileAlbumMemoryEmptyIcon {
+  opacity: 0.84;
+}
+
+.mobileAlbumMemoryList {
+  display: grid;
+  gap: 14px;
+}
+
+.mobileAlbumMemoryCard {
+  display: grid;
+  gap: 10px;
+}
+
+.mobileAlbumMemoryCardTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.mobileAlbumMemoryCardMeta {
+  margin: 0;
+  color: rgba(230, 240, 245, 0.68);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.mobileMemoryPreviewImage,
+.mobileMemoryPreviewVideo {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 720px) {
+  .mobileAlbumsPolish {
+    max-width: 100%;
+  }
+
+  .mobileAlbumHeroCard,
+  .mobileAlbumPanel,
+  .mobileAlbumFormCard,
+  .mobileAlbumEmptyCard,
+  .mobileAlbumMemoryCard,
+  .mobileAlbumListCard {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .mobileAlbumActionRow > * {
+    flex: 1 1 auto;
+  }
+}
