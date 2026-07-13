@@ -35,7 +35,7 @@ const copy = {
     description: "Descripcion",
     descriptionPlaceholder: "Que tipo de recuerdos pertenecen en este album?",
     lovedOne: "Ser querido",
-    general: "Ãlbum familiar general",
+    general: "Album familiar general",
     publicStatus: "Marcar como publico despues",
     publicHelp: "Por ahora, esto solo etiqueta el album. Manten los albumes familiares privados salvo que estes seguro.",
     create: "Crear album",
@@ -45,7 +45,6 @@ const copy = {
     missingTitle: "Agrega un titulo para el album.",
   },
 };
-
 export default function MobileNewCollectionPage() {
   const router = useRouter();
 
@@ -132,7 +131,7 @@ export default function MobileNewCollectionPage() {
   }
 
   return (
-    <section className="mobileScreenStack">
+    <section className="mobileScreenStack mobileAlbumsPolish">
       <div className="mobileScreenHero">
         <p className="mobileCapsLabel">{t.label}</p>
         <h1>{t.title}</h1>

@@ -41,22 +41,21 @@ const copy = {
     description: "Descripcion",
     descriptionPlaceholder: "Que tipo de recuerdos pertenecen en este album?",
     lovedOne: "Ser querido",
-    general: "Ãlbum familiar general",
+    general: "Album familiar general",
     publicStatus: "Marcar como publico despues",
     publicHelp: "Por ahora, esto solo etiqueta el album. Manten los albumes familiares privados salvo que estes seguro.",
     save: "Guardar cambios",
     saving: "Guardando...",
     back: "Volver al album",
-    saved: "Ãlbum actualizado.",
+    saved: "Album actualizado.",
     deleteAlbum: "Eliminar album",
     deleteConfirm: "Eliminar este album? Los recuerdos permaneceran en tu biblioteca, pero el album sera eliminado.",
-    deleted: "Ãlbum eliminado.",
+    deleted: "Album eliminado.",
     error: "Algo salio mal. Intentalo de nuevo.",
-    notFound: "Ãlbum no encontrado",
+    notFound: "Album no encontrado",
     missingTitle: "Agrega un titulo para el album.",
   },
 };
-
 export default function MobileEditCollectionPage() {
   const params = useParams();
   const router = useRouter();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { CheckCircle2, FileUp, ImagePlus, UploadCloud } from "lucide-react";
 import { supabase } from "../../../lib/supabaseClient";
 import { getInitialMobileLanguage } from "../../../components/mobile/mobileLanguage";
@@ -25,25 +26,26 @@ const copy = {
     privateNote: "Files are private by default and saved inside the selected profile.",
   },
   es: {
-    label: "Subida mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€š³vil",
+    label: "Subida movil",
     title: "Sube un recuerdo",
-    subtitle: "Elige una foto, audio, video o documento desde tu telÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€š©fono sin salir de la app mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€š³vil.",
+    subtitle: "Elige una foto, audio, video o documento desde tu telefono sin salir de la app movil.",
     choose: "Elegir archivo",
     selected: "Archivo seleccionado",
     profile: "Conectar a perfil",
-    profileFallback: "BÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€š³veda familiar predeterminada",
+    profileFallback: "Boveda familiar predeterminada",
     note: "Nota del recuerdo",
     placeholder: "Escribe una nota corta sobre este recuerdo...",
     upload: "Subir recuerdo",
     uploading: "Subiendo...",
     saved: "Recuerdo subido.",
-    signIn: "Inicia sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€š³n antes de subir.",
+    signIn: "Inicia sesion antes de subir.",
     noFile: "Primero elige un archivo.",
     privateNote: "Los archivos son privados por defecto y se guardan dentro del perfil seleccionado.",
   },
 };
 
 export default function MobileUploadPage() {
+  const router = useRouter();
   const [language, setLanguage] = useState("en");
   const [file, setFile] = useState(null);
   const [note, setNote] = useState("");
@@ -58,15 +60,10 @@ export default function MobileUploadPage() {
 
   function cleanDisplayText(value = "") {
     return String(value || "")
-      .replaceAll("a", "a")
-      .replaceAll("e", "e")
-      .replaceAll("i", "i")
-      .replaceAll("o", "o")
-      .replaceAll("u", "u")
-      .replaceAll("n", "n")
-      .replaceAll("-", "-")
-      .replaceAll("", "")
-      .replaceAll("", "")
+      .replace(/[\u00c3\u00c2\ufffd]/g, "")
+      .replace(/[\u201c\u201d]/g, '"')
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/\u00b7/g, "-")
       .replace(/\s+/g, " ")
       .trim();
   }
@@ -133,7 +130,7 @@ export default function MobileUploadPage() {
         return;
       }
 
-      await saveMobileMemoryToV2({
+      const result = await saveMobileMemoryToV2({
         supabase,
         user,
         file,
@@ -143,12 +140,33 @@ export default function MobileUploadPage() {
         targetVaultId: selectedVaultId || undefined,
       });
 
+      if (selectedAlbumId && result?.memoryId) {
+        const { count } = await supabase
+          .from("memory_collection_items")
+          .select("id", { count: "exact", head: true })
+          .eq("collection_id", selectedAlbumId);
+
+        const { error: albumError } = await supabase.from("memory_collection_items").insert({
+          collection_id: selectedAlbumId,
+          memory_id: result.memoryId,
+          sort_order: count || 0,
+        });
+
+        if (albumError) {
+          throw new Error(albumError.message);
+        }
+      }
+
       setMessage(t.saved);
       setFile(null);
       setNote("");
 
       if (inputRef.current) {
         inputRef.current.value = "";
+      }
+
+      if (selectedAlbumId) {
+        router.push(`/mobile/collections/${selectedAlbumId}`);
       }
     } catch (error) {
       setMessage(error.message || "Upload failed.");
@@ -175,7 +193,7 @@ export default function MobileUploadPage() {
             <option value="">{t.profileFallback}</option>
             {vaults.map((vault) => (
               <option value={vault.id} key={vault.id}>
-                {(vault.subject_name || vault.title) + " ÃƒÆ’Ã†â€™Ãƒ¢Ã¢â€š¬Ã…ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€š- " + (vault.relationship_label || "Vault")}
+                {cleanDisplayText(`${vault.subject_name || vault.title || t.profileFallback} - ${vault.relationship_label || "Vault"}`)}
               </option>
             ))}
           </select>

@@ -55,14 +55,14 @@ const copy = {
   es: {
     themeDark: "Oscuro",
     themeLight: "Claro",
-    menu: "Menú",
+    menu: "Menu",
     close: "Cerrar",
-    back: "Atrás",
+    back: "Atras",
     dashboard: "Inicio",
     feed: "Red",
     profile: "Perfil",
     library: "Biblioteca",
-    collections: "Álbumes",
+    collections: "Albumes",
     record: "Grabar",
     upload: "Subir",
     consent: "Consentimiento",
@@ -70,13 +70,13 @@ const copy = {
     connect: "Conectar",
     website: "Sitio web",
     menuTitle: "VozEterna",
-    menuText: "Preserva recuerdos familiares en una bóveda privada.",
+    menuText: "Preserva recuerdos familiares en una boveda privada.",
     simpleView: "Vista simple",
     fullView: "Vista completa",
-    online: "En línea",
-    offline: "Sin conexión",
+    online: "En linea",
+    offline: "Sin conexion",
     onlineText: "Listo para guardar recuerdos",
-    offlineText: "Puedes crear borradores y sincronizar después",
+    offlineText: "Puedes crear borradores y sincronizar despues",
   },
 };
 
@@ -281,10 +281,10 @@ export default function MobileAppShell({ children }) {
                 );
               })}
             </nav>
-          <AuthMenuControls
-            language={language}
-            onNavigate={() => setMenuOpen(false)}
-          />
+            <AuthMenuControls
+              language={language}
+              onNavigate={() => setMenuOpen(false)}
+            />
           </aside>
         </div>
       )}

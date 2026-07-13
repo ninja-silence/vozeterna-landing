@@ -27,21 +27,20 @@ const copy = {
   es: {
     label: "Agregar recuerdos",
     loading: "Cargando recuerdos...",
-    notFound: "Ãƒlbum no encontrado",
+    notFound: "Album no encontrado",
     title: "Agregar de biblioteca",
-    subtitle: "Elige recuerdos existentes de tu biblioteca y agrÃƒ©galos a este Ãƒlbum.",
-    back: "Volver al Ãƒlbum",
+    subtitle: "Elige recuerdos existentes de tu biblioteca y agregalos a este album.",
+    back: "Volver al album",
     addSelected: "Agregar seleccionados",
     adding: "Agregando...",
     emptyTitle: "No hay recuerdos disponibles",
-    emptyText: "No tienes recuerdos disponibles para agregar, o ya estÃƒn en este Ãƒlbum.",
+    emptyText: "No tienes recuerdos disponibles para agregar, o ya estan en este album.",
     selected: "seleccionados",
-    added: "Recuerdos agregados al Ãƒlbum.",
-    error: "Algo saliÃƒ³ mal. IntÃƒ©ntalo de nuevo.",
+    added: "Recuerdos agregados al album.",
+    error: "Algo salio mal. Intentalo de nuevo.",
     saved: "Guardado",
   },
 };
-
 export default function MobileAddMemoriesToCollectionPage() {
   const params = useParams();
   const router = useRouter();
@@ -246,8 +245,14 @@ export default function MobileAddMemoriesToCollectionPage() {
                     <img src={url} alt={memory.title || "Memory"} className="mobileMemoryPreviewImage" />
                   )}
 
-                  <span className="mobileAlbumSelectCheck">
-                    {selected ? "Ã¢Å“â€œ" : "+"}
+                  {(!url || !memory.media_mime_type?.startsWith("image/")) && (
+                    <div className="mobileAlbumFilePreview">
+                      <FolderHeart size={22} />
+                    </div>
+                  )}
+
+                  <span className={selected ? "mobileAlbumSelectCheck selected" : "mobileAlbumSelectCheck"}>
+                    {selected ? "\u2713" : ""}
                   </span>
 
                   <h3 className="mobileAlbumMemoryCardTitle">
