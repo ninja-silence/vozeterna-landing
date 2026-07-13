@@ -18784,3 +18784,88 @@ select.appInput {
 .mobileUploadCard button {
   gap: 8px;
 }
+
+/* ===== Mobile Album Completion Polish v1 ===== */
+
+.mobileAlbumSelectCheck {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #ffffff !important;
+  border: 2px solid rgba(255, 255, 255, 0.95) !important;
+  color: transparent !important;
+  font-weight: 950;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+.mobileAlbumSelectCheck.selected {
+  background: #ffffff !important;
+  color: #00b86b !important;
+  border-color: #ffffff !important;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.mobileLibraryMemorySelect {
+  position: relative;
+  padding-right: 62px !important;
+}
+
+.mobileLibraryMemorySelect.selected {
+  border-color: rgba(0, 184, 107, 0.85) !important;
+  box-shadow:
+    0 0 0 3px rgba(0, 184, 107, 0.16),
+    0 18px 42px rgba(0, 0, 0, 0.25) !important;
+}
+
+.mobileAlbumActionRow.compact {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+
+.mobileAlbumActionRow.compact .mobileAlbumSecondaryBtn,
+.mobileAlbumActionRow.compact .mobileAlbumGhostBtn {
+  min-height: 42px !important;
+  padding: 0 14px !important;
+  font-size: 0.9rem !important;
+}
+
+.mobileAlbumFilePreview {
+  min-height: 160px;
+  border-radius: 20px;
+  border: 1px dashed rgba(255,255,255,0.18);
+  background:
+    radial-gradient(circle at center, rgba(98,219,231,0.07), transparent 60%),
+    rgba(255,255,255,0.035);
+  display: grid;
+  place-items: center;
+  color: rgba(235, 245, 248, 0.78);
+}
+
+.mobileAlbumMemoryCard:has(.mobileAlbumFilePreview) {
+  min-height: 220px;
+}
+
+.mobileAlbumMemoryCardTitle {
+  color: #ffffff !important;
+}
+
+.mobileAlbumMemoryCardMeta {
+  color: rgba(235, 245, 248, 0.64) !important;
+}
+
+.mobileUploadCard select,
+.mobileUploadCard select option {
+  font-family: inherit;
+}
+
+.mobileUploadCard select option {
+  background: #10313d !important;
+  color: #ffffff !important;
+}

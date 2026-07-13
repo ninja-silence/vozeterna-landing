@@ -25,19 +25,19 @@ const copy = {
     privateNote: "Files are private by default and saved inside the selected profile.",
   },
   es: {
-    label: "Subida mÃƒÂ³vil",
+    label: "Subida mÃƒÆ’Ã‚Â³vil",
     title: "Sube un recuerdo",
-    subtitle: "Elige una foto, audio, video o documento desde tu telÃƒÂ©fono sin salir de la app mÃƒÂ³vil.",
+    subtitle: "Elige una foto, audio, video o documento desde tu telÃƒÆ’Ã‚Â©fono sin salir de la app mÃƒÆ’Ã‚Â³vil.",
     choose: "Elegir archivo",
     selected: "Archivo seleccionado",
     profile: "Conectar a perfil",
-    profileFallback: "BÃƒÂ³veda familiar predeterminada",
+    profileFallback: "BÃƒÆ’Ã‚Â³veda familiar predeterminada",
     note: "Nota del recuerdo",
     placeholder: "Escribe una nota corta sobre este recuerdo...",
     upload: "Subir recuerdo",
     uploading: "Subiendo...",
     saved: "Recuerdo subido.",
-    signIn: "Inicia sesiÃƒÂ³n antes de subir.",
+    signIn: "Inicia sesiÃƒÆ’Ã‚Â³n antes de subir.",
     noFile: "Primero elige un archivo.",
     privateNote: "Los archivos son privados por defecto y se guardan dentro del perfil seleccionado.",
   },
@@ -160,7 +160,7 @@ export default function MobileUploadPage() {
             <option value="">{t.profileFallback}</option>
             {vaults.map((vault) => (
               <option value={vault.id} key={vault.id}>
-                {(vault.subject_name || vault.title) + " Ã‚Â· " + (vault.relationship_label || "Vault")}
+                {(vault.subject_name || vault.title) + " Ãƒâ€šÃ‚Â· " + (vault.relationship_label || "Vault")}
               </option>
             ))}
           </select>

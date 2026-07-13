@@ -27,17 +27,17 @@ const copy = {
   es: {
     label: "Agregar recuerdos",
     loading: "Cargando recuerdos...",
-    notFound: "Álbum no encontrado",
+    notFound: "Ãlbum no encontrado",
     title: "Agregar de biblioteca",
-    subtitle: "Elige recuerdos existentes de tu biblioteca y agrégalos a este álbum.",
-    back: "Volver al álbum",
+    subtitle: "Elige recuerdos existentes de tu biblioteca y agrÃ©galos a este Ã¡lbum.",
+    back: "Volver al Ã¡lbum",
     addSelected: "Agregar seleccionados",
     adding: "Agregando...",
     emptyTitle: "No hay recuerdos disponibles",
-    emptyText: "No tienes recuerdos disponibles para agregar, o ya están en este álbum.",
+    emptyText: "No tienes recuerdos disponibles para agregar, o ya estÃ¡n en este Ã¡lbum.",
     selected: "seleccionados",
-    added: "Recuerdos agregados al álbum.",
-    error: "Algo salió mal. Inténtalo de nuevo.",
+    added: "Recuerdos agregados al Ã¡lbum.",
+    error: "Algo saliÃ³ mal. IntÃ©ntalo de nuevo.",
     saved: "Guardado",
   },
 };
@@ -247,7 +247,7 @@ export default function MobileAddMemoriesToCollectionPage() {
                   )}
 
                   <span className="mobileAlbumSelectCheck">
-                    {selected ? "✓" : "+"}
+                    {selected ? "âœ“" : "+"}
                   </span>
 
                   <h3 className="mobileAlbumMemoryCardTitle">

@@ -25,6 +25,7 @@ const copy = {
     emptyTitle: "No memories in this album yet",
     emptyText: "Upload a new memory or add one that already exists in your library.",
     openMemory: "Open memory",
+    editMemory: "Edit memory",
     removeMemory: "Remove",
     removeConfirm: "Remove this memory from the album? The original memory will stay in your library.",
     removed: "Memory removed from album.",
@@ -32,27 +33,28 @@ const copy = {
     noDescription: "Private memory album",
   },
   es: {
-    label: "Álbum",
-    loading: "Cargando álbum...",
-    notFound: "Álbum no encontrado",
-    notFoundText: "Este álbum puede no existir o quizá no tienes acceso.",
-    back: "Volver a álbumes",
-    edit: "Editar álbum",
+    label: "Ãlbum",
+    loading: "Cargando Ã¡lbum...",
+    notFound: "Ãlbum no encontrado",
+    notFoundText: "Este Ã¡lbum puede no existir o quizÃ¡ no tienes acceso.",
+    back: "Volver a Ã¡lbumes",
+    edit: "Editar Ã¡lbum",
     uploadMemory: "Subir recuerdo",
     addFromLibrary: "Agregar de biblioteca",
     linkedTo: "Conectado con",
-    general: "Álbum familiar general",
+    general: "Ãlbum familiar general",
     private: "Privado",
-    public: "Público",
+    public: "PÃºblico",
     memories: "Recuerdos",
-    emptyTitle: "Todavía no hay recuerdos en este álbum",
+    emptyTitle: "TodavÃ­a no hay recuerdos en este Ã¡lbum",
     emptyText: "Sube un recuerdo nuevo o agrega uno que ya existe en tu biblioteca.",
     openMemory: "Abrir recuerdo",
+    editMemory: "Editar recuerdo",
     removeMemory: "Quitar",
-    removeConfirm: "¿Quitar este recuerdo del álbum? El recuerdo original permanecerá en tu biblioteca.",
-    removed: "Recuerdo quitado del álbum.",
+    removeConfirm: "Â¿Quitar este recuerdo del Ã¡lbum? El recuerdo original permanecerÃ¡ en tu biblioteca.",
+    removed: "Recuerdo quitado del Ã¡lbum.",
     saved: "Guardado",
-    noDescription: "Álbum privado de recuerdos",
+    noDescription: "Ãlbum privado de recuerdos",
   },
 };
 
@@ -361,7 +363,7 @@ export default function MobileCollectionDetailPage() {
                     <video controls src={url} className="mobileMemoryPreviewVideo" />
                   )}
 
-                  {kind === "file" && (
+                  {(!url || kind === "file") && (
                     <div className="mobileAlbumFilePreview">
                       <FolderHeart size={22} />
                     </div>
@@ -378,6 +380,10 @@ export default function MobileCollectionDetailPage() {
                   <div className="mobileAlbumActionRow compact">
                     <Link href={`/mobile/memories/${memory.id}`} className="mobileAlbumSecondaryBtn">
                       {t.openMemory}
+                    </Link>
+
+                    <Link href={`/mobile/memories/${memory.id}/edit`} className="mobileAlbumSecondaryBtn">
+                      {t.editMemory}
                     </Link>
 
                     <button
