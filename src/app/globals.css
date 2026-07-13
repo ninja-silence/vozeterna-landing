@@ -17296,3 +17296,57 @@ select.appInput {
 .publicVaultCard p {
   color: rgba(255,243,223,0.72);
 }
+/* Mobile Supabase debug page */
+.mobileDebugRow,
+.mobileDebugAuth,
+.mobileDebugCard {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--mobile-bg-soft);
+  border: 1px solid var(--mobile-faint);
+}
+
+.mobileDebugRow {
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+.mobileDebugRow strong,
+.mobileDebugAuth strong,
+.mobileDebugCard strong {
+  color: var(--mobile-text);
+}
+
+.mobileDebugRow span,
+.mobileDebugAuth span,
+.mobileDebugAuth small,
+.mobileDebugCard span {
+  color: var(--mobile-muted);
+  font-size: 0.78rem;
+}
+
+.mobileDebugRow.ok,
+.mobileDebugAuth.ok,
+.mobileDebugCard.ok {
+  border-color: rgba(65, 190, 130, 0.35);
+}
+
+.mobileDebugRow.bad,
+.mobileDebugAuth.bad,
+.mobileDebugCard.bad {
+  border-color: rgba(255, 120, 120, 0.35);
+}
+
+.mobileDebugCard pre {
+  max-height: 280px;
+  overflow: auto;
+  padding: 10px;
+  border-radius: 12px;
+  color: #fff3df;
+  background: rgba(0, 0, 0, 0.22);
+  font-size: 0.68rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
