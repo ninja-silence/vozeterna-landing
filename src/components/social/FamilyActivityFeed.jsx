@@ -12,6 +12,7 @@ import {
   Video,
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
+import { normalizeStoragePath, warnInvalidStoragePath } from "../../lib/storagePaths";
 import { getInitialMobileLanguage } from "../mobile/mobileLanguage";
 import MobileMemoryActions from "../mobile/MobileMemoryActions";
 
@@ -96,9 +97,10 @@ function getActivityLabel(type, t) {
 }
 
 function getMemoryMediaKind(memory = {}) {
-  const type = memory.type || "";
-  const mimeType = memory.media_mime_type || "";
-  const mediaPath = String(memory.media_path || "").toLowerCase();
+  const safeMemory = memory || {};
+  const type = safeMemory.type || "";
+  const mimeType = safeMemory.media_mime_type || "";
+  const mediaPath = String(safeMemory.media_path || "").toLowerCase();
 
   if (type === "photo" || mimeType.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp|avif)$/.test(mediaPath)) {
     return "photo";
@@ -152,7 +154,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
   const t = copy[language] || copy.en;
   const resolvedType = feedType === "friend" ? "friend" : "family";
   const filteredActivities = activities.filter((activity) => {
-    const relationshipType = activity.relationship_type;
+    const relationshipType = activity?.relationship_type;
 
     if (resolvedType === "friend") {
       return relationshipType === "friend";
@@ -236,9 +238,11 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
 
     const networkRows = networks || [];
     const networkTypeById = new Map(
-      networkRows.map((network) => [network.id, network.type === "friend" ? "friend" : "family"])
+      networkRows
+        .filter((network) => network?.id)
+        .map((network) => [network.id, network?.type === "friend" ? "friend" : "family"])
     );
-    const networkIds = networkRows.map((network) => network.id);
+    const networkIds = networkRows.map((network) => network?.id).filter(Boolean);
 
     if (networkIds.length === 0) {
       setActivities([]);
@@ -301,8 +305,12 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
 
     await Promise.all(
       rows.map(async (activity) => {
-        const path = activity.memories?.media_path;
-        if (!path) return;
+        const rawPath = activity?.memories?.media_path;
+        const path = normalizeStoragePath(rawPath);
+        if (!path) {
+          if (rawPath) warnInvalidStoragePath("family feed media", rawPath);
+          return;
+        }
 
         const { data: signed, error: signedError } = await supabase.storage
           .from("family-media")
@@ -310,6 +318,8 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
 
         if (!signedError && signed?.signedUrl) {
           urls[activity.id] = signed.signedUrl;
+        } else {
+          warnInvalidStoragePath("family feed media", rawPath);
         }
       })
     );
@@ -353,11 +363,11 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
         <div className="familyFeedList">
           {filteredActivities.map((activity) => {
             const memory = activity.memories;
-            const Icon = getActivityIcon(activity.activity_type);
+            const Icon = getActivityIcon(activity?.activity_type);
             const activityTitle =
               memory?.title ||
-              activity.title ||
-              getActivityLabel(activity.activity_type, t);
+              activity?.title ||
+              getActivityLabel(activity?.activity_type, t);
             const description = memory?.body || t.noDescription;
             const url = signedUrls[activity.id];
             const mediaKind = getMemoryMediaKind(memory);

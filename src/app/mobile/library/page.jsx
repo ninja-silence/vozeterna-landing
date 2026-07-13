@@ -11,6 +11,7 @@ import {
   Video,
 } from "lucide-react";
 import { supabase } from "../../../lib/supabaseClient";
+import { normalizeStoragePath, warnInvalidStoragePath } from "../../../lib/storagePaths";
 import { getInitialMobileLanguage } from "../../../components/mobile/mobileLanguage";
 import MobileMemoryActions from "../../../components/mobile/MobileMemoryActions";
 
@@ -117,14 +118,20 @@ export default function MobileLibraryPage() {
 
     await Promise.all(
       rows.map(async (memory) => {
-        if (!memory.media_path) return;
+        const mediaPath = normalizeStoragePath(memory.media_path);
+        if (!mediaPath) {
+          if (memory.media_path) warnInvalidStoragePath("mobile library media", memory.media_path);
+          return;
+        }
 
-        const { data: signed } = await supabase.storage
+        const { data: signed, error: signedError } = await supabase.storage
           .from("family-media")
-          .createSignedUrl(memory.media_path, 3600);
+          .createSignedUrl(mediaPath, 3600);
 
-        if (signed?.signedUrl) {
+        if (!signedError && signed?.signedUrl) {
           urls[memory.id] = signed.signedUrl;
+        } else {
+          warnInvalidStoragePath("mobile library media", memory.media_path);
         }
       })
     );

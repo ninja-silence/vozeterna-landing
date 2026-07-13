@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { CheckCircle2, FolderHeart, Library } from "lucide-react";
 import { supabase } from "../../../../../lib/supabaseClient";
+import { normalizeStoragePath, warnInvalidStoragePath } from "../../../../../lib/storagePaths";
 import { getInitialMobileLanguage } from "../../../../../components/mobile/mobileLanguage";
 
 const copy = {
@@ -100,14 +101,20 @@ export default function MobileAddMemoriesToCollectionPage() {
       const urlMap = {};
 
       for (const memory of availableMemories) {
-        if (!memory.media_path) continue;
+        const mediaPath = normalizeStoragePath(memory.media_path);
+        if (!mediaPath) {
+          if (memory.media_path) warnInvalidStoragePath("mobile album add media", memory.media_path);
+          continue;
+        }
 
-        const { data: signedData } = await supabase.storage
+        const { data: signedData, error: signedError } = await supabase.storage
           .from("family-media")
-          .createSignedUrl(memory.media_path, 60 * 10);
+          .createSignedUrl(mediaPath, 60 * 10);
 
-        if (signedData?.signedUrl) {
+        if (!signedError && signedData?.signedUrl) {
           urlMap[memory.id] = signedData.signedUrl;
+        } else {
+          warnInvalidStoragePath("mobile album add media", memory.media_path);
         }
       }
 

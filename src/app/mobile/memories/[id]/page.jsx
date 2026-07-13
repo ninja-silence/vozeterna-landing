@@ -14,6 +14,7 @@ import {
   Volume2,
 } from "lucide-react";
 import { supabase } from "../../../../lib/supabaseClient";
+import { normalizeStoragePath, warnInvalidStoragePath } from "../../../../lib/storagePaths";
 
 function MediaFallback() {
   return (
@@ -26,9 +27,10 @@ function MediaFallback() {
 }
 
 function getMemoryMediaKind(memory = {}) {
-  const type = memory.type || "";
-  const mimeType = memory.media_mime_type || "";
-  const mediaPath = String(memory.media_path || "").toLowerCase();
+  const safeMemory = memory || {};
+  const type = safeMemory.type || "";
+  const mimeType = safeMemory.media_mime_type || "";
+  const mediaPath = String(safeMemory.media_path || "").toLowerCase();
 
   if (type === "photo" || mimeType.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp|avif)$/.test(mediaPath)) {
     return "photo";
@@ -97,24 +99,34 @@ export default function MobileMemoryViewPage() {
 
       setMemory(data);
 
-      if (data.media_path) {
+      const mediaPath = normalizeStoragePath(data.media_path);
+      if (mediaPath) {
         const { data: signed, error: signedError } = await supabase.storage
           .from("family-media")
-          .createSignedUrl(data.media_path, 3600);
+          .createSignedUrl(mediaPath, 3600);
 
         if (!signedError && signed?.signedUrl) {
           setMediaUrl(signed.signedUrl);
+        } else {
+          warnInvalidStoragePath("mobile memory media", data.media_path);
         }
+      } else if (data.media_path) {
+        warnInvalidStoragePath("mobile memory media", data.media_path);
       }
 
-      if (data.narration_audio_path) {
+      const narrationPath = normalizeStoragePath(data.narration_audio_path);
+      if (narrationPath) {
         const { data: signedNarration, error: narrationError } = await supabase.storage
           .from("family-media")
-          .createSignedUrl(data.narration_audio_path, 3600);
+          .createSignedUrl(narrationPath, 3600);
 
         if (!narrationError && signedNarration?.signedUrl) {
           setNarrationUrl(signedNarration.signedUrl);
+        } else {
+          warnInvalidStoragePath("mobile memory narration", data.narration_audio_path);
         }
+      } else if (data.narration_audio_path) {
+        warnInvalidStoragePath("mobile memory narration", data.narration_audio_path);
       }
 
       const { data: activityData } = await supabase
@@ -140,12 +152,14 @@ export default function MobileMemoryViewPage() {
     if (!confirmed) return;
 
     try {
-      if (memory.media_path) {
-        await supabase.storage.from("family-media").remove([memory.media_path]);
+      const mediaPath = normalizeStoragePath(memory.media_path);
+      if (mediaPath) {
+        await supabase.storage.from("family-media").remove([mediaPath]);
       }
 
-      if (memory.narration_audio_path) {
-        await supabase.storage.from("family-media").remove([memory.narration_audio_path]);
+      const narrationPath = normalizeStoragePath(memory.narration_audio_path);
+      if (narrationPath) {
+        await supabase.storage.from("family-media").remove([narrationPath]);
       }
 
       const { error } = await supabase.from("memories").delete().eq("id", memory.id);
@@ -192,7 +206,7 @@ export default function MobileMemoryViewPage() {
   const mediaKind = getMemoryMediaKind(memory);
 
   return (
-    <section className="mobileScreenStack">
+    <section className="mobileScreenStack mobileMemoryDetailScreen">
       <div className="mobileScreenHero">
         <p className="mobileCapsLabel">Memory</p>
         <h1>{memory.title || "Untitled memory"}</h1>

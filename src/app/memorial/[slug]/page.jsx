@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import AppLanguageToggle from "../../../components/app/AppLanguageToggle";
 import { supabase } from "../../../lib/supabaseClient";
 import { getStoredAppLanguage } from "../../../lib/appLanguage";
+import { getRelationshipLabel } from "../../../lib/relationshipLabels";
+import { normalizeStoragePath, warnInvalidStoragePath } from "../../../lib/storagePaths";
 
 const copy = {
   en: {
@@ -111,14 +113,19 @@ export default function PublicMemorialPage() {
 
       setPerson(profileData);
 
-      if (profileData.profile_photo_path) {
-        const { data: signedPhotoData } = await supabase.storage
+      const profilePhotoPath = normalizeStoragePath(profileData.profile_photo_path);
+      if (profilePhotoPath) {
+        const { data: signedPhotoData, error: signedPhotoError } = await supabase.storage
           .from("family-media")
-          .createSignedUrl(profileData.profile_photo_path, 60 * 10);
+          .createSignedUrl(profilePhotoPath, 60 * 10);
 
-        if (signedPhotoData?.signedUrl) {
+        if (!signedPhotoError && signedPhotoData?.signedUrl) {
           setProfilePhotoUrl(signedPhotoData.signedUrl);
+        } else {
+          warnInvalidStoragePath("public memorial profile photo", profileData.profile_photo_path);
         }
+      } else if (profileData.profile_photo_path) {
+        warnInvalidStoragePath("public memorial profile photo", profileData.profile_photo_path);
       }
 
       const { data: memoryData } = await supabase
@@ -134,12 +141,20 @@ export default function PublicMemorialPage() {
       const urlMap = {};
 
       for (const memory of publicMemories) {
-        const { data: signedData } = await supabase.storage
-          .from("family-media")
-          .createSignedUrl(memory.file_path, 60 * 10);
+        const filePath = normalizeStoragePath(memory.file_path);
+        if (!filePath) {
+          if (memory.file_path) warnInvalidStoragePath("public memorial memory", memory.file_path);
+          continue;
+        }
 
-        if (signedData?.signedUrl) {
+        const { data: signedData, error: signedError } = await supabase.storage
+          .from("family-media")
+          .createSignedUrl(filePath, 60 * 10);
+
+        if (!signedError && signedData?.signedUrl) {
           urlMap[memory.id] = signedData.signedUrl;
+        } else {
+          warnInvalidStoragePath("public memorial memory", memory.file_path);
         }
       }
 
@@ -179,7 +194,7 @@ export default function PublicMemorialPage() {
 
   function getFileKind(fileName, fileType) {
     const type = fileType || "";
-    const lower = fileName.toLowerCase();
+    const lower = String(fileName || "").toLowerCase();
 
     if (type.startsWith("image/") || lower.match(/\.(jpg|jpeg|png|webp)$/)) return "image";
     if (type.startsWith("audio/") || lower.match(/\.(mp3|wav|webm|mpeg)$/)) return "audio";

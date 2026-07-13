@@ -13,6 +13,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
+import { normalizeStoragePath } from "../../lib/storagePaths";
 
 const defaultLabels = {
   view: "View",
@@ -137,12 +138,14 @@ export default function MobileMemoryActions({
     }
 
     try {
-      if (memory.media_path) {
-        await supabase.storage.from("family-media").remove([memory.media_path]);
+      const mediaPath = normalizeStoragePath(memory.media_path);
+      if (mediaPath) {
+        await supabase.storage.from("family-media").remove([mediaPath]);
       }
 
-      if (memory.narration_audio_path) {
-        await supabase.storage.from("family-media").remove([memory.narration_audio_path]);
+      const narrationPath = normalizeStoragePath(memory.narration_audio_path);
+      if (narrationPath) {
+        await supabase.storage.from("family-media").remove([narrationPath]);
       }
 
       const { error } = await supabase.from("memories").delete().eq("id", memory.id);

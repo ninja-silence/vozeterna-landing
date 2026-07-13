@@ -18,6 +18,7 @@ import {
   Video,
 } from "lucide-react";
 import { supabase } from "../../../../lib/supabaseClient";
+import { normalizeStoragePath, warnInvalidStoragePath } from "../../../../lib/storagePaths";
 import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
 import ShareMemoryButton from "../../../../components/social/ShareMemoryButton";
 import MobileMemoryActions from "../../../../components/mobile/MobileMemoryActions";
@@ -204,12 +205,19 @@ export default function MobileProfileDetailPage() {
 
     let nextCoverUrl = "";
 
-    if (vaultData.cover_image_path) {
-      const { data: signedCover } = await supabase.storage
+    const coverPath = normalizeStoragePath(vaultData.cover_image_path);
+    if (coverPath) {
+      const { data: signedCover, error: signedCoverError } = await supabase.storage
         .from("family-media")
-        .createSignedUrl(vaultData.cover_image_path, 3600);
+        .createSignedUrl(coverPath, 3600);
 
-      nextCoverUrl = signedCover?.signedUrl || "";
+      if (!signedCoverError && signedCover?.signedUrl) {
+        nextCoverUrl = signedCover.signedUrl;
+      } else {
+        warnInvalidStoragePath("mobile profile cover", vaultData.cover_image_path);
+      }
+    } else if (vaultData.cover_image_path) {
+      warnInvalidStoragePath("mobile profile cover", vaultData.cover_image_path);
     }
 
     const { data: memoryData } = await supabase
@@ -229,13 +237,21 @@ export default function MobileProfileDetailPage() {
 
     await Promise.all(
       rows.map(async (memory) => {
-        if (!memory.media_path) return;
+        const mediaPath = normalizeStoragePath(memory.media_path);
+        if (!mediaPath) {
+          if (memory.media_path) warnInvalidStoragePath("mobile profile memory", memory.media_path);
+          return;
+        }
 
-        const { data: signed } = await supabase.storage
+        const { data: signed, error: signedError } = await supabase.storage
           .from("family-media")
-          .createSignedUrl(memory.media_path, 3600);
+          .createSignedUrl(mediaPath, 3600);
 
-        if (signed?.signedUrl) urls[memory.id] = signed.signedUrl;
+        if (!signedError && signed?.signedUrl) {
+          urls[memory.id] = signed.signedUrl;
+        } else {
+          warnInvalidStoragePath("mobile profile memory", memory.media_path);
+        }
       })
     );
 
