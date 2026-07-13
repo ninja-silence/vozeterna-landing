@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { BookOpen, FolderHeart, Pencil, Plus } from "lucide-react";
+import { BookOpen, FolderHeart, Library, Pencil, Plus } from "lucide-react";
 import { supabase } from "../../../../lib/supabaseClient";
 import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
 
@@ -16,13 +16,14 @@ const copy = {
     back: "Back to albums",
     edit: "Edit album",
     uploadMemory: "Upload memory",
+    addFromLibrary: "Add from library",
     linkedTo: "Linked to",
     general: "General family album",
     private: "Private",
     public: "Public",
     memories: "Memories",
     emptyTitle: "No memories in this album yet",
-    emptyText: "Add photos, voice recordings, videos, stories, or keepsakes to start building this album.",
+    emptyText: "Upload a new memory or add one that already exists in your library.",
     openMemory: "Open memory",
     removeMemory: "Remove",
     removeConfirm: "Remove this memory from the album? The original memory will stay in your library.",
@@ -38,13 +39,14 @@ const copy = {
     back: "Volver a álbumes",
     edit: "Editar álbum",
     uploadMemory: "Subir recuerdo",
+    addFromLibrary: "Agregar de biblioteca",
     linkedTo: "Conectado con",
     general: "Álbum familiar general",
     private: "Privado",
     public: "Público",
     memories: "Recuerdos",
     emptyTitle: "Todavía no hay recuerdos en este álbum",
-    emptyText: "Agrega fotos, grabaciones de voz, videos, historias o recuerdos especiales para comenzar este álbum.",
+    emptyText: "Sube un recuerdo nuevo o agrega uno que ya existe en tu biblioteca.",
     openMemory: "Abrir recuerdo",
     removeMemory: "Quitar",
     removeConfirm: "¿Quitar este recuerdo del álbum? El recuerdo original permanecerá en tu biblioteca.",
@@ -135,7 +137,6 @@ export default function MobileCollectionDetailPage() {
           if (v2) {
             return {
               ...item,
-              source: "memories",
               memory: {
                 id: v2.id,
                 title: v2.title,
@@ -152,7 +153,6 @@ export default function MobileCollectionDetailPage() {
           if (legacy) {
             return {
               ...item,
-              source: "media_assets",
               memory: {
                 id: legacy.id,
                 title: legacy.memory_note || legacy.title || legacy.file_name,
@@ -237,7 +237,7 @@ export default function MobileCollectionDetailPage() {
   if (loading) {
     return (
       <section className="mobileScreenStack mobileAlbumsPolish">
-        <section className="mobileAlbumHeroCard mobileAlbumCoverCard">
+        <section className="mobileAlbumHeroCard">
           <p className="mobileCapsLabel">{t.label}</p>
           <h1>{t.loading}</h1>
         </section>
@@ -248,7 +248,7 @@ export default function MobileCollectionDetailPage() {
   if (!collection) {
     return (
       <section className="mobileScreenStack mobileAlbumsPolish">
-        <section className="mobileAlbumHeroCard mobileAlbumCoverCard">
+        <section className="mobileAlbumHeroCard">
           <p className="mobileCapsLabel">{t.label}</p>
           <h1>{t.notFound}</h1>
           <p className="mobileAlbumSubtitle">{t.notFoundText}</p>
@@ -265,9 +265,7 @@ export default function MobileCollectionDetailPage() {
 
   return (
     <section className="mobileScreenStack mobileAlbumsPolish">
-      <section className="mobileAlbumHeroCard mobileAlbumCoverCard">
-        <div className="mobileAlbumSpine" />
-
+      <section className="mobileAlbumHeroCard">
         <div className="mobileAlbumHeroTop">
           <p className="mobileCapsLabel">{t.label}</p>
 
@@ -303,6 +301,11 @@ export default function MobileCollectionDetailPage() {
             {t.uploadMemory}
           </Link>
 
+          <Link href={`/mobile/collections/${collection.id}/add`} className="mobileAlbumSecondaryBtn">
+            <Library size={16} />
+            {t.addFromLibrary}
+          </Link>
+
           <Link href="/mobile/collections" className="mobileAlbumGhostBtn">
             {t.back}
           </Link>
@@ -325,10 +328,17 @@ export default function MobileCollectionDetailPage() {
             <h3>{t.emptyTitle}</h3>
             <p>{t.emptyText}</p>
 
-            <Link href={`/mobile/upload?albumId=${collection.id}`} className="mobileAlbumPrimaryBtn">
-              <Plus size={17} />
-              {t.uploadMemory}
-            </Link>
+            <div className="mobileAlbumActionRow">
+              <Link href={`/mobile/upload?albumId=${collection.id}`} className="mobileAlbumPrimaryBtn">
+                <Plus size={17} />
+                {t.uploadMemory}
+              </Link>
+
+              <Link href={`/mobile/collections/${collection.id}/add`} className="mobileAlbumSecondaryBtn">
+                <Library size={17} />
+                {t.addFromLibrary}
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="mobileAlbumMemoryList">

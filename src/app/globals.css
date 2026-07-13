@@ -18730,3 +18730,57 @@ select.appInput {
     max-width: 100% !important;
   }
 }
+/* ===== Mobile Album Library Picker v1 ===== */
+
+.mobileLibraryMemorySelect {
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  position: relative;
+}
+
+.mobileLibraryMemorySelect.selected {
+  border-color: rgba(98, 219, 231, 0.65) !important;
+  box-shadow:
+    0 0 0 3px rgba(98, 219, 231, 0.12),
+    0 18px 42px rgba(0, 0, 0, 0.25) !important;
+}
+
+.mobileAlbumSelectCheck {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(98, 219, 231, 0.14);
+  border: 1px solid rgba(98, 219, 231, 0.32);
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.mobileFormCard select,
+.mobileUploadCard select {
+  color: #ffffff !important;
+}
+
+.mobileFormCard select option,
+.mobileUploadCard select option {
+  color: #ffffff;
+  background: #10313d;
+}
+
+.mobileUploadCard textarea {
+  color: #ffffff !important;
+}
+
+.mobileUploadCard textarea::placeholder {
+  color: rgba(255,255,255,0.52) !important;
+}
+
+.mobileUploadCard button {
+  gap: 8px;
+}
