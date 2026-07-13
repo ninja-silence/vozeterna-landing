@@ -18901,7 +18901,7 @@ select.appInput {
 }
 
 .mobileAlbumMemoryCard:has(.mobileMemoryPreviewImage)::before {
-  content: "Premium frame";
+  content: "Basic frame";
   position: absolute;
   top: 18px;
   left: 18px;
@@ -18939,3 +18939,226 @@ select.appInput {
    premium-frame: ornate/gold family portrait frame
    memorial-frame: elegant black/gold remembrance frame
 */
+
+
+/* ===== VozEterna Album Stabilization v4 ===== */
+
+.mobileAlbumsPolish {
+  width: min(720px, calc(100vw - 32px));
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-bottom: 150px !important;
+}
+
+.albumListHeroClean {
+  overflow: hidden !important;
+}
+
+.albumListHeroClean h1 {
+  max-width: 100% !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+.albumViewToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.albumViewToggle button {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: rgba(245,250,252,0.72);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.albumViewToggle button.active {
+  background: rgba(90, 216, 230, 0.18);
+  color: #ffffff;
+}
+
+.mobileAlbumBookShelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(164px, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.mobileAlbumBookLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.mobileAlbumBookCard {
+  position: relative;
+  min-height: 230px;
+  padding: 22px 18px 18px 28px;
+  border-radius: 22px 18px 18px 22px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.08) 0 4px, transparent 4px 100%),
+    radial-gradient(circle at 70% 10%, rgba(91,221,233,0.12), transparent 34%),
+    linear-gradient(135deg, rgba(16, 51, 64, 0.98), rgba(5, 28, 40, 0.98));
+  border: 1px solid rgba(120, 220, 235, 0.14);
+  box-shadow:
+    14px 20px 40px rgba(0,0,0,0.28),
+    inset 9px 0 16px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobileAlbumBookCard::before,
+.mobileAlbumBookCard::after {
+  display: none !important;
+  content: none !important;
+}
+
+.albumBookCoverWindow {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.09);
+  color: rgba(245,250,252,0.86);
+}
+
+.mobileAlbumBookCard .mobileAlbumMetaRow {
+  order: -1;
+}
+
+.mobileAlbumBookCard .mobileAlbumListTitle {
+  color: #ffffff !important;
+  font-size: 1.25rem !important;
+  line-height: 1.1 !important;
+  margin-top: auto !important;
+}
+
+.mobileAlbumBookCard .mobileAlbumListFooter {
+  margin-top: auto;
+}
+
+.mobileAlbumMemoryCard:has(.mobileMemoryPreviewImage)::before {
+  content: "Basic frame" !important;
+  background: rgba(70, 38, 14, 0.72) !important;
+  color: #ffe0a0 !important;
+}
+
+/* Light mode consistency */
+html:not([data-theme="dark"]) .mobileAlbumsPolish .mobileAlbumHeroCard,
+html:not([data-theme="dark"]) .mobileAlbumsPolish .mobileAlbumPanel,
+html:not([data-theme="dark"]) .mobileAlbumsPolish .mobileAlbumFormCard,
+html:not([data-theme="dark"]) .mobileAlbumsPolish .mobileAlbumEmptyCard,
+html:not([data-theme="dark"]) .mobileAlbumsPolish .mobileAlbumMemoryCard,
+html:not([data-theme="dark"]) .mobileAlbumsPolish .mobileAlbumListCard,
+html:not([data-theme="dark"]) .mobileAlbumsPolish .mobileAlbumBookCard,
+body:not(.dark) .mobileAlbumsPolish .mobileAlbumHeroCard,
+body:not(.dark) .mobileAlbumsPolish .mobileAlbumPanel,
+body:not(.dark) .mobileAlbumsPolish .mobileAlbumFormCard,
+body:not(.dark) .mobileAlbumsPolish .mobileAlbumEmptyCard,
+body:not(.dark) .mobileAlbumsPolish .mobileAlbumMemoryCard,
+body:not(.dark) .mobileAlbumsPolish .mobileAlbumListCard,
+body:not(.dark) .mobileAlbumsPolish .mobileAlbumBookCard {
+  background:
+    radial-gradient(circle at 16% 10%, rgba(255, 221, 166, 0.26), transparent 30%),
+    linear-gradient(135deg, rgba(255,255,255,0.96), rgba(244, 238, 226, 0.96)) !important;
+  border-color: rgba(22, 68, 82, 0.12) !important;
+  color: #123747 !important;
+  box-shadow: 0 22px 52px rgba(55, 44, 30, 0.12) !important;
+}
+
+html:not([data-theme="dark"]) .mobileAlbumsPolish h1,
+html:not([data-theme="dark"]) .mobileAlbumsPolish h2,
+html:not([data-theme="dark"]) .mobileAlbumsPolish h3,
+body:not(.dark) .mobileAlbumsPolish h1,
+body:not(.dark) .mobileAlbumsPolish h2,
+body:not(.dark) .mobileAlbumsPolish h3 {
+  color: #123747 !important;
+  text-shadow: none !important;
+}
+
+html:not([data-theme="dark"]) .mobileAlbumsPolish p,
+html:not([data-theme="dark"]) .mobileAlbumsPolish span,
+body:not(.dark) .mobileAlbumsPolish p,
+body:not(.dark) .mobileAlbumsPolish span {
+  color: rgba(18, 55, 71, 0.72);
+}
+
+html:not([data-theme="dark"]) .mobileAlbumsPolish .mobileCapsLabel,
+body:not(.dark) .mobileAlbumsPolish .mobileCapsLabel {
+  color: rgba(14, 92, 108, 0.9) !important;
+}
+
+html:not([data-theme="dark"]) .mobileAlbumsPolish .mobileAlbumPrimaryBtn,
+body:not(.dark) .mobileAlbumsPolish .mobileAlbumPrimaryBtn {
+  background: linear-gradient(135deg, #55d4e4, #23a8bc) !important;
+  color: #06242e !important;
+}
+
+html:not([data-theme="dark"]) .mobileAlbumsPolish .mobileAlbumSecondaryBtn,
+html:not([data-theme="dark"]) .mobileAlbumsPolish .mobileAlbumGhostBtn,
+body:not(.dark) .mobileAlbumsPolish .mobileAlbumSecondaryBtn,
+body:not(.dark) .mobileAlbumsPolish .mobileAlbumGhostBtn {
+  background: rgba(18, 55, 71, 0.06) !important;
+  color: #123747 !important;
+  border-color: rgba(18, 55, 71, 0.10) !important;
+}
+
+html:not([data-theme="dark"]) .albumViewToggle,
+body:not(.dark) .albumViewToggle {
+  background: rgba(18,55,71,0.06);
+  border-color: rgba(18,55,71,0.10);
+}
+
+html:not([data-theme="dark"]) .albumViewToggle button,
+body:not(.dark) .albumViewToggle button {
+  color: rgba(18,55,71,0.68);
+}
+
+html:not([data-theme="dark"]) .albumViewToggle button.active,
+body:not(.dark) .albumViewToggle button.active {
+  color: #123747;
+  background: rgba(85, 212, 228, 0.25);
+}
+
+@media (max-width: 720px) {
+  .mobileAlbumsPolish {
+    width: min(100%, calc(100vw - 24px));
+  }
+
+  .mobileAlbumBookShelf {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .mobileAlbumBookCard {
+    min-height: 210px;
+    padding: 18px 14px 16px 24px;
+  }
+
+  .albumViewToggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .albumViewToggle button {
+    flex: 1;
+    justify-content: center;
+  }
+}
