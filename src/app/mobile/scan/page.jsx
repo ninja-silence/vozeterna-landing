@@ -36,6 +36,15 @@ function resolveQrDestination(rawValue) {
       return { error: "This QR code does not look like a VozEterna QR code." };
     }
 
+    const allowedPath =
+      url.pathname.startsWith("/mobile/invite/") ||
+      url.pathname.startsWith("/memorial/") ||
+      url.pathname === "/mobile/feed";
+
+    if (!allowedPath) {
+      return { error: "This QR code does not look like a VozEterna QR code." };
+    }
+
     return {
       href: `${url.pathname}${url.search}${url.hash}`,
     };
@@ -44,6 +53,11 @@ function resolveQrDestination(rawValue) {
   }
 
   const cleanValue = value.replace(/^\/+|\/+$/g, "");
+
+  if (cleanValue.startsWith("mobile/feed")) {
+    const feedPath = cleanValue.startsWith("mobile/feed?") ? cleanValue : "mobile/feed";
+    return { href: `/${feedPath}` };
+  }
 
   if (cleanValue.startsWith("mobile/invite/")) {
     const token = cleanValue.replace("mobile/invite/", "");
@@ -185,7 +199,7 @@ export default function MobileScanPage() {
       <div className="mobileScreenHero mobileScanHero">
         <p className="mobileCapsLabel">QR Reader</p>
         <h1>Scan VozEterna QR</h1>
-        <p>Scan a family invite, friend invite, or public memory QR code.</p>
+        <p>Scan a family invite, friend invite, public memorial, or public feed QR code.</p>
       </div>
 
       <section className="mobileScanCard">
