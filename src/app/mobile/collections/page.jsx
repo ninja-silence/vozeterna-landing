@@ -14,7 +14,10 @@ const copy = {
     loading: "Loading albums...",
     emptyTitle: "No albums yet",
     emptyText: "Albums help organize memories by person, event, blessing, or story.",
-    add: "Add memory first",
+    add: "Create album",
+    open: "Open album",
+    private: "Private",
+    public: "Public",
   },
   es: {
     label: "Álbumes",
@@ -23,7 +26,10 @@ const copy = {
     loading: "Cargando álbumes...",
     emptyTitle: "Todavía no hay álbumes",
     emptyText: "Los álbumes ayudan a organizar recuerdos por persona, evento, bendición o historia.",
-    add: "Agregar recuerdo primero",
+    add: "Crear álbum",
+    open: "Abrir álbum",
+    private: "Privado",
+    public: "Público",
   },
 };
 
@@ -56,7 +62,7 @@ export default function MobileCollectionsPage() {
 
       const { data } = await supabase
         .from("memory_collections")
-        .select("id, title, description, created_at")
+        .select("id, title, description, is_public, created_at")
         .order("created_at", { ascending: false });
 
       setAlbums(data || []);
@@ -72,6 +78,11 @@ export default function MobileCollectionsPage() {
         <p className="mobileCapsLabel">{t.label}</p>
         <h1>{t.title}</h1>
         <p>{t.subtitle}</p>
+
+        <Link href="/mobile/collections/new" className="mobileRecorderPrimary">
+          <Plus size={17} />
+          {t.add}
+        </Link>
       </div>
 
       <section className="mobileCardList">
@@ -82,7 +93,7 @@ export default function MobileCollectionsPage() {
             <FolderHeart size={24} />
             <h2>{t.emptyTitle}</h2>
             <p>{t.emptyText}</p>
-            <Link href="/mobile/upload" className="mobileRecorderPrimary">
+            <Link href="/mobile/collections/new" className="mobileRecorderPrimary">
               <Plus size={17} />
               {t.add}
             </Link>
@@ -90,10 +101,16 @@ export default function MobileCollectionsPage() {
         )}
 
         {albums.map((album) => (
-          <article className="mobileListCard" key={album.id}>
+          <Link className="mobileListCard mobileAlbumLinkCard" key={album.id} href={`/mobile/collections/${album.id}`}>
+            <span className={album.is_public ? "mobileStatusPill public" : "mobileStatusPill"}>
+              {album.is_public ? t.public : t.private}
+            </span>
+
             <strong>{album.title}</strong>
             {album.description && <p>{album.description}</p>}
-          </article>
+
+            <span className="mobileInlineAction">{t.open}</span>
+          </Link>
         ))}
       </section>
     </section>
