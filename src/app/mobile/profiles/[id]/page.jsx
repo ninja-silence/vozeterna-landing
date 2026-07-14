@@ -51,6 +51,7 @@ const copy = {
     updatePhoto: "Update photo",
     savingPhoto: "Saving photo...",
     photoSaved: "Vault photo updated.",
+    photoOwnerOnly: "Only the vault owner can update this photo.",
     publicPage: "Public page",
     enablePublic: "Enable public page",
     disablePublic: "Disable public page",
@@ -110,6 +111,7 @@ const copy = {
     updatePhoto: "Actualizar foto",
     savingPhoto: "Guardando foto...",
     photoSaved: "Foto de la boveda actualizada.",
+    photoOwnerOnly: "Solo el dueno de la boveda puede actualizar esta foto.",
     publicPage: "Página pública",
     enablePublic: "Activar página pública",
     disablePublic: "Desactivar página pública",
@@ -171,6 +173,7 @@ export default function MobileProfileDetailPage() {
   const [photoMessage, setPhotoMessage] = useState("");
   const [actionMessage, setActionMessage] = useState("");
   const [currentUserId, setCurrentUserId] = useState("");
+  const [canUpdatePhoto, setCanUpdatePhoto] = useState(false);
 
   const t = copy[language] || copy.en;
 
@@ -189,6 +192,36 @@ export default function MobileProfileDetailPage() {
     if (vaultId) loadProfile(vaultId);
   }, [vaultId]);
 
+  async function canManageVaultPhoto(vaultData, user) {
+    if (!vaultData?.id || !user?.id) return false;
+
+    if (vaultData.created_by === user.id) return true;
+
+    if (vaultData.network_id) {
+      const { data: member } = await supabase
+        .from("network_members")
+        .select("role")
+        .eq("network_id", vaultData.network_id)
+        .eq("user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+
+      const role = String(member?.role || "").toLowerCase();
+      if (role === "owner" || role === "admin") return true;
+    }
+
+    const { data: vaultMember } = await supabase
+      .from("vault_memberships")
+      .select("role")
+      .eq("vault_id", vaultData.id)
+      .eq("user_id", user.id)
+      .limit(1)
+      .maybeSingle();
+
+    const vaultRole = String(vaultMember?.role || "").toLowerCase();
+    return vaultRole === "owner" || vaultRole === "admin";
+  }
+
   async function loadProfile(id) {
     setLoading(true);
     const {
@@ -198,16 +231,19 @@ export default function MobileProfileDetailPage() {
 
     const { data: vaultData, error: vaultError } = await supabase
       .from("vaults")
-      .select("id, network_id, title, subject_name, relationship_label, description, cover_image_path, public_enabled, public_slug, public_title, public_description, created_at")
+      .select("id, network_id, created_by, title, subject_name, relationship_label, description, cover_image_path, public_enabled, public_slug, public_title, public_description, created_at")
       .eq("id", id)
       .maybeSingle();
 
     if (vaultError || !vaultData) {
       setVault(null);
       setMemories([]);
+      setCanUpdatePhoto(false);
       setLoading(false);
       return;
     }
+
+    const nextCanUpdatePhoto = await canManageVaultPhoto(vaultData, user);
 
     let nextCoverUrl = "";
 
@@ -220,6 +256,7 @@ export default function MobileProfileDetailPage() {
       if (!signedCoverError && signedCover?.signedUrl) {
         nextCoverUrl = signedCover.signedUrl;
       } else {
+        console.warn("[VozEterna] Could not sign mobile vault cover image:", signedCoverError?.message || vaultData.cover_image_path);
         warnInvalidStoragePath("mobile profile cover", vaultData.cover_image_path);
       }
     } else if (vaultData.cover_image_path) {
@@ -276,6 +313,7 @@ export default function MobileProfileDetailPage() {
     }
 
     setVault(vaultData);
+    setCanUpdatePhoto(nextCanUpdatePhoto);
     setCoverUrl(nextCoverUrl);
     setMemories(rows);
     setActivitiesByMemory(activityMap);
@@ -298,6 +336,8 @@ export default function MobileProfileDetailPage() {
 
       if (!user) throw new Error("Please sign in first.");
 
+      if (!canUpdatePhoto) throw new Error(t.photoOwnerOnly);
+
       const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-");
       const filePath = `${user.id}/profile-covers/${vault.id}-${Date.now()}-${safeName}`;
 
@@ -310,6 +350,11 @@ export default function MobileProfileDetailPage() {
 
       if (uploadResult.error) throw new Error(uploadResult.error.message);
 
+      const normalizedCoverPath = normalizeStoragePath(filePath);
+      const { data: signedCover, error: signedCoverError } = await supabase.storage
+        .from("family-media")
+        .createSignedUrl(normalizedCoverPath, 3600);
+
       const updateResult = await supabase
         .from("vaults")
         .update({
@@ -320,12 +365,21 @@ export default function MobileProfileDetailPage() {
 
       if (updateResult.error) throw new Error(updateResult.error.message);
 
+      setVault((current) => ({ ...(current || vault), cover_image_path: filePath }));
+      if (!signedCoverError && signedCover?.signedUrl) {
+        setCoverUrl(signedCover.signedUrl);
+      } else {
+        console.warn("[VozEterna] Vault photo saved but signed URL failed:", signedCoverError?.message || filePath);
+      }
       setPhotoMessage(t.photoSaved);
       loadProfile(vault.id);
     } catch (error) {
       setPhotoMessage(error.message || "Could not update profile photo.");
     } finally {
       setPhotoSaving(false);
+      if (photoInputRef.current) {
+        photoInputRef.current.value = "";
+      }
     }
   }
 
@@ -535,10 +589,14 @@ export default function MobileProfileDetailPage() {
         <h1>{vault.subject_name || vault.title}</h1>
         <p>{vault.description || t.privateArchive}</p>
 
-        <button type="button" className="mobilePhotoButton" onClick={() => photoInputRef.current?.click()} disabled={photoSaving}>
-          <Camera size={16} />
-          {photoSaving ? t.savingPhoto : t.updatePhoto}
-        </button>
+        {canUpdatePhoto ? (
+          <button type="button" className="mobilePhotoButton" onClick={() => photoInputRef.current?.click()} disabled={photoSaving}>
+            <Camera size={16} />
+            {photoSaving ? t.savingPhoto : t.updatePhoto}
+          </button>
+        ) : (
+          <p className="mobileFormHelper">{t.photoOwnerOnly}</p>
+        )}
 
         <input ref={photoInputRef} type="file" hidden accept="image/*" onChange={updateProfilePhoto} />
         {photoMessage && <p className="mobileFormMessage">{photoMessage}</p>}
