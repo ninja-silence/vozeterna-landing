@@ -2,6 +2,7 @@ export const mobileRoutes = {
   home: "/mobile",
   feed: "/mobile/feed",
   profiles: "/mobile/profiles",
+  people: "/mobile/people",
   newProfile: "/mobile/profiles/new",
   library: "/mobile/library",
   collections: "/mobile/collections",

@@ -16,6 +16,7 @@ import {
   Moon,
   Sun,
   UserRound,
+  UsersRound,
   X,
 } from "lucide-react";
 import {
@@ -41,6 +42,7 @@ const copy = {
     upload: "Upload",
     consent: "Consent",
     account: "Account",
+    people: "Connected people",
     connect: "Connect",
     website: "Website",
     menuTitle: "VozEterna",
@@ -67,6 +69,7 @@ const copy = {
     upload: "Subir",
     consent: "Consentimiento",
     account: "Cuenta",
+    people: "Personas conectadas",
     connect: "Conectar",
     website: "Sitio web",
     menuTitle: "VozEterna",
@@ -96,6 +99,7 @@ function getMenuItems(t) {
     { href: mobileRoutes.feed, label: t.feed, icon: Globe2 },
     { href: mobileRoutes.library, label: t.library, icon: LibraryBig },
     { href: mobileRoutes.profiles, label: t.profile, icon: UserRound },
+    { href: mobileRoutes.people, label: t.people, icon: UsersRound },
     { href: mobileRoutes.collections, label: t.collections, icon: FolderHeart },
     { href: mobileRoutes.record, label: t.record, icon: Mic2 },
     { href: mobileRoutes.upload, label: t.upload, icon: BookOpen },
