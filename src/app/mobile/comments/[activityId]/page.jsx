@@ -5,23 +5,122 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { MessageCircle, Send } from "lucide-react";
 import { supabase } from "../../../../lib/supabaseClient";
+import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
+
+const copy = {
+  en: {
+    label: "COMMENTS",
+    title: "Comments",
+    subtitle: "Private comments for this feed item.",
+    backFeed: "Back to feed",
+    loading: "Loading comments...",
+    notFound: "Feed item not found.",
+    subjectFallback: "Memory comments",
+    empty: "No comments yet.",
+    placeholder: "Write a comment...",
+    send: "Send",
+    sending: "Sending...",
+    writeFirst: "Please write a comment before sending.",
+    signIn: "Please sign in before commenting.",
+    sendFailed: "Could not send comment.",
+    loadFailed: "Could not load comments.",
+    someone: "Someone",
+    commented: "commented on",
+  },
+  es: {
+    label: "COMENTARIOS",
+    title: "Comentarios",
+    subtitle: "Comentarios privados para este elemento del feed.",
+    backFeed: "Volver al feed",
+    loading: "Cargando comentarios...",
+    notFound: "Elemento del feed no encontrado.",
+    subjectFallback: "Comentarios del recuerdo",
+    empty: "Todavia no hay comentarios.",
+    placeholder: "Escribe un comentario...",
+    send: "Enviar",
+    sending: "Enviando...",
+    writeFirst: "Escribe un comentario antes de enviar.",
+    signIn: "Inicia sesion antes de comentar.",
+    sendFailed: "No se pudo enviar el comentario.",
+    loadFailed: "No se pudieron cargar los comentarios.",
+    someone: "Alguien",
+    commented: "comento en",
+  },
+};
+
+function getProfileName(profile, fallback) {
+  return (
+    profile?.display_name ||
+    profile?.username ||
+    profile?.full_name ||
+    profile?.email ||
+    fallback
+  );
+}
 
 export default function MobileCommentsPage() {
   const params = useParams();
   const activityId = params?.activityId;
 
+  const [language, setLanguage] = useState("en");
   const [activity, setActivity] = useState(null);
   const [comments, setComments] = useState([]);
+  const [profileNames, setProfileNames] = useState({});
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState("");
+
+  const t = copy[language] || copy.en;
+
+  useEffect(() => {
+    setLanguage(getInitialMobileLanguage());
+
+    function handleLanguageChange(event) {
+      if (event.detail === "en" || event.detail === "es") {
+        setLanguage(event.detail);
+      }
+    }
+
+    window.addEventListener("vozeterna-language-change", handleLanguageChange);
+    return () => window.removeEventListener("vozeterna-language-change", handleLanguageChange);
+  }, []);
 
   useEffect(() => {
     if (activityId) {
       loadComments(activityId);
     }
   }, [activityId]);
+
+  async function loadProfilesForComments(commentRows) {
+    const userIds = [
+      ...new Set((commentRows || []).map((comment) => comment.created_by).filter(Boolean)),
+    ];
+
+    if (userIds.length === 0) {
+      setProfileNames({});
+      return;
+    }
+
+    const withEmail = await supabase
+      .from("profiles")
+      .select("id, display_name, username, full_name, email")
+      .in("id", userIds);
+
+    const profileRows = withEmail.error
+      ? (await supabase
+          .from("profiles")
+          .select("id, display_name, username, full_name")
+          .in("id", userIds)).data || []
+      : withEmail.data || [];
+
+    const names = profileRows.reduce((map, profile) => {
+      map[profile.id] = getProfileName(profile, "");
+      return map;
+    }, {});
+
+    setProfileNames(names);
+  }
 
   async function loadComments(id) {
     setLoading(true);
@@ -30,7 +129,19 @@ export default function MobileCommentsPage() {
     try {
       const { data: activityData, error: activityError } = await supabase
         .from("network_activity")
-        .select("id, network_id, memory_id, title, created_at")
+        .select(`
+          id,
+          network_id,
+          memory_id,
+          vault_id,
+          title,
+          created_at,
+          memories (
+            id,
+            title,
+            created_by
+          )
+        `)
         .eq("id", id)
         .maybeSingle();
 
@@ -43,7 +154,7 @@ export default function MobileCommentsPage() {
       }
 
       if (!activityData) {
-        setMessage("Feed item not found.");
+        setMessage(t.notFound);
         setActivity(null);
         setComments([]);
         setLoading(false);
@@ -61,13 +172,42 @@ export default function MobileCommentsPage() {
         setMessage(commentError.message);
       }
 
+      const rows = commentData || [];
       setActivity(activityData);
-      setComments(commentData || []);
+      setComments(rows);
+      await loadProfilesForComments(rows);
       setLoading(false);
     } catch (error) {
-      setMessage(error.message || "Could not load comments.");
+      setMessage(error.message || t.loadFailed);
       setLoading(false);
     }
+  }
+
+  async function createCommentActivity({ user, commentBody }) {
+    if (!activity?.network_id || !activity?.id) return;
+
+    const commenterName =
+      profileNames[user.id] ||
+      user.user_metadata?.display_name ||
+      user.email ||
+      t.someone;
+    const memoryTitle = activity.memories?.title || activity.title || t.subjectFallback;
+
+    await supabase.from("network_activity").insert({
+      network_id: activity.network_id,
+      vault_id: activity.vault_id || null,
+      memory_id: activity.memory_id || null,
+      actor_id: user.id,
+      activity_type: "comment_added",
+      title: `${commenterName} ${t.commented} ${memoryTitle}`,
+      feed_visibility: "network",
+      is_commentable: false,
+      metadata: {
+        source: "mobile_comment",
+        parent_activity_id: activity.id,
+        body_preview: commentBody.slice(0, 140),
+      },
+    });
   }
 
   async function sendComment(event) {
@@ -76,7 +216,7 @@ export default function MobileCommentsPage() {
     const cleanBody = body.trim();
 
     if (!cleanBody) {
-      setMessage("Please write a comment before sending.");
+      setMessage(t.writeFirst);
       return;
     }
 
@@ -91,7 +231,7 @@ export default function MobileCommentsPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        setMessage("Please sign in before commenting.");
+        setMessage(t.signIn);
         setSending(false);
         return;
       }
@@ -110,11 +250,18 @@ export default function MobileCommentsPage() {
         return;
       }
 
+      try {
+        await createCommentActivity({ user, commentBody: cleanBody });
+      } catch {
+        // TODO: A future dedicated notifications table can make comment notifications
+        // richer. For MVP, comments remain saved even if activity notification insert fails.
+      }
+
       setBody("");
       setSending(false);
       loadComments(activity.id);
     } catch (error) {
-      setMessage(error.message || "Could not send comment.");
+      setMessage(error.message || t.sendFailed);
       setSending(false);
     }
   }
@@ -122,38 +269,41 @@ export default function MobileCommentsPage() {
   return (
     <section className="mobileScreenStack">
       <div className="mobileScreenHero">
-        <p className="mobileCapsLabel">Comments</p>
-        <h1>Comments</h1>
-        <p>Private comments for this feed item.</p>
+        <p className="mobileCapsLabel">{t.label}</p>
+        <h1>{t.title}</h1>
+        <p>{t.subtitle}</p>
       </div>
 
       <section className="mobileCommentsPanel">
         <Link href="/mobile/feed" className="mobileBackToFeed">
-          Back to feed
+          {t.backFeed}
         </Link>
 
         {loading ? (
-          <p className="mobileFormHelper">Loading comments...</p>
+          <p className="mobileFormHelper">{t.loading}</p>
         ) : !activity ? (
-          <p className="mobileFormMessage">{message || "Feed item not found."}</p>
+          <p className="mobileFormMessage">{message || t.notFound}</p>
         ) : (
           <>
             <div className="mobileCommentSubject">
               <MessageCircle size={19} />
               <div>
-                <strong>{activity.title || "Memory comments"}</strong>
-                <span>{new Date(activity.created_at).toLocaleString()}</span>
+                <strong>{activity.title || t.subjectFallback}</strong>
+                <span>{new Date(activity.created_at).toLocaleString(language === "es" ? "es-MX" : "en-US")}</span>
               </div>
             </div>
 
             <div className="mobileCommentList">
               {comments.length === 0 ? (
-                <p className="mobileFormHelper">No comments yet.</p>
+                <p className="mobileFormHelper">{t.empty}</p>
               ) : (
                 comments.map((comment) => (
                   <article className="mobileCommentBubble" key={comment.id}>
+                    <strong className="mobileCommentAuthor">
+                      {profileNames[comment.created_by] || t.someone}
+                    </strong>
                     <p>{comment.body}</p>
-                    <span>{new Date(comment.created_at).toLocaleString()}</span>
+                    <span>{new Date(comment.created_at).toLocaleString(language === "es" ? "es-MX" : "en-US")}</span>
                   </article>
                 ))
               )}
@@ -163,12 +313,12 @@ export default function MobileCommentsPage() {
               <textarea
                 value={body}
                 onChange={(event) => setBody(event.target.value)}
-                placeholder="Write a comment..."
+                placeholder={t.placeholder}
               />
 
               <button type="submit" disabled={sending || !body.trim()}>
                 <Send size={16} />
-                {sending ? "Sending..." : "Send"}
+                {sending ? t.sending : t.send}
               </button>
             </form>
 

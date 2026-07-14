@@ -17,13 +17,65 @@ import {
 import { supabase } from "../../../../lib/supabaseClient";
 import { isMemoryOwner } from "../../../../lib/memoryPermissions";
 import { normalizeStoragePath, warnInvalidStoragePath } from "../../../../lib/storagePaths";
+import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
 
-function MediaFallback() {
+const copy = {
+  en: {
+    label: "Memory",
+    loading: "Loading memory...",
+    notFound: "Memory not found",
+    backLibrary: "Back to library",
+    untitled: "Untitled memory",
+    networkFeed: "Network feed",
+    private: "Private",
+    publicPage: "Public page",
+    mediaUnavailable: "Media unavailable",
+    mediaUnavailableText: "This file may be missing, private, or still processing.",
+    noDescription: "No description yet.",
+    aiNarration: "AI voice narration",
+    noNarration: "No narration generated yet.",
+    edit: "Edit",
+    security: "Security",
+    saveToAlbum: "Save to album",
+    comments: "Comments",
+    delete: "Delete",
+    noPermissionDelete: "You do not have permission to delete this memory.",
+    confirmDelete: "Delete this memory? This cannot be undone.",
+    deleteFailed: "Could not delete memory.",
+    loadFailed: "This memory could not load.",
+  },
+  es: {
+    label: "RECUERDO",
+    loading: "Cargando recuerdo...",
+    notFound: "Recuerdo no encontrado",
+    backLibrary: "Volver a biblioteca",
+    untitled: "Recuerdo sin titulo",
+    networkFeed: "Feed de red",
+    private: "Privado",
+    publicPage: "Pagina publica",
+    mediaUnavailable: "Medio no disponible",
+    mediaUnavailableText: "Este archivo puede faltar, ser privado o seguir procesandose.",
+    noDescription: "Sin descripcion todavia.",
+    aiNarration: "NARRACION DE VOZ IA",
+    noNarration: "Todavia no hay narracion generada.",
+    edit: "Editar",
+    security: "Seguridad",
+    saveToAlbum: "Guardar en album",
+    comments: "Comentarios",
+    delete: "Eliminar",
+    noPermissionDelete: "No tienes permiso para eliminar este recuerdo.",
+    confirmDelete: "Eliminar este recuerdo? Esto no se puede deshacer.",
+    deleteFailed: "No se pudo eliminar el recuerdo.",
+    loadFailed: "No se pudo cargar este recuerdo.",
+  },
+};
+
+function MediaFallback({ labels }) {
   return (
     <div className="mobileMediaFallback">
       <ImageOff size={26} />
-      <strong>Media unavailable</strong>
-      <span>This file may be missing, private, or still processing.</span>
+      <strong>{labels.mediaUnavailable}</strong>
+      <span>{labels.mediaUnavailableText}</span>
     </div>
   );
 }
@@ -54,6 +106,7 @@ export default function MobileMemoryViewPage() {
   const router = useRouter();
   const memoryId = params?.id;
 
+  const [language, setLanguage] = useState("en");
   const [memory, setMemory] = useState(null);
   const [activity, setActivity] = useState(null);
   const [currentUserId, setCurrentUserId] = useState("");
@@ -63,6 +116,20 @@ export default function MobileMemoryViewPage() {
   const [narrationFailed, setNarrationFailed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState("");
+  const t = copy[language] || copy.en;
+
+  useEffect(() => {
+    setLanguage(getInitialMobileLanguage());
+
+    function handleLanguageChange(event) {
+      if (event.detail === "en" || event.detail === "es") {
+        setLanguage(event.detail);
+      }
+    }
+
+    window.addEventListener("vozeterna-language-change", handleLanguageChange);
+    return () => window.removeEventListener("vozeterna-language-change", handleLanguageChange);
+  }, []);
 
   useEffect(() => {
     if (memoryId) {
@@ -95,7 +162,7 @@ export default function MobileMemoryViewPage() {
 
       if (!data) {
         setMemory(null);
-        setPageError("Memory not found.");
+        setPageError(t.notFound);
         setLoading(false);
         return;
       }
@@ -147,7 +214,7 @@ export default function MobileMemoryViewPage() {
       setCurrentUserId(user?.id || "");
       setLoading(false);
     } catch (error) {
-      setPageError(error.message || "This memory could not load.");
+      setPageError(error.message || t.loadFailed);
       setLoading(false);
     }
   }
@@ -156,11 +223,11 @@ export default function MobileMemoryViewPage() {
     if (!memory?.id) return;
 
     if (!isMemoryOwner(memory, activity, currentUserId)) {
-      setPageError("You do not have permission to delete this memory.");
+      setPageError(t.noPermissionDelete);
       return;
     }
 
-    const confirmed = window.confirm("Delete this memory? This cannot be undone.");
+    const confirmed = window.confirm(t.confirmDelete);
     if (!confirmed) return;
 
     try {
@@ -183,7 +250,7 @@ export default function MobileMemoryViewPage() {
 
       router.push("/mobile/library");
     } catch (error) {
-      setPageError(error.message || "Could not delete memory.");
+      setPageError(error.message || t.deleteFailed);
     }
   }
 
@@ -191,8 +258,8 @@ export default function MobileMemoryViewPage() {
     return (
       <section className="mobileScreenStack">
         <div className="mobileScreenHero">
-          <p className="mobileCapsLabel">Memory</p>
-          <h1>Loading memory...</h1>
+          <p className="mobileCapsLabel">{t.label}</p>
+          <h1>{t.loading}</h1>
         </div>
       </section>
     );
@@ -202,13 +269,13 @@ export default function MobileMemoryViewPage() {
     return (
       <section className="mobileScreenStack">
         <div className="mobileScreenHero">
-          <p className="mobileCapsLabel">Memory</p>
-          <h1>Memory not found</h1>
+          <p className="mobileCapsLabel">{t.label}</p>
+          <h1>{t.notFound}</h1>
           {pageError && <p>{pageError}</p>}
 
           <Link href="/mobile/library" className="mobilePrimaryButton">
             <ArrowLeft size={17} />
-            Back to library
+            {t.backLibrary}
           </Link>
         </div>
       </section>
@@ -221,12 +288,12 @@ export default function MobileMemoryViewPage() {
   return (
     <section className="mobileScreenStack mobileMemoryDetailScreen">
       <div className="mobileScreenHero">
-        <p className="mobileCapsLabel">Memory</p>
-        <h1>{memory.title || "Untitled memory"}</h1>
+        <p className="mobileCapsLabel">{t.label}</p>
+        <h1>{memory.title || t.untitled}</h1>
 
         <div className="mobileSecurityPills">
-          <span>{memory.feed_visibility === "network" ? "Network feed" : "Private"}</span>
-          {memory.show_on_public_page && <span>Public page</span>}
+          <span>{memory.feed_visibility === "network" ? t.networkFeed : t.private}</span>
+          {memory.show_on_public_page && <span>{t.publicPage}</span>}
         </div>
       </div>
 
@@ -259,14 +326,14 @@ export default function MobileMemoryViewPage() {
           />
         )}
 
-        {(!mediaUrl || mediaFailed) && <MediaFallback />}
+        {(!mediaUrl || mediaFailed) && <MediaFallback labels={t} />}
 
-        <p>{memory.body || "No description yet."}</p>
+        <p>{memory.body || t.noDescription}</p>
 
         <div className="mobileNarrationBox">
           <p className="mobileCapsLabel">
             <Volume2 size={15} />
-            AI voice narration
+            {t.aiNarration}
           </p>
 
           {narrationUrl && !narrationFailed ? (
@@ -277,7 +344,7 @@ export default function MobileMemoryViewPage() {
               onError={() => setNarrationFailed(true)}
             />
           ) : (
-            <p className="mobileFormHelper">No narration generated yet.</p>
+            <p className="mobileFormHelper">{t.noNarration}</p>
           )}
         </div>
 
@@ -285,7 +352,7 @@ export default function MobileMemoryViewPage() {
           {canManageMemory && (
             <Link href={`/mobile/memories/${memory.id}/edit`} className="familyFeedCommentButton">
               <Edit3 size={16} />
-              Edit
+              {t.edit}
             </Link>
           )}
 
@@ -295,26 +362,26 @@ export default function MobileMemoryViewPage() {
               className="familyFeedCommentButton"
             >
               <ShieldCheck size={16} />
-              Security
+              {t.security}
             </Link>
           )}
 
           <Link href={`/mobile/memories/${memory.id}/add-to-album`} className="familyFeedCommentButton">
             <FolderPlus size={16} />
-            Save to album
+            {t.saveToAlbum}
           </Link>
 
           {activity?.id && (
             <Link href={`/mobile/comments/${activity.id}`} className="familyFeedCommentButton">
               <MessageCircle size={16} />
-              Comments
+              {t.comments}
             </Link>
           )}
 
           {canManageMemory && (
             <button type="button" className="mobileDeleteButton" onClick={deleteMemory}>
               <Trash2 size={15} />
-              Delete
+              {t.delete}
             </button>
           )}
         </div>

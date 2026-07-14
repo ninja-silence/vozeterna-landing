@@ -24,6 +24,11 @@ const copy = {
     emptyFriend: "No friend feed activity yet.",
     recordFirst: "Record first memory",
     comments: "Comments",
+    commentSingular: "1 comment",
+    commentPlural: "comments",
+    feedError: "Feed error",
+    retry: "Retry",
+    mediaUnavailable: "Media unavailable",
     noDescription: "No description yet.",
     justNow: "Just now",
     agoMinute: "m ago",
@@ -56,6 +61,11 @@ const copy = {
     emptyFriend: "Todavia no hay actividad en el feed de amigos.",
     recordFirst: "Grabar primer recuerdo",
     comments: "Comentarios",
+    commentSingular: "1 comentario",
+    commentPlural: "comentarios",
+    feedError: "Error del feed",
+    retry: "Reintentar",
+    mediaUnavailable: "Medio no disponible",
     noDescription: "Sin descripcion todavia.",
     justNow: "Ahora mismo",
     agoMinute: "min",
@@ -149,6 +159,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
   const [activities, setActivities] = useState([]);
   const [signedUrls, setSignedUrls] = useState({});
   const [failedMediaIds, setFailedMediaIds] = useState([]);
+  const [commentCounts, setCommentCounts] = useState({});
   const [currentUserId, setCurrentUserId] = useState("");
   const [loading, setLoading] = useState(true);
   const [feedError, setFeedError] = useState("");
@@ -186,6 +197,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
     setLoading(true);
     setFeedError("");
     setFailedMediaIds([]);
+    setCommentCounts({});
 
     const {
       data: { user },
@@ -308,6 +320,24 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
         networkTypeById.get(activity.network_id),
     }));
     const urls = {};
+    const activityIds = rows.map((activity) => activity.id).filter(Boolean);
+
+    if (activityIds.length > 0) {
+      const { data: commentRows } = await supabase
+        .from("network_comments")
+        .select("activity_id")
+        .in("activity_id", activityIds)
+        .is("deleted_at", null);
+
+      const counts = (commentRows || []).reduce((map, row) => {
+        if (row.activity_id) {
+          map[row.activity_id] = (map[row.activity_id] || 0) + 1;
+        }
+        return map;
+      }, {});
+
+      setCommentCounts(counts);
+    }
 
     await Promise.all(
       rows.map(async (activity) => {
@@ -351,10 +381,10 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
         </div>
       ) : feedError ? (
         <div className="mobileFeedEmptyState">
-          <strong>Feed error</strong>
+          <strong>{t.feedError}</strong>
           <p>{feedError}</p>
           <button type="button" onClick={loadActivity} className="familyFeedRetry">
-            Retry
+            {t.retry}
           </button>
         </div>
       ) : filteredActivities.length === 0 ? (
@@ -381,6 +411,13 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
             const mediaFailed = failedMediaIds.includes(activity.id);
             const showMediaFallback = hasMedia && (!url || mediaFailed || mediaKind === "file");
             const canManageMemory = isMemoryOwner(memory, activity, currentUserId);
+            const commentCount = commentCounts[activity.id] || 0;
+            const commentLabel =
+              commentCount === 1
+                ? t.commentSingular
+                : commentCount > 1
+                  ? `${commentCount} ${t.commentPlural}`
+                  : t.comments;
 
             return (
               <article className="familyFeedMemoryCard" key={activity.id}>
@@ -440,7 +477,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
                 {showMediaFallback && (
                   <div className="familyFeedMediaFallback">
                     <ImageOff size={20} />
-                    <strong>Media unavailable</strong>
+                    <strong>{t.mediaUnavailable}</strong>
                   </div>
                 )}
 
@@ -450,7 +487,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
                   {activity.feed_visibility === "network" && activity.is_commentable && (
                     <Link href={`/mobile/comments/${activity.id}`} className="familyFeedCommentButton">
                       <MessageCircle size={16} />
-                      {t.comments}
+                      {commentLabel}
                     </Link>
                   )}
                 </div>
