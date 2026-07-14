@@ -12,6 +12,7 @@ import {
   Video,
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
+import { isMemoryOwner } from "../../lib/memoryPermissions";
 import { normalizeStoragePath, warnInvalidStoragePath } from "../../lib/storagePaths";
 import { getInitialMobileLanguage } from "../mobile/mobileLanguage";
 import MobileMemoryActions from "../mobile/MobileMemoryActions";
@@ -148,6 +149,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
   const [activities, setActivities] = useState([]);
   const [signedUrls, setSignedUrls] = useState({});
   const [failedMediaIds, setFailedMediaIds] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState("");
   const [loading, setLoading] = useState(true);
   const [feedError, setFeedError] = useState("");
 
@@ -191,11 +193,13 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
     } = await supabase.auth.getUser();
 
     if (userError || !user?.id) {
+      setCurrentUserId("");
       setActivities([]);
       setSignedUrls({});
       setLoading(false);
       return;
     }
+    setCurrentUserId(user.id);
 
     const { data: memberships, error: membershipError } = await supabase
       .from("network_members")
@@ -261,6 +265,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
         memory_id,
         vault_id,
         network_id,
+        actor_id,
         feed_visibility,
         is_commentable,
         memories (
@@ -270,6 +275,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
           type,
           media_path,
           media_mime_type,
+          created_by,
           feed_visibility,
           show_on_public_page,
           vault_id,
@@ -374,6 +380,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
             const hasMedia = Boolean(memory?.media_path);
             const mediaFailed = failedMediaIds.includes(activity.id);
             const showMediaFallback = hasMedia && (!url || mediaFailed || mediaKind === "file");
+            const canManageMemory = isMemoryOwner(memory, activity, currentUserId);
 
             return (
               <article className="familyFeedMemoryCard" key={activity.id}>
@@ -393,6 +400,9 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
                     <MobileMemoryActions
                       memory={memory}
                       activityId={activity.id}
+                      activity={activity}
+                      currentUserId={currentUserId}
+                      canManage={canManageMemory}
                       labels={t.actions}
                       onDeleted={removeDeleted}
                     />

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { BookOpen, FolderHeart, Library, Pencil, Plus } from "lucide-react";
 import { supabase } from "../../../../lib/supabaseClient";
+import { isMemoryOwner } from "../../../../lib/memoryPermissions";
 import { normalizeStoragePath, warnInvalidStoragePath } from "../../../../lib/storagePaths";
 import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
 
@@ -68,6 +69,7 @@ export default function MobileCollectionDetailPage() {
   const [items, setItems] = useState([]);
   const [signedUrls, setSignedUrls] = useState({});
   const [message, setMessage] = useState("");
+  const [currentUserId, setCurrentUserId] = useState("");
 
   const t = copy[language] || copy.en;
 
@@ -78,6 +80,10 @@ export default function MobileCollectionDetailPage() {
   useEffect(() => {
     async function loadCollection() {
       setLoading(true);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || "");
 
       const { data: collectionData, error: collectionError } = await supabase
         .from("memory_collections")
@@ -116,7 +122,7 @@ export default function MobileCollectionDetailPage() {
         const [{ data: memoriesData }, { data: mediaData }] = await Promise.all([
           supabase
             .from("memories")
-            .select("id, title, body, type, media_path, media_mime_type, media_size_bytes, created_at")
+            .select("id, title, body, type, media_path, media_mime_type, media_size_bytes, created_by, vault_id, network_id, created_at")
             .in("id", memoryIds),
           supabase
             .from("media_assets")
@@ -147,6 +153,9 @@ export default function MobileCollectionDetailPage() {
                 fileName: v2.title || "Memory",
                 filePath: v2.media_path,
                 fileType: v2.media_mime_type,
+                created_by: v2.created_by,
+                vault_id: v2.vault_id,
+                network_id: v2.network_id,
                 createdAt: v2.created_at,
               },
             };
@@ -356,6 +365,7 @@ export default function MobileCollectionDetailPage() {
 
               const kind = getFileKind(memory.fileName, memory.fileType);
               const url = signedUrls[memory.id];
+              const canManageMemory = isMemoryOwner(memory, null, currentUserId);
 
               return (
                 <article className="mobileAlbumMemoryCard" key={item.id}>
@@ -388,9 +398,11 @@ export default function MobileCollectionDetailPage() {
                       {t.openMemory}
                     </Link>
 
-                    <Link href={`/mobile/memories/${memory.id}/edit`} className="mobileAlbumSecondaryBtn">
-                      {t.editMemory}
-                    </Link>
+                    {canManageMemory && (
+                      <Link href={`/mobile/memories/${memory.id}/edit`} className="mobileAlbumSecondaryBtn">
+                        {t.editMemory}
+                      </Link>
+                    )}
 
                     <button
                       type="button"

@@ -74,6 +74,7 @@ export default function MobileLibraryPage() {
   const [memories, setMemories] = useState([]);
   const [activitiesByMemory, setActivitiesByMemory] = useState({});
   const [signedUrls, setSignedUrls] = useState({});
+  const [currentUserId, setCurrentUserId] = useState("");
   const [loading, setLoading] = useState(true);
 
   const t = copy[language] || copy.en;
@@ -100,10 +101,14 @@ export default function MobileLibraryPage() {
 
   async function loadMemories() {
     setLoading(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    setCurrentUserId(user?.id || "");
 
     const { data, error } = await supabase
       .from("memories")
-      .select("id, title, body, type, media_path, media_mime_type, media_size_bytes, feed_visibility, created_at, vault_id, network_id")
+      .select("id, title, body, type, media_path, media_mime_type, media_size_bytes, feed_visibility, created_at, vault_id, network_id, created_by")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -143,7 +148,7 @@ export default function MobileLibraryPage() {
     if (memoryIds.length > 0) {
       const { data: activityRows } = await supabase
         .from("network_activity")
-        .select("id, memory_id, feed_visibility, is_commentable")
+        .select("id, memory_id, actor_id, feed_visibility, is_commentable")
         .in("memory_id", memoryIds);
 
       activityMap = (activityRows || []).reduce((map, item) => {
@@ -200,6 +205,8 @@ export default function MobileLibraryPage() {
                 <MobileMemoryActions
                   memory={memory}
                   activityId={activity?.id}
+                  activity={activity}
+                  currentUserId={currentUserId}
                   labels={t.actions}
                   onDeleted={removeDeleted}
                 />

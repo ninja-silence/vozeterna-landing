@@ -18,6 +18,7 @@ import {
   Video,
 } from "lucide-react";
 import { supabase } from "../../../../lib/supabaseClient";
+import { isMemoryOwner } from "../../../../lib/memoryPermissions";
 import { normalizeStoragePath, warnInvalidStoragePath } from "../../../../lib/storagePaths";
 import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
 import ShareMemoryButton from "../../../../components/social/ShareMemoryButton";
@@ -169,6 +170,7 @@ export default function MobileProfileDetailPage() {
   const [photoSaving, setPhotoSaving] = useState(false);
   const [photoMessage, setPhotoMessage] = useState("");
   const [actionMessage, setActionMessage] = useState("");
+  const [currentUserId, setCurrentUserId] = useState("");
 
   const t = copy[language] || copy.en;
 
@@ -189,6 +191,10 @@ export default function MobileProfileDetailPage() {
 
   async function loadProfile(id) {
     setLoading(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    setCurrentUserId(user?.id || "");
 
     const { data: vaultData, error: vaultError } = await supabase
       .from("vaults")
@@ -222,7 +228,7 @@ export default function MobileProfileDetailPage() {
 
     const { data: memoryData } = await supabase
       .from("memories")
-      .select("id, title, body, type, media_path, media_mime_type, feed_visibility, show_on_public_page, created_at")
+      .select("id, title, body, type, media_path, media_mime_type, feed_visibility, show_on_public_page, created_by, vault_id, network_id, created_at")
       .eq("vault_id", id)
       .order("created_at", { ascending: false });
 
@@ -260,7 +266,7 @@ export default function MobileProfileDetailPage() {
     if (rows.length > 0) {
       const { data: activityRows } = await supabase
         .from("network_activity")
-        .select("id, memory_id, feed_visibility, is_commentable")
+        .select("id, memory_id, actor_id, feed_visibility, is_commentable")
         .in("memory_id", rows.map((memory) => memory.id));
 
       activityMap = (activityRows || []).reduce((map, item) => {
@@ -464,6 +470,11 @@ export default function MobileProfileDetailPage() {
   }
 
   async function toggleMemoryPublic(memory) {
+    if (!isMemoryOwner(memory, null, currentUserId)) {
+      setActionMessage("You do not have permission to change this memory.");
+      return;
+    }
+
     const nextValue = !memory.show_on_public_page;
 
     const { error } = await supabase
@@ -611,6 +622,7 @@ export default function MobileProfileDetailPage() {
             const Icon = getMemoryIcon(memory.type);
             const url = signedUrls[memory.id];
             const activity = activitiesByMemory[memory.id];
+            const canManageMemory = isMemoryOwner(memory, activity, currentUserId);
 
             return (
               <article className="mobileMemoryCard" key={memory.id}>
@@ -619,6 +631,8 @@ export default function MobileProfileDetailPage() {
                   <MobileMemoryActions
                     memory={memory}
                     activityId={activity?.id}
+                    activity={activity}
+                    currentUserId={currentUserId}
                     labels={t.actions}
                     onDeleted={removeDeleted}
                   />
@@ -633,7 +647,7 @@ export default function MobileProfileDetailPage() {
                   <strong>{memory.title || "Memory"}</strong>
                   {memory.body && <p>{memory.body}</p>}
 
-                  {vault.public_enabled && (
+                  {vault.public_enabled && canManageMemory && (
                     <button type="button" className="mobileMiniAction" onClick={() => toggleMemoryPublic(memory)}>
                       {memory.show_on_public_page ? t.hidePublic : t.approvePublic}
                     </button>

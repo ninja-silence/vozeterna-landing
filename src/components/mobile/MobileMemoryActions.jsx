@@ -6,6 +6,7 @@ import {
   Check,
   Edit3,
   Eye,
+  FolderPlus,
   MessageCircle,
   MoreVertical,
   Share2,
@@ -13,6 +14,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
+import { isMemoryOwner } from "../../lib/memoryPermissions";
 import { normalizeStoragePath } from "../../lib/storagePaths";
 
 const defaultLabels = {
@@ -20,6 +22,7 @@ const defaultLabels = {
   edit: "Edit",
   security: "Security",
   delete: "Delete",
+  addToAlbum: "Save to album",
   share: "Share",
   copied: "Copied",
   comments: "Comments",
@@ -32,6 +35,9 @@ export default function MobileMemoryActions({
   activityId,
   commentsHref,
   onDeleted,
+  activity,
+  currentUserId,
+  canManage,
   labels = defaultLabels,
 }) {
   const router = useRouter();
@@ -74,12 +80,17 @@ export default function MobileMemoryActions({
 
   const memoryHref = `/mobile/memories/${memory.id}`;
   const editHref = `/mobile/memories/${memory.id}/edit`;
+  const addToAlbumHref = `/mobile/memories/${memory.id}/add-to-album`;
   const securityHref = memory.vault_id
     ? `/mobile/security?vaultId=${memory.vault_id}&memoryId=${memory.id}`
     : `/mobile/security?memoryId=${memory.id}`;
 
   const resolvedCommentsHref =
     commentsHref || (activityId ? `/mobile/comments/${activityId}` : "");
+  const canManageMemory =
+    typeof canManage === "boolean"
+      ? canManage
+      : isMemoryOwner(memory, activity, currentUserId);
 
   function stopEvent(event) {
     event.preventDefault();
@@ -130,6 +141,12 @@ export default function MobileMemoryActions({
 
   async function deleteMemory(event) {
     stopEvent(event);
+
+    if (!canManageMemory) {
+      alert("You do not have permission to delete this memory.");
+      setOpen(false);
+      return;
+    }
 
     const confirmed = window.confirm(t.confirmDelete);
 
@@ -189,14 +206,23 @@ export default function MobileMemoryActions({
             <span>{t.view}</span>
           </button>
 
-          <button type="button" role="menuitem" onClick={(event) => goTo(event, editHref)}>
-            <Edit3 size={16} />
-            <span>{t.edit}</span>
-          </button>
+          {canManageMemory && (
+            <button type="button" role="menuitem" onClick={(event) => goTo(event, editHref)}>
+              <Edit3 size={16} />
+              <span>{t.edit}</span>
+            </button>
+          )}
 
-          <button type="button" role="menuitem" onClick={(event) => goTo(event, securityHref)}>
-            <ShieldCheck size={16} />
-            <span>{t.security}</span>
+          {canManageMemory && (
+            <button type="button" role="menuitem" onClick={(event) => goTo(event, securityHref)}>
+              <ShieldCheck size={16} />
+              <span>{t.security}</span>
+            </button>
+          )}
+
+          <button type="button" role="menuitem" onClick={(event) => goTo(event, addToAlbumHref)}>
+            <FolderPlus size={16} />
+            <span>{t.addToAlbum}</span>
           </button>
 
           {resolvedCommentsHref && (
@@ -215,10 +241,12 @@ export default function MobileMemoryActions({
             <span>{shareStatus === "copied" ? t.copied : t.share}</span>
           </button>
 
-          <button type="button" role="menuitem" className="danger" onClick={deleteMemory}>
-            <Trash2 size={16} />
-            <span>{t.delete}</span>
-          </button>
+          {canManageMemory && (
+            <button type="button" role="menuitem" className="danger" onClick={deleteMemory}>
+              <Trash2 size={16} />
+              <span>{t.delete}</span>
+            </button>
+          )}
         </div>
       )}
     </div>

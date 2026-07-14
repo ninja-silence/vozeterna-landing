@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Save, ShieldCheck } from "lucide-react";
 import { supabase } from "../../../../../lib/supabaseClient";
+import { isMemoryOwner } from "../../../../../lib/memoryPermissions";
 
 export default function MobileMemoryEditPage() {
   const params = useParams();
@@ -18,6 +19,8 @@ export default function MobileMemoryEditPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [currentUserId, setCurrentUserId] = useState("");
+  const [canEdit, setCanEdit] = useState(false);
 
   useEffect(() => {
     if (memoryId) {
@@ -32,7 +35,7 @@ export default function MobileMemoryEditPage() {
     try {
       const { data, error } = await supabase
         .from("memories")
-        .select("id, title, body, feed_visibility, show_on_public_page, vault_id, network_id")
+        .select("id, title, body, feed_visibility, show_on_public_page, vault_id, network_id, created_by")
         .eq("id", id)
         .maybeSingle();
 
@@ -49,6 +52,13 @@ export default function MobileMemoryEditPage() {
         return;
       }
 
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const ownerAllowed = isMemoryOwner(data, null, user?.id || "");
+
+      setCurrentUserId(user?.id || "");
+      setCanEdit(ownerAllowed);
       setMemory(data);
       setTitle(data.title || "");
       setBody(data.body || "");
@@ -65,6 +75,11 @@ export default function MobileMemoryEditPage() {
     event.preventDefault();
 
     if (!memory?.id || saving) return;
+
+    if (!isMemoryOwner(memory, null, currentUserId)) {
+      setMessage("You do not have permission to edit this memory.");
+      return;
+    }
 
     setSaving(true);
     setMessage("");
@@ -126,6 +141,21 @@ export default function MobileMemoryEditPage() {
           <p className="mobileCapsLabel">Edit</p>
           <h1>Memory not found</h1>
           {message && <p>{message}</p>}
+        </div>
+      </section>
+    );
+  }
+
+  if (!canEdit) {
+    return (
+      <section className="mobileScreenStack">
+        <div className="mobileScreenHero">
+          <p className="mobileCapsLabel">Edit</p>
+          <h1>No permission</h1>
+          <p>You do not have permission to edit this memory.</p>
+          <button type="button" className="mobilePrimaryButton" onClick={() => router.push(`/mobile/memories/${memory.id}`)}>
+            View memory
+          </button>
         </div>
       </section>
     );

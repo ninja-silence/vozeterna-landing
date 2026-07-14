@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   Edit3,
   FileText,
+  FolderPlus,
   ImageOff,
   MessageCircle,
   ShieldCheck,
@@ -14,6 +15,7 @@ import {
   Volume2,
 } from "lucide-react";
 import { supabase } from "../../../../lib/supabaseClient";
+import { isMemoryOwner } from "../../../../lib/memoryPermissions";
 import { normalizeStoragePath, warnInvalidStoragePath } from "../../../../lib/storagePaths";
 
 function MediaFallback() {
@@ -54,6 +56,7 @@ export default function MobileMemoryViewPage() {
 
   const [memory, setMemory] = useState(null);
   const [activity, setActivity] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
   const [narrationUrl, setNarrationUrl] = useState("");
   const [mediaFailed, setMediaFailed] = useState(false);
@@ -79,7 +82,7 @@ export default function MobileMemoryViewPage() {
       const { data, error } = await supabase
         .from("memories")
         .select(
-          "id, title, body, type, media_path, media_mime_type, feed_visibility, show_on_public_page, vault_id, network_id, narration_audio_path, created_at"
+          "id, title, body, type, media_path, media_mime_type, feed_visibility, show_on_public_page, vault_id, network_id, created_by, narration_audio_path, created_at"
         )
         .eq("id", id)
         .maybeSingle();
@@ -131,13 +134,17 @@ export default function MobileMemoryViewPage() {
 
       const { data: activityData } = await supabase
         .from("network_activity")
-        .select("id, feed_visibility, is_commentable")
+        .select("id, actor_id, feed_visibility, is_commentable")
         .eq("memory_id", id)
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
       setActivity(activityData || null);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || "");
       setLoading(false);
     } catch (error) {
       setPageError(error.message || "This memory could not load.");
@@ -147,6 +154,11 @@ export default function MobileMemoryViewPage() {
 
   async function deleteMemory() {
     if (!memory?.id) return;
+
+    if (!isMemoryOwner(memory, activity, currentUserId)) {
+      setPageError("You do not have permission to delete this memory.");
+      return;
+    }
 
     const confirmed = window.confirm("Delete this memory? This cannot be undone.");
     if (!confirmed) return;
@@ -204,6 +216,7 @@ export default function MobileMemoryViewPage() {
   }
 
   const mediaKind = getMemoryMediaKind(memory);
+  const canManageMemory = isMemoryOwner(memory, activity, currentUserId);
 
   return (
     <section className="mobileScreenStack mobileMemoryDetailScreen">
@@ -269,17 +282,26 @@ export default function MobileMemoryViewPage() {
         </div>
 
         <div className="familyFeedActions">
-          <Link href={`/mobile/memories/${memory.id}/edit`} className="familyFeedCommentButton">
-            <Edit3 size={16} />
-            Edit
-          </Link>
+          {canManageMemory && (
+            <Link href={`/mobile/memories/${memory.id}/edit`} className="familyFeedCommentButton">
+              <Edit3 size={16} />
+              Edit
+            </Link>
+          )}
 
-          <Link
-            href={`/mobile/security?vaultId=${memory.vault_id || ""}&memoryId=${memory.id}`}
-            className="familyFeedCommentButton"
-          >
-            <ShieldCheck size={16} />
-            Security
+          {canManageMemory && (
+            <Link
+              href={`/mobile/security?vaultId=${memory.vault_id || ""}&memoryId=${memory.id}`}
+              className="familyFeedCommentButton"
+            >
+              <ShieldCheck size={16} />
+              Security
+            </Link>
+          )}
+
+          <Link href={`/mobile/memories/${memory.id}/add-to-album`} className="familyFeedCommentButton">
+            <FolderPlus size={16} />
+            Save to album
           </Link>
 
           {activity?.id && (
@@ -289,10 +311,12 @@ export default function MobileMemoryViewPage() {
             </Link>
           )}
 
-          <button type="button" className="mobileDeleteButton" onClick={deleteMemory}>
-            <Trash2 size={15} />
-            Delete
-          </button>
+          {canManageMemory && (
+            <button type="button" className="mobileDeleteButton" onClick={deleteMemory}>
+              <Trash2 size={15} />
+              Delete
+            </button>
+          )}
         </div>
 
         {pageError && <p className="mobileFormMessage">{pageError}</p>}
