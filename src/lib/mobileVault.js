@@ -30,6 +30,61 @@ function networkLabels(networkType = "family") {
   };
 }
 
+export async function loadExistingNetwork(supabase, networkId) {
+  if (!networkId) return null;
+
+  const { data, error } = await supabase
+    .from("networks")
+    .select("id, type")
+    .eq("id", networkId)
+    .maybeSingle();
+
+  if (error || !data?.id) return null;
+
+  return data;
+}
+
+export async function isNetworkMember(supabase, user, networkId) {
+  if (!user?.id || !networkId) return false;
+
+  const { data, error } = await supabase
+    .from("network_members")
+    .select("network_id")
+    .eq("network_id", networkId)
+    .eq("user_id", user.id)
+    .limit(1)
+    .maybeSingle();
+
+  return !error && Boolean(data?.network_id);
+}
+
+async function ensureUsableNetworkForUser({
+  supabase,
+  user,
+  networkId,
+  networkType = "family",
+}) {
+  const existingNetwork = await loadExistingNetwork(supabase, networkId);
+  const member = await isNetworkMember(supabase, user, networkId);
+
+  if (existingNetwork?.id && member) {
+    return {
+      networkId: existingNetwork.id,
+      networkType: existingNetwork.type === "friend" ? "friend" : "family",
+    };
+  }
+
+  const fallbackType = networkType === "friend" ? "friend" : "family";
+  const ensured = await ensureNetworkAndVaultByType(supabase, user, fallbackType);
+
+  return {
+    networkId: ensured.networkId,
+    vaultId: ensured.vaultId,
+    networkType: ensured.networkType,
+    usedFallback: true,
+  };
+}
+
 export async function ensureNetworkAndVaultByType(supabase, user, networkType = "family") {
   if (!user?.id) {
     throw new Error("Please sign in first.");
@@ -172,8 +227,24 @@ export async function resolveTargetVault({
     }
 
     if (data?.id && data?.network_id) {
-      return {
+      const usableNetwork = await ensureUsableNetworkForUser({
+        supabase,
+        user,
         networkId: data.network_id,
+        networkType,
+      });
+
+      if (usableNetwork.usedFallback) {
+        return {
+          networkId: usableNetwork.networkId,
+          vaultId: usableNetwork.vaultId,
+          vault: null,
+          usedFallback: true,
+        };
+      }
+
+      return {
+        networkId: usableNetwork.networkId,
         vaultId: data.id,
         vault: data,
       };
@@ -252,6 +323,7 @@ export async function saveMobileMemoryToV2({
   forcedType,
   networkType = "family",
   targetVaultId,
+  onProgress,
 }) {
   if (!user?.id) {
     throw new Error("Please sign in first.");
@@ -260,6 +332,13 @@ export async function saveMobileMemoryToV2({
   if (!file) {
     throw new Error("Choose or record a file first.");
   }
+
+  onProgress?.({
+    percent: 5,
+    uploadedBytes: 0,
+    totalBytes: file.size || 0,
+    status: "preparing",
+  });
 
   const { networkId, vaultId } = await resolveTargetVault({
     supabase,
@@ -274,6 +353,13 @@ export async function saveMobileMemoryToV2({
   const memoryType = forcedType || inferMemoryType(mimeType);
   const memoryId = crypto.randomUUID();
 
+  onProgress?.({
+    percent: 10,
+    uploadedBytes: 0,
+    totalBytes: file.size || 0,
+    status: "uploading",
+  });
+
   const uploadResult = await supabase.storage
     .from("family-media")
     .upload(filePath, file, {
@@ -284,6 +370,13 @@ export async function saveMobileMemoryToV2({
   if (uploadResult.error) {
     throw new Error(uploadResult.error.message);
   }
+
+  onProgress?.({
+    percent: 88,
+    uploadedBytes: file.size || 0,
+    totalBytes: file.size || 0,
+    status: "saving",
+  });
 
   const cleanTitle =
     title?.trim() ||
@@ -313,6 +406,13 @@ export async function saveMobileMemoryToV2({
     throw new Error(memoryResult.error.message);
   }
 
+  onProgress?.({
+    percent: 93,
+    uploadedBytes: file.size || 0,
+    totalBytes: file.size || 0,
+    status: "saving",
+  });
+
   await supabase.from("network_activity").insert({
     network_id: networkId,
     vault_id: vaultId,
@@ -335,6 +435,13 @@ export async function saveMobileMemoryToV2({
       media_mime_type: mimeType,
       network_type: networkType,
     },
+  });
+
+  onProgress?.({
+    percent: 95,
+    uploadedBytes: file.size || 0,
+    totalBytes: file.size || 0,
+    status: "saving",
   });
 
   return {

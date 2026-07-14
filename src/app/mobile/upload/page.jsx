@@ -20,7 +20,18 @@ const copy = {
     placeholder: "Write a short note about this memory...",
     upload: "Upload memory",
     uploading: "Uploading...",
+    preparing: "Preparing upload...",
+    savingMemory: "Saving memory...",
     saved: "Memory uploaded.",
+    failed: "Upload failed. Please try again.",
+    fileLabel: "File",
+    typeLabel: "Type",
+    sizeLabel: "Size",
+    uploadedLabel: "Uploaded",
+    photoType: "Photo",
+    audioType: "Audio",
+    videoType: "Video",
+    fileType: "File",
     signIn: "Please sign in before uploading.",
     noFile: "Choose a file first.",
     privateNote: "Files are private by default and saved inside the selected profile.",
@@ -37,7 +48,18 @@ const copy = {
     placeholder: "Escribe una nota corta sobre este recuerdo...",
     upload: "Subir recuerdo",
     uploading: "Subiendo...",
+    preparing: "Preparando carga...",
+    savingMemory: "Guardando recuerdo...",
     saved: "Recuerdo subido.",
+    failed: "Error al subir. Intentalo de nuevo.",
+    fileLabel: "Archivo",
+    typeLabel: "Tipo",
+    sizeLabel: "Tamano",
+    uploadedLabel: "Subido",
+    photoType: "Foto",
+    audioType: "Audio",
+    videoType: "Video",
+    fileType: "Archivo",
     signIn: "Inicia sesion antes de subir.",
     noFile: "Primero elige un archivo.",
     privateNote: "Los archivos son privados por defecto y se guardan dentro del perfil seleccionado.",
@@ -54,7 +76,9 @@ export default function MobileUploadPage() {
   const [selectedAlbumId, setSelectedAlbumId] = useState("");
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(null);
   const inputRef = useRef(null);
+  const progressTimerRef = useRef(null);
 
   const t = copy[language] || copy.en;
 
@@ -66,6 +90,76 @@ export default function MobileUploadPage() {
       .replace(/\u00b7/g, "-")
       .replace(/\s+/g, " ")
       .trim();
+  }
+
+  function formatBytes(bytes = 0) {
+    const safeBytes = Number(bytes) || 0;
+    if (safeBytes <= 0) return "0 MB";
+    return `${(safeBytes / (1024 * 1024)).toFixed(2)} MB`;
+  }
+
+  function getReadableFileType(selectedFile) {
+    if (!selectedFile) return "";
+    if (selectedFile.type?.startsWith("image/")) return t.photoType;
+    if (selectedFile.type?.startsWith("audio/")) return t.audioType;
+    if (selectedFile.type?.startsWith("video/")) return t.videoType;
+    return selectedFile.type || t.fileType;
+  }
+
+  function getProgressStatusText(progress = uploadProgress) {
+    if (!progress) return "";
+    if (progress.status === "preparing") return t.preparing;
+    if (progress.status === "uploading") return t.uploading;
+    if (progress.status === "saving") return t.savingMemory;
+    if (progress.status === "success") return t.saved;
+    if (progress.status === "error") return t.failed;
+    return t.preparing;
+  }
+
+  function resetUploadProgress(selectedFile = file) {
+    window.clearInterval(progressTimerRef.current);
+    if (!selectedFile) {
+      setUploadProgress(null);
+      return;
+    }
+
+    setUploadProgress({
+      percent: 0,
+      uploadedBytes: 0,
+      totalBytes: selectedFile.size || 0,
+      status: "preparing",
+    });
+  }
+
+  function updateUploadProgress(nextProgress) {
+    setUploadProgress((current) => ({
+      percent: Math.max(current?.percent || 0, Math.round(nextProgress.percent || 0)),
+      uploadedBytes: nextProgress.uploadedBytes ?? current?.uploadedBytes ?? 0,
+      totalBytes: nextProgress.totalBytes ?? current?.totalBytes ?? file?.size ?? 0,
+      status: nextProgress.status || current?.status || "preparing",
+    }));
+  }
+
+  function startStagedUploadProgress(selectedFile) {
+    window.clearInterval(progressTimerRef.current);
+    setUploadProgress({
+      percent: 10,
+      uploadedBytes: 0,
+      totalBytes: selectedFile.size || 0,
+      status: "uploading",
+    });
+
+    progressTimerRef.current = window.setInterval(() => {
+      setUploadProgress((current) => {
+        if (!current || current.status !== "uploading") return current;
+        const nextPercent = Math.min(85, current.percent + 3);
+        return {
+          ...current,
+          percent: nextPercent,
+          uploadedBytes: Math.round((selectedFile.size || 0) * (nextPercent / 100)),
+        };
+      });
+    }, 550);
   }
 
   useEffect(() => {
@@ -81,6 +175,7 @@ export default function MobileUploadPage() {
 
     return () => {
       window.removeEventListener("vozeterna-language-change", handleLanguageChange);
+      window.clearInterval(progressTimerRef.current);
     };
   }, []);
 
@@ -118,6 +213,7 @@ export default function MobileUploadPage() {
     }
 
     setSaving(true);
+    resetUploadProgress(file);
 
     try {
       const {
@@ -127,8 +223,11 @@ export default function MobileUploadPage() {
       if (!user) {
         setMessage(t.signIn);
         setSaving(false);
+        updateUploadProgress({ percent: 0, status: "error", totalBytes: file.size || 0 });
         return;
       }
+
+      startStagedUploadProgress(file);
 
       const result = await saveMobileMemoryToV2({
         supabase,
@@ -138,9 +237,18 @@ export default function MobileUploadPage() {
         note,
         folder: "mobile-uploads",
         targetVaultId: selectedVaultId || undefined,
+        onProgress: updateUploadProgress,
       });
 
       if (selectedAlbumId && result?.memoryId) {
+        window.clearInterval(progressTimerRef.current);
+        updateUploadProgress({
+          percent: 95,
+          uploadedBytes: file.size || 0,
+          totalBytes: file.size || 0,
+          status: "saving",
+        });
+
         const { count } = await supabase
           .from("memory_collection_items")
           .select("id", { count: "exact", head: true })
@@ -157,8 +265,14 @@ export default function MobileUploadPage() {
         }
       }
 
+      window.clearInterval(progressTimerRef.current);
+      updateUploadProgress({
+        percent: 100,
+        uploadedBytes: file.size || 0,
+        totalBytes: file.size || 0,
+        status: "success",
+      });
       setMessage(t.saved);
-      setFile(null);
       setNote("");
 
       if (inputRef.current) {
@@ -169,10 +283,24 @@ export default function MobileUploadPage() {
         router.push(`/mobile/collections/${selectedAlbumId}`);
       }
     } catch (error) {
-      setMessage(error.message || "Upload failed.");
+      window.clearInterval(progressTimerRef.current);
+      updateUploadProgress({
+        percent: uploadProgress?.percent || 0,
+        uploadedBytes: uploadProgress?.uploadedBytes || 0,
+        totalBytes: file?.size || 0,
+        status: "error",
+      });
+      setMessage(error.message || t.failed);
     } finally {
       setSaving(false);
     }
+  }
+
+  function handleFileChange(event) {
+    const nextFile = event.target.files?.[0] || null;
+    setFile(nextFile);
+    setMessage("");
+    resetUploadProgress(nextFile);
   }
 
   return (
@@ -202,6 +330,7 @@ export default function MobileUploadPage() {
         <button
           type="button"
           className="mobileUploadPicker"
+          disabled={saving}
           onClick={() => inputRef.current?.click()}
         >
           <ImagePlus size={28} />
@@ -214,7 +343,8 @@ export default function MobileUploadPage() {
           type="file"
           hidden
           accept="image/*,audio/*,video/*,.pdf,.doc,.docx,.txt"
-          onChange={(event) => setFile(event.target.files?.[0] || null)}
+          disabled={saving}
+          onChange={handleFileChange}
         />
 
         {file && (
@@ -227,13 +357,51 @@ export default function MobileUploadPage() {
           </div>
         )}
 
+        {file && uploadProgress && (
+          <section className={`mobileUploadStatusPanel ${uploadProgress.status}`}>
+            <div className="mobileUploadStatusTop">
+              <div>
+                <p className="mobileCapsLabel">{getProgressStatusText(uploadProgress)}</p>
+                <strong>{uploadProgress.percent}%</strong>
+              </div>
+              <div className="mobileUploadPercentRing">
+                {uploadProgress.percent}%
+              </div>
+            </div>
+
+            <div className="mobileUploadProgressTrack">
+              <span style={{ width: `${Math.min(100, Math.max(0, uploadProgress.percent))}%` }} />
+            </div>
+
+            <dl className="mobileUploadStatusGrid">
+              <div>
+                <dt>{t.fileLabel}</dt>
+                <dd>{file.name}</dd>
+              </div>
+              <div>
+                <dt>{t.typeLabel}</dt>
+                <dd>{getReadableFileType(file)}</dd>
+              </div>
+              <div>
+                <dt>{t.sizeLabel}</dt>
+                <dd>{formatBytes(file.size)}</dd>
+              </div>
+              <div>
+                <dt>{t.uploadedLabel}</dt>
+                <dd>{formatBytes(uploadProgress.uploadedBytes)} / {formatBytes(uploadProgress.totalBytes)}</dd>
+              </div>
+            </dl>
+          </section>
+        )}
+
         <label>
           {t.note}
           <textarea
             value={note}
-            onChange={(event) => setNote(event.target.value)}
-            placeholder={t.placeholder}
-          />
+          onChange={(event) => setNote(event.target.value)}
+          placeholder={t.placeholder}
+          disabled={saving}
+        />
         </label>
 
         <button type="button" onClick={uploadMemory} disabled={saving}>

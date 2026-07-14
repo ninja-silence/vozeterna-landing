@@ -122,6 +122,33 @@ export default function MobileCommentsPage() {
     setProfileNames(names);
   }
 
+  async function loadProfileName(userId, fallback) {
+    if (!userId) return fallback;
+    if (profileNames[userId]) return profileNames[userId];
+
+    const withEmail = await supabase
+      .from("profiles")
+      .select("id, display_name, username, full_name, email")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (!withEmail.error && withEmail.data) {
+      return getProfileName(withEmail.data, fallback);
+    }
+
+    const basic = await supabase
+      .from("profiles")
+      .select("id, display_name, username, full_name")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (!basic.error && basic.data) {
+      return getProfileName(basic.data, fallback);
+    }
+
+    return fallback;
+  }
+
   async function loadComments(id) {
     setLoading(true);
     setMessage("");
@@ -186,11 +213,10 @@ export default function MobileCommentsPage() {
   async function createCommentActivity({ user, commentBody }) {
     if (!activity?.network_id || !activity?.id) return;
 
-    const commenterName =
-      profileNames[user.id] ||
-      user.user_metadata?.display_name ||
-      user.email ||
-      t.someone;
+    const commenterName = await loadProfileName(
+      user.id,
+      user.user_metadata?.display_name || user.email || t.someone
+    );
     const memoryTitle = activity.memories?.title || activity.title || t.subjectFallback;
 
     await supabase.from("network_activity").insert({
@@ -205,6 +231,8 @@ export default function MobileCommentsPage() {
       metadata: {
         source: "mobile_comment",
         parent_activity_id: activity.id,
+        commenter_name: commenterName,
+        memory_title: memoryTitle,
         body_preview: commentBody.slice(0, 140),
       },
     });

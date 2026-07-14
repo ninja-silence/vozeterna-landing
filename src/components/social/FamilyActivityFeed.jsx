@@ -29,6 +29,8 @@ const copy = {
     feedError: "Feed error",
     retry: "Retry",
     mediaUnavailable: "Media unavailable",
+    someone: "Someone",
+    commentedOn: "commented on",
     noDescription: "No description yet.",
     justNow: "Just now",
     agoMinute: "m ago",
@@ -40,6 +42,7 @@ const copy = {
       video_added: "Video memory",
       photo_added: "Photo memory",
       profile_added: "Profile update",
+      comment_added: "Comment",
       memory_added: "Memory update",
       default: "Network update",
     },
@@ -66,6 +69,8 @@ const copy = {
     feedError: "Error del feed",
     retry: "Reintentar",
     mediaUnavailable: "Medio no disponible",
+    someone: "Alguien",
+    commentedOn: "comento en",
     noDescription: "Sin descripcion todavia.",
     justNow: "Ahora mismo",
     agoMinute: "min",
@@ -77,6 +82,7 @@ const copy = {
       video_added: "Recuerdo en video",
       photo_added: "Recuerdo con foto",
       profile_added: "Actualizacion de perfil",
+      comment_added: "Comentario",
       memory_added: "Actualizacion de recuerdo",
       default: "Actualizacion de red",
     },
@@ -96,6 +102,7 @@ const copy = {
 
 function getActivityIcon(type) {
   if (type === "reflection_added") return MessageCircle;
+  if (type === "comment_added") return MessageCircle;
   if (type === "voice_added") return Mic2;
   if (type === "video_added") return Video;
   if (type === "photo_added") return ImageIcon;
@@ -160,6 +167,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
   const [signedUrls, setSignedUrls] = useState({});
   const [failedMediaIds, setFailedMediaIds] = useState([]);
   const [commentCounts, setCommentCounts] = useState({});
+  const [actorNames, setActorNames] = useState({});
   const [currentUserId, setCurrentUserId] = useState("");
   const [loading, setLoading] = useState(true);
   const [feedError, setFeedError] = useState("");
@@ -198,6 +206,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
     setFeedError("");
     setFailedMediaIds([]);
     setCommentCounts({});
+    setActorNames({});
 
     const {
       data: { user },
@@ -278,6 +287,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
         vault_id,
         network_id,
         actor_id,
+        metadata,
         feed_visibility,
         is_commentable,
         memories (
@@ -321,6 +331,33 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
     }));
     const urls = {};
     const activityIds = rows.map((activity) => activity.id).filter(Boolean);
+    const actorIds = [...new Set(rows.map((activity) => activity.actor_id).filter(Boolean))];
+
+    if (actorIds.length > 0) {
+      const withEmail = await supabase
+        .from("profiles")
+        .select("id, display_name, username, full_name, email")
+        .in("id", actorIds);
+
+      const profileRows = withEmail.error
+        ? (await supabase
+            .from("profiles")
+            .select("id, display_name, username, full_name")
+            .in("id", actorIds)).data || []
+        : withEmail.data || [];
+
+      setActorNames(
+        profileRows.reduce((map, profile) => {
+          map[profile.id] =
+            profile.display_name ||
+            profile.username ||
+            profile.full_name ||
+            profile.email ||
+            "";
+          return map;
+        }, {})
+      );
+    }
 
     if (activityIds.length > 0) {
       const { data: commentRows } = await supabase
@@ -400,14 +437,21 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
           {filteredActivities.map((activity) => {
             const memory = activity.memories;
             const Icon = getActivityIcon(activity?.activity_type);
+            const metadata = activity.metadata || {};
+            const isCommentActivity = activity.activity_type === "comment_added";
+            const commenterName = metadata.commenter_name || actorNames[activity.actor_id] || t.someone;
+            const commentMemoryTitle = metadata.memory_title || memory?.title || activity?.title || getActivityLabel(activity?.activity_type, t);
+            const commentPreview = metadata.body_preview || metadata.comment_preview || "";
             const activityTitle =
-              memory?.title ||
-              activity?.title ||
-              getActivityLabel(activity?.activity_type, t);
-            const description = memory?.body || t.noDescription;
+              isCommentActivity
+                ? `${commenterName} ${t.commentedOn} ${commentMemoryTitle}`
+                : memory?.title ||
+                  activity?.title ||
+                  getActivityLabel(activity?.activity_type, t);
+            const description = isCommentActivity ? commentPreview : memory?.body || t.noDescription;
             const url = signedUrls[activity.id];
-            const mediaKind = getMemoryMediaKind(memory);
-            const hasMedia = Boolean(memory?.media_path);
+            const mediaKind = isCommentActivity ? "comment" : getMemoryMediaKind(memory);
+            const hasMedia = !isCommentActivity && Boolean(memory?.media_path);
             const mediaFailed = failedMediaIds.includes(activity.id);
             const showMediaFallback = hasMedia && (!url || mediaFailed || mediaKind === "file");
             const canManageMemory = isMemoryOwner(memory, activity, currentUserId);
@@ -433,7 +477,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
                     </p>
                   </div>
 
-                  {memory?.id && (
+                  {memory?.id && !isCommentActivity && (
                     <MobileMemoryActions
                       memory={memory}
                       activityId={activity.id}
@@ -445,6 +489,12 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
                     />
                   )}
                 </div>
+
+                {isCommentActivity && commentPreview && (
+                  <blockquote className="familyFeedCommentPreview">
+                    {commentPreview}
+                  </blockquote>
+                )}
 
                 {mediaKind === "photo" && url && !mediaFailed && (
                   <img
@@ -481,13 +531,13 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
                   </div>
                 )}
 
-                <p className="familyFeedDescription">{description}</p>
+                {!isCommentActivity && <p className="familyFeedDescription">{description}</p>}
 
                 <div className="familyFeedActions">
-                  {activity.feed_visibility === "network" && activity.is_commentable && (
-                    <Link href={`/mobile/comments/${activity.id}`} className="familyFeedCommentButton">
+                  {(isCommentActivity || (activity.feed_visibility === "network" && activity.is_commentable)) && (
+                    <Link href={`/mobile/comments/${metadata.parent_activity_id || activity.id}`} className="familyFeedCommentButton">
                       <MessageCircle size={16} />
-                      {commentLabel}
+                      {isCommentActivity ? t.comments : commentLabel}
                     </Link>
                   )}
                 </div>
