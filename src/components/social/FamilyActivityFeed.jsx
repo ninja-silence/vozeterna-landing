@@ -138,13 +138,22 @@ function getCommentMemoryTitleFromActivityTitle(title = "") {
   return value.slice(value.indexOf(marker) + marker.length).trim();
 }
 
-function resolveCommenterName({ metadataName, actorName, fallback }) {
+function getEmailFromCommentTitle(title = "") {
+  const value = String(title || "");
+  const match = value.match(/[^\s@]+@[^\s@]+\.[^\s@]+/);
+  return match?.[0] || "";
+}
+
+function resolveCommenterName({ metadataName, actorName, emailProfileName, fallback }) {
   const cleanMetadataName = String(metadataName || "").trim();
   const cleanActorName = String(actorName || "").trim();
+  const cleanEmailProfileName = String(emailProfileName || "").trim();
 
   if (cleanActorName && !looksLikeEmail(cleanActorName)) return cleanActorName;
+  if (cleanEmailProfileName && !looksLikeEmail(cleanEmailProfileName)) return cleanEmailProfileName;
   if (cleanMetadataName && !looksLikeEmail(cleanMetadataName)) return cleanMetadataName;
   if (cleanActorName) return cleanActorName;
+  if (cleanEmailProfileName) return cleanEmailProfileName;
   if (cleanMetadataName) return cleanMetadataName;
 
   return fallback;
@@ -204,6 +213,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
   const [failedMediaIds, setFailedMediaIds] = useState([]);
   const [commentCounts, setCommentCounts] = useState({});
   const [actorNames, setActorNames] = useState({});
+  const [profileNamesByEmail, setProfileNamesByEmail] = useState({});
   const [currentUserId, setCurrentUserId] = useState("");
   const [loading, setLoading] = useState(true);
   const [feedError, setFeedError] = useState("");
@@ -243,6 +253,7 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
     setFailedMediaIds([]);
     setCommentCounts({});
     setActorNames({});
+    setProfileNamesByEmail({});
 
     const {
       data: { user },
@@ -368,6 +379,16 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
     const urls = {};
     const activityIds = rows.map((activity) => activity.id).filter(Boolean);
     const actorIds = [...new Set(rows.map((activity) => activity.actor_id).filter(Boolean))];
+    const commenterEmails = [
+      ...new Set(
+        rows
+          .flatMap((activity) => [
+            activity.metadata?.commenter_name,
+            getEmailFromCommentTitle(activity.title),
+          ])
+          .filter((value) => looksLikeEmail(value))
+      ),
+    ];
 
     if (actorIds.length > 0) {
       const withEmail = await supabase
@@ -388,6 +409,24 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
           return map;
         }, {})
       );
+    }
+
+    if (commenterEmails.length > 0) {
+      const { data: profilesByEmail, error: profilesByEmailError } = await supabase
+        .from("profiles")
+        .select("email, display_name, username, full_name")
+        .in("email", commenterEmails);
+
+      if (!profilesByEmailError) {
+        setProfileNamesByEmail(
+          (profilesByEmail || []).reduce((map, profile) => {
+            if (profile.email) {
+              map[profile.email] = getProfileDisplayName(profile);
+            }
+            return map;
+          }, {})
+        );
+      }
     }
 
     if (activityIds.length > 0) {
@@ -470,9 +509,12 @@ export default function FamilyActivityFeed({ feedType = "family", limit = 30 }) 
             const Icon = getActivityIcon(activity?.activity_type);
             const metadata = activity.metadata || {};
             const isCommentActivity = activity.activity_type === "comment_added";
+            const metadataEmail = looksLikeEmail(metadata.commenter_name) ? metadata.commenter_name : "";
+            const titleEmail = getEmailFromCommentTitle(activity.title);
             const commenterName = resolveCommenterName({
               metadataName: metadata.commenter_name,
               actorName: actorNames[activity.actor_id],
+              emailProfileName: profileNamesByEmail[metadataEmail] || profileNamesByEmail[titleEmail],
               fallback: t.someone,
             });
             const commentMemoryTitle =

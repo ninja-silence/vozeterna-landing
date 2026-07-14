@@ -58,6 +58,10 @@ function getProfileName(profile, fallback) {
   );
 }
 
+function looksLikeEmail(value = "") {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+}
+
 export default function MobileCommentsPage() {
   const params = useParams();
   const activityId = params?.activityId;
@@ -146,6 +150,18 @@ export default function MobileCommentsPage() {
       return getProfileName(basic.data, fallback);
     }
 
+    if (looksLikeEmail(fallback)) {
+      const byEmail = await supabase
+        .from("profiles")
+        .select("id, display_name, username, full_name, email")
+        .eq("email", fallback)
+        .maybeSingle();
+
+      if (!byEmail.error && byEmail.data) {
+        return getProfileName(byEmail.data, fallback);
+      }
+    }
+
     return fallback;
   }
 
@@ -231,6 +247,7 @@ export default function MobileCommentsPage() {
       metadata: {
         source: "mobile_comment",
         parent_activity_id: activity.id,
+        commenter_id: user.id,
         commenter_name: commenterName,
         memory_title: memoryTitle,
         body_preview: commentBody.slice(0, 140),
