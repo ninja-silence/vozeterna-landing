@@ -12,7 +12,7 @@ const copy = {
     label: "Account",
     title: "Account",
     signedOut: "Sign in to manage your private account settings.",
-    signIn: "Log in / Create account",
+    signIn: "Sign in",
     email: "Email",
     displayName: "Display name",
     username: "Username",
@@ -46,7 +46,7 @@ const copy = {
     label: "Cuenta",
     title: "Cuenta",
     signedOut: "Inicia sesion para administrar tu cuenta privada.",
-    signIn: "Iniciar sesion / Crear cuenta",
+    signIn: "Iniciar sesion",
     email: "Email",
     displayName: "Nombre visible",
     username: "Usuario",
@@ -423,7 +423,7 @@ export default function MobileAccountPage() {
         </Link>
       </div>
 
-      {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+      {authOpen && <AuthModal onClose={() => setAuthOpen(false)} language={language} />}
     </section>
   );
 }

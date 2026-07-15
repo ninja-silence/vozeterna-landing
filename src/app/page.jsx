@@ -36,7 +36,7 @@ const copy = {
     secondaryCta: "Request Demo",
     partnerCta: "Partner with VozEterna",
     signIn: "Sign In",
-    inviteSignInPrefix: "Already have an invite?",
+    inviteSignInPrefix: "Already have access?",
     inviteSignInAction: "Sign in",
     trust: "Private by default - English and Spanish - QR memorial ready",
 
@@ -143,7 +143,7 @@ const copy = {
     secondaryCta: "Solicitar Demo",
     partnerCta: "Aliarse con VozEterna",
     signIn: "Iniciar sesión",
-    inviteSignInPrefix: "¿Ya tienes una invitación?",
+    inviteSignInPrefix: "¿Ya tienes acceso?",
     inviteSignInAction: "Inicia sesión",
     trust: "Privado por defecto - Espanol e ingles - Memorial con QR listo",
 
@@ -292,7 +292,7 @@ export default function Home() {
 
         <div className="headerRight">
           <Switchers language={language} setLanguage={setLanguage} currency={currency} setCurrency={setCurrency} />
-          <Cta href="/mobile" variant="signin">{t.signIn}</Cta>
+          <Cta href="/mobile?auth=signin" variant="signin">{t.signIn}</Cta>
           <Cta href={familyForm} variant="gold">{t.start}</Cta>
         </div>
       </header>
@@ -308,7 +308,7 @@ export default function Home() {
             <Cta href={funeralForm} variant="gold">{t.partnerCta}</Cta>
           </div>
           <p className="inviteSignIn">
-            {t.inviteSignInPrefix} <a href="/mobile">{t.inviteSignInAction}</a>
+            {t.inviteSignInPrefix} <a href="/mobile?auth=signin">{t.inviteSignInAction}</a>
           </p>
           <p className="trust">{t.trust}</p>
         </div>

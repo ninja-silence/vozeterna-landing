@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { supabase } from "../../lib/supabaseClient";
+import AuthModal from "../../components/auth/AuthModal";
 import { countAccessibleVaults } from "../../lib/mobileVault";
 import {
   getInitialMobileLanguage,
@@ -124,6 +125,7 @@ function formatStorage(bytes) {
 export default function MobileDashboardPage() {
   const [language, setLanguage] = useState("en");
   const [user, setUser] = useState(null);
+  const [authOpen, setAuthOpen] = useState(false);
   const [loadingStats, setLoadingStats] = useState(true);
   const [stats, setStats] = useState({
     profiles: 0,
@@ -178,6 +180,14 @@ export default function MobileDashboardPage() {
 
       setUser(currentUser);
 
+      if (
+        !currentUser &&
+        typeof window !== "undefined" &&
+        new URLSearchParams(window.location.search).get("auth") === "signin"
+      ) {
+        setAuthOpen(true);
+      }
+
       if (!currentUser) {
         setLoadingStats(false);
         return;
@@ -214,6 +224,21 @@ export default function MobileDashboardPage() {
     }
 
     loadStats();
+  }, []);
+
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      const currentUser = session?.user || null;
+      setUser(currentUser);
+
+      if (currentUser) {
+        setAuthOpen(false);
+      }
+    });
+
+    return () => {
+      listener?.subscription?.unsubscribe?.();
+    };
   }, []);
 
   function changeLanguage(nextLanguage) {
@@ -342,6 +367,15 @@ export default function MobileDashboardPage() {
           <span>{t.featuresProfilesText}</span>
         </Link>
       </section>
+
+      {authOpen && (
+        <AuthModal
+          onClose={() => setAuthOpen(false)}
+          allowSignup={false}
+          language={language}
+          redirectTo="/mobile"
+        />
+      )}
     </>
   );
 }

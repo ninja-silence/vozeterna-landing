@@ -35,6 +35,7 @@ const copy = {
     missingVault: "The invite vault could not be found.",
     signIn: "Please log in or create an account before accepting this invite.",
     login: "Log in / Create account",
+    authHelper: "Create your account or sign in to accept this family vault invitation.",
     goVault: "Open vault",
     home: "VozEterna",
     privacy: "Invite-only access. This does not make the vault public.",
@@ -64,6 +65,7 @@ const copy = {
     missingVault: "No se encontro la boveda de esta invitacion.",
     signIn: "Inicia sesion o crea una cuenta antes de aceptar esta invitacion.",
     login: "Iniciar sesion / Crear cuenta",
+    authHelper: "Crea tu cuenta o inicia sesión para aceptar esta invitación a la bóveda familiar.",
     goVault: "Abrir boveda",
     home: "VozEterna",
     privacy: "Acceso solo por invitacion. Esto no hace publica la boveda.",
@@ -217,7 +219,8 @@ export default function MobileInvitePage() {
       throw new Error(t.expired);
     }
 
-    if (Number.isFinite(link.max_uses) && link.max_uses > 0 && (link.used_count || 0) >= link.max_uses) {
+    const maxUses = Number(link.max_uses);
+    if (Number.isFinite(maxUses) && maxUses > 0 && (link.used_count || 0) >= maxUses) {
       throw new Error(t.maxUses);
     }
 
@@ -601,7 +604,15 @@ export default function MobileInvitePage() {
         )}
       </section>
 
-      {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+      {authOpen && inviteDetails && status !== "error" && (
+        <AuthModal
+          onClose={() => setAuthOpen(false)}
+          allowSignup={true}
+          language={language}
+          helperText={t.authHelper}
+          redirectTo={`/mobile/invite/${token}`}
+        />
+      )}
     </section>
   );
 }

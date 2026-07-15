@@ -7,14 +7,14 @@ import AuthModal from "../auth/AuthModal";
 
 const copy = {
   en: {
-    signIn: "Log in / Create account",
+    signIn: "Sign in",
     logout: "Log out",
     account: "Account",
     signedInAs: "Signed in as",
     kyc: "KYC / Premium",
   },
   es: {
-    signIn: "Iniciar sesión / Crear cuenta",
+    signIn: "Iniciar sesión",
     logout: "Cerrar sesión",
     account: "Cuenta",
     signedInAs: "Sesión iniciada como",
@@ -131,7 +131,7 @@ export default function AuthMenuControls({ language = "en", onNavigate }) {
         </>
       )}
 
-      {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+      {authOpen && <AuthModal onClose={() => setAuthOpen(false)} language={language} />}
     </div>
   );
 }
