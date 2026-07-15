@@ -90,7 +90,13 @@ function getInviteRole(value) {
 }
 
 function getProfileName(profile = {}, fallback = "Someone") {
-  return profile.display_name || profile.email || fallback;
+  return (
+    profile?.display_name ||
+    profile?.username ||
+    profile?.legal_name ||
+    profile?.email ||
+    fallback
+  );
 }
 
 export default function MobileInvitePage() {
@@ -249,7 +255,7 @@ export default function MobileInvitePage() {
     if (link.created_by) {
       const { data: inviterProfile } = await supabase
         .from("profiles")
-        .select("id, display_name, email")
+        .select("id, display_name, username, legal_name, email")
         .eq("id", link.created_by)
         .maybeSingle();
 
@@ -498,7 +504,7 @@ export default function MobileInvitePage() {
             <UsersRound size={18} />
             <p>
               <span className="mobileCapsLabel">{t.invitedVault}</span>
-              <strong>{inviteDetails.vault.title}</strong>
+              <strong>{inviteDetails?.vault?.title || inviteDetails?.network?.name || t.title}</strong>
               {inviteDetails.inviterName && (
                 <>
                   <br />
