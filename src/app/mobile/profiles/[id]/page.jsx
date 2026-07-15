@@ -20,6 +20,7 @@ import {
 import { supabase } from "../../../../lib/supabaseClient";
 import { isMemoryOwner } from "../../../../lib/memoryPermissions";
 import { getVaultAccess } from "../../../../lib/mobileVault";
+import { cleanupUploadedFile } from "../../../../lib/storageCleanup";
 import { normalizeStoragePath, warnInvalidStoragePath } from "../../../../lib/storagePaths";
 import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
 import ShareMemoryButton from "../../../../components/social/ShareMemoryButton";
@@ -421,7 +422,15 @@ export default function MobileProfileDetailPage() {
         })
         .eq("id", vault.id);
 
-      if (updateResult.error) throw new Error(updateResult.error.message);
+      if (updateResult.error) {
+        await cleanupUploadedFile(
+          supabase,
+          "family-media",
+          normalizedCoverPath || filePath,
+          "failed vault cover upload"
+        );
+        throw new Error(updateResult.error.message);
+      }
 
       setVault((current) => ({ ...(current || vault), cover_image_path: filePath }));
       if (!signedCoverError && signedCover?.signedUrl) {

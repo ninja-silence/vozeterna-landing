@@ -5,6 +5,7 @@ import Link from "next/link";
 import CameraRecorder from "../../../components/app/CameraRecorder";
 import { supabase } from "../../../lib/supabaseClient";
 import { getRelationshipLabel } from "../../../lib/relationshipLabels";
+import { cleanupUploadedFile } from "../../../lib/storageCleanup";
 import { useAppLanguage } from "../../../lib/useAppLanguage";
 
 const copy = {
@@ -293,6 +294,7 @@ function VoiceRecorderCard({
     setSaving(false);
 
     if (insertError) {
+      await cleanupUploadedFile(supabase, "family-media", filePath, "failed voice recording upload");
       setMessage(insertError.message);
       return;
     }

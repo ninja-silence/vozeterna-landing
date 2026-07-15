@@ -1,3 +1,5 @@
+import { cleanupUploadedFile } from "./storageCleanup";
+
 export function inferMemoryType(fileType = "") {
   if (fileType.startsWith("image/")) return "photo";
   if (fileType.startsWith("audio/")) return "audio";
@@ -15,6 +17,25 @@ const UPLOAD_ROLES = [...MANAGE_ROLES, "contributor"];
 
 function normalizeRole(role = "") {
   return String(role || "").toLowerCase();
+}
+
+function isUsableVaultRow(vault) {
+  return Boolean(vault?.id) && vault.is_archived !== true;
+}
+
+function withRequiredVaultColumns(columns = "") {
+  if (!columns || columns.trim() === "*") return columns || "*";
+
+  const requiredColumns = ["id", "network_id", "created_by", "is_archived", "created_at"];
+  const existing = new Set(
+    columns
+      .split(",")
+      .map((column) => column.trim().split(":").pop().split(" ").pop())
+      .filter(Boolean)
+  );
+  const missing = requiredColumns.filter((column) => !existing.has(column));
+
+  return [...missing, columns].join(", ");
 }
 
 export function canManageRole(role) {
@@ -121,15 +142,17 @@ export async function getNetworkAccess(supabase, user, networkId) {
 export async function loadAccessibleVaults(supabase, user, selectColumns) {
   if (!user?.id) return [];
 
-  const columns =
+  const columns = withRequiredVaultColumns(
     selectColumns ||
-    "id, network_id, created_by, title, subject_name, relationship_label, description, created_at";
+      "id, network_id, created_by, title, subject_name, relationship_label, description, created_at, is_archived"
+  );
 
   const [ownedResult, vaultMembershipsResult, networkMembershipsResult] = await Promise.all([
     supabase
       .from("vaults")
       .select(columns)
       .eq("created_by", user.id)
+      .or("is_archived.is.null,is_archived.eq.false")
       .order("created_at", { ascending: false }),
     supabase
       .from("vault_memberships")
@@ -158,6 +181,7 @@ export async function loadAccessibleVaults(supabase, user, selectColumns) {
           .from("vaults")
           .select(columns)
           .in("id", memberVaultIds)
+          .or("is_archived.is.null,is_archived.eq.false")
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [] }),
     networkIds.length > 0
@@ -165,6 +189,7 @@ export async function loadAccessibleVaults(supabase, user, selectColumns) {
           .from("vaults")
           .select(columns)
           .in("network_id", networkIds)
+          .or("is_archived.is.null,is_archived.eq.false")
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [] }),
   ]);
@@ -183,10 +208,19 @@ export async function loadAccessibleVaults(supabase, user, selectColumns) {
     ...(memberVaultsResult.data || []),
     ...(networkVaultsResult.data || []),
   ].forEach((vault) => {
-    if (vault?.id) vaultMap.set(vault.id, vault);
+    if (isUsableVaultRow(vault)) vaultMap.set(vault.id, vault);
   });
 
-  return [...vaultMap.values()].sort(
+  const visibleVaults = [];
+
+  for (const vault of vaultMap.values()) {
+    const access = await getVaultAccess(supabase, user, vault);
+    if (access.canView) {
+      visibleVaults.push(vault);
+    }
+  }
+
+  return visibleVaults.sort(
     (a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
   );
 }
@@ -621,6 +655,7 @@ export async function saveMobileMemoryToV2({
   });
 
   if (memoryResult.error) {
+    await cleanupUploadedFile(supabase, "family-media", filePath, "mobile memory upload");
     throw new Error(memoryResult.error.message);
   }
 

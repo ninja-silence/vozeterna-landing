@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../../../../lib/supabaseClient";
 import { relationshipOptions, getRelationshipEnglishLabel } from "../../../../../lib/relationshipLabels";
+import { cleanupUploadedFile } from "../../../../../lib/storageCleanup";
 import { useAppLanguage } from "../../../../../lib/useAppLanguage";
 
 const copy = {
@@ -255,6 +256,7 @@ export default function EditLovedOnePage() {
 
     try {
       const finalProfilePhotoPath = await uploadProfilePhoto();
+      const uploadedProfilePhotoPath = profilePhotoFile ? finalProfilePhotoPath : "";
 
       const finalSlug = memorialSlug.trim()
         ? makeSlug(memorialSlug)
@@ -286,6 +288,15 @@ export default function EditLovedOnePage() {
         .eq("id", id);
 
       if (error) {
+        if (uploadedProfilePhotoPath) {
+          await cleanupUploadedFile(
+            supabase,
+            "family-media",
+            uploadedProfilePhotoPath,
+            "failed profile photo upload"
+          );
+        }
+
         setMessage(error.message);
         setSaving(false);
         return;

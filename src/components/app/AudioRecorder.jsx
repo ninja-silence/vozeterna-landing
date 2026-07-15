@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
+import { cleanupUploadedFile } from "../../lib/storageCleanup";
 
 const copy = {
   en: {
@@ -149,6 +150,7 @@ export default function AudioRecorder({
     });
 
     if (insertError) {
+      await cleanupUploadedFile(supabase, "family-media", filePath, "failed audio upload");
       setMessage(insertError.message);
       setSaving(false);
       return;
