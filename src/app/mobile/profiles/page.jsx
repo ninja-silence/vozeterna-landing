@@ -48,6 +48,7 @@ export default function MobileProfilesPage() {
   const [loading, setLoading] = useState(true);
 
   const t = copy[language] || copy.en;
+  const canInviteFromAnyVault = vaults.some((vault) => vault.access?.canManage);
 
   useEffect(() => {
     setLanguage(getInitialMobileLanguage());
@@ -119,11 +120,13 @@ export default function MobileProfilesPage() {
           <p>{t.createText}</p>
         </Link>
 
-        <Link href="/mobile/connect" className="mobileActionCard">
-          <QrCode size={20} />
-          <strong>{t.connect}</strong>
-          <p>{t.connectText}</p>
-        </Link>
+        {canInviteFromAnyVault && (
+          <Link href="/mobile/connect" className="mobileActionCard">
+            <QrCode size={20} />
+            <strong>{t.connect}</strong>
+            <p>{t.connectText}</p>
+          </Link>
+        )}
       </section>
 
       <section className="mobileCardList">

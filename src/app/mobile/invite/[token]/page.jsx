@@ -7,7 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import AuthModal from "../../../../components/auth/AuthModal";
 import { supabase } from "../../../../lib/supabaseClient";
 import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
-import { loadExistingNetwork } from "../../../../lib/mobileVault";
+import { getNetworkAccess, getVaultAccess } from "../../../../lib/mobileVault";
 
 const copy = {
   en: {
@@ -27,6 +27,7 @@ const copy = {
     accepting: "Connecting...",
     success: "You joined the vault.",
     error: "This invite could not be accepted.",
+    membershipError: "We couldn't accept this invite. Please ask the person who invited you to send a new link.",
     loading: "Loading invite...",
     invalid: "This invite does not look valid.",
     expired: "This invite is no longer valid.",
@@ -57,6 +58,7 @@ const copy = {
     accepting: "Conectando...",
     success: "Te uniste a la boveda.",
     error: "No se pudo aceptar esta invitacion.",
+    membershipError: "No pudimos aceptar esta invitación. Pídele a quien te invitó que te envíe un nuevo enlace.",
     loading: "Cargando invitacion...",
     invalid: "Esta invitacion no parece valida.",
     expired: "Esta invitacion ya no es valida.",
@@ -72,33 +74,10 @@ const copy = {
   },
 };
 
-function extractNetworkId(value) {
-  if (!value) return "";
-
-  const row = Array.isArray(value) ? value[0] : value;
-
-  return (
-    row?.network_id ||
-    row?.target_network_id ||
-    row?.network?.id ||
-    ""
-  );
-}
-
 function getInviteRole(value) {
   const row = Array.isArray(value) ? value[0] : value;
-  const role = String(row?.invite_role || row?.target_role || row?.role || "").toLowerCase();
-  return ["owner", "admin", "manager", "contributor", "viewer"].includes(role) ? role : "contributor";
-}
-
-function getProfileName(profile = {}, fallback = "Someone") {
-  return (
-    profile?.display_name ||
-    profile?.username ||
-    profile?.legal_name ||
-    profile?.email ||
-    fallback
-  );
+  const role = String(row?.invite_role || "").toLowerCase();
+  return ["admin", "manager", "contributor", "viewer"].includes(role) ? role : "";
 }
 
 export default function MobileInvitePage() {
@@ -197,86 +176,47 @@ export default function MobileInvitePage() {
       throw new Error(t.invalid);
     }
 
-    const { data: link, error: linkError } = await supabase
-      .from("sharable_links")
-      .select("id, network_id, created_by, token, invite_role, status, max_uses, used_count, expires_at")
-      .eq("token", token)
-      .maybeSingle();
+    const { data: inviteResult, error: inviteError } = await supabase.rpc(
+      "get_vault_invite_by_token",
+      { invite_token: token }
+    );
 
-    if (linkError) {
-      throw new Error(linkError.message);
-    }
-
-    if (!link?.id || !link.network_id) {
+    if (inviteError) {
       throw new Error(t.invalid);
     }
 
-    if (link.status && link.status !== "active") {
-      throw new Error(t.expired);
+    const link = Array.isArray(inviteResult) ? inviteResult[0] : inviteResult;
+
+    if (!link?.token || !link.network_id) {
+      throw new Error(t.invalid);
     }
 
-    if (link.expires_at && new Date(link.expires_at).getTime() < Date.now()) {
-      throw new Error(t.expired);
+    const inviteRole = getInviteRole(link);
+    if (!inviteRole) {
+      throw new Error(t.invalid);
     }
 
-    const maxUses = Number(link.max_uses);
-    if (Number.isFinite(maxUses) && maxUses > 0 && (link.used_count || 0) >= maxUses) {
-      throw new Error(t.maxUses);
-    }
-
-    const { data: network, error: networkError } = await supabase
-      .from("networks")
-      .select("id, name, type")
-      .eq("id", link.network_id)
-      .maybeSingle();
-
-    if (networkError) {
-      throw new Error(networkError.message);
-    }
-
-    if (!network?.id) {
-      throw new Error(t.missingNetwork);
-    }
-
-    const { data: vault, error: vaultError } = await supabase
-      .from("vaults")
-      .select("id, network_id, title, description")
-      .eq("network_id", link.network_id)
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
-
-    if (vaultError) {
-      throw new Error(vaultError.message);
-    }
-
-    if (!vault?.id) {
+    if (!link.vault_id) {
       throw new Error(t.missingVault);
-    }
-
-    let inviterName = "";
-    if (link.created_by) {
-      const { data: inviterProfile } = await supabase
-        .from("profiles")
-        .select("id, display_name, username, legal_name, email")
-        .eq("id", link.created_by)
-        .maybeSingle();
-
-      inviterName = getProfileName(inviterProfile, "");
     }
 
     const details = {
       link,
-      network,
-      vault,
-      inviterName,
-      role: getInviteRole(link),
+      network: { id: link.network_id, name: link.network_name || "", type: "family" },
+      vault: {
+        id: link.vault_id,
+        network_id: link.network_id,
+        title: link.vault_title || t.invitedVault,
+        description: link.vault_description || "",
+      },
+      inviterName: "",
+      role: inviteRole,
     };
 
     console.info("[VozEterna] Invite loaded", {
       hasToken: Boolean(token),
       networkId: link.network_id,
-      vaultId: vault.id,
+      vaultId: link.vault_id,
       role: details.role,
     });
 
@@ -294,24 +234,16 @@ export default function MobileInvitePage() {
       .limit(1)
       .maybeSingle();
 
-    const values = {
+    if (existing.data?.network_id) return false;
+
+    const result = await supabase.from("network_members").insert({
+      network_id: networkId,
+      user_id: currentUser.id,
       role,
       invited_by: invitedBy || currentUser.id,
       accepted_at: new Date().toISOString(),
       relationship_type: relationshipType,
-    };
-
-    const result = existing.data?.network_id
-      ? await supabase
-          .from("network_members")
-          .update(values)
-          .eq("network_id", networkId)
-          .eq("user_id", currentUser.id)
-      : await supabase.from("network_members").insert({
-          network_id: networkId,
-          user_id: currentUser.id,
-          ...values,
-        });
+    });
 
     if (result.error && /relationship_type/i.test(result.error.message || "")) {
       const fallbackValues = {
@@ -320,24 +252,26 @@ export default function MobileInvitePage() {
         accepted_at: new Date().toISOString(),
       };
 
-      const fallbackResult = existing.data?.network_id
-        ? await supabase
-            .from("network_members")
-            .update(fallbackValues)
-            .eq("network_id", networkId)
-            .eq("user_id", currentUser.id)
-        : await supabase.from("network_members").insert({
-            network_id: networkId,
-            user_id: currentUser.id,
-            ...fallbackValues,
-          });
+      const fallbackResult = await supabase.from("network_members").insert({
+        network_id: networkId,
+        user_id: currentUser.id,
+        ...fallbackValues,
+      });
 
-      if (fallbackResult.error) throw new Error(fallbackResult.error.message);
-      return !existing.data?.network_id;
+      if (fallbackResult.error) {
+        const access = await getNetworkAccess(supabase, currentUser, networkId);
+        if (access.canView) return false;
+        throw new Error(t.membershipError);
+      }
+      return true;
     }
 
-    if (result.error) throw new Error(result.error.message);
-    return !existing.data?.network_id;
+    if (result.error) {
+      const access = await getNetworkAccess(supabase, currentUser, networkId);
+      if (access.canView) return false;
+      throw new Error(t.membershipError);
+    }
+    return true;
   }
 
   async function ensureVaultMembership({ vaultId, currentUser, role, invitedBy }) {
@@ -355,23 +289,15 @@ export default function MobileInvitePage() {
       throw existing.error;
     }
 
-    const values = {
+    if (existing.data?.vault_id) return false;
+
+    const result = await supabase.from("vault_memberships").insert({
+      vault_id: vaultId,
+      user_id: currentUser.id,
       role,
       invited_by: invitedBy || currentUser.id,
       accepted_at: new Date().toISOString(),
-    };
-
-    const result = existing.data?.vault_id
-      ? await supabase
-          .from("vault_memberships")
-          .update(values)
-          .eq("vault_id", vaultId)
-          .eq("user_id", currentUser.id)
-      : await supabase.from("vault_memberships").insert({
-          vault_id: vaultId,
-          user_id: currentUser.id,
-          ...values,
-        });
+    });
 
     if (result.error) {
       throw result.error;
@@ -383,16 +309,10 @@ export default function MobileInvitePage() {
   async function saveRelationshipMetadata(networkId, currentUser) {
     if (!networkId || !currentUser?.id) return;
 
-    const existingNetwork = await loadExistingNetwork(supabase, networkId);
-    if (!existingNetwork?.id) {
+    const access = await getNetworkAccess(supabase, currentUser, networkId);
+    if (!access.canView) {
       throw new Error(t.expired);
     }
-
-    await supabase
-      .from("network_members")
-      .update({ relationship_type: relationshipType })
-      .eq("network_id", networkId)
-      .eq("user_id", currentUser.id);
 
     await supabase.from("network_activity").insert({
       network_id: networkId,
@@ -409,12 +329,12 @@ export default function MobileInvitePage() {
   }
 
   async function incrementInviteUsedCount(link) {
-    if (!link?.id) return;
+    if (!link?.token) return;
 
     const { error } = await supabase
       .from("sharable_links")
       .update({ used_count: (link.used_count || 0) + 1 })
-      .eq("id", link.id);
+      .eq("token", link.token);
 
     if (error) {
       console.warn("[VozEterna] Invite used_count update failed:", error.message);
@@ -461,15 +381,21 @@ export default function MobileInvitePage() {
           invitedBy: details.link.created_by,
         });
       } catch (vaultMembershipError) {
-        console.warn(
-          "[VozEterna] vault_memberships invite acceptance skipped after network_members succeeded:",
-          {
-            message: vaultMembershipError?.message || vaultMembershipError,
-            code: vaultMembershipError?.code,
-            details: vaultMembershipError?.details,
-            hint: vaultMembershipError?.hint,
-          }
-        );
+        const [vaultAccess, networkAccess] = await Promise.all([
+          getVaultAccess(supabase, currentUser, details.vault),
+          getNetworkAccess(supabase, currentUser, networkId),
+        ]);
+
+        if (!vaultAccess.canView && !networkAccess.canView) {
+          throw new Error(t.membershipError);
+        }
+
+        console.warn("[VozEterna] vault_memberships invite acceptance skipped after existing access check:", {
+          message: vaultMembershipError?.message || vaultMembershipError,
+          code: vaultMembershipError?.code,
+          details: vaultMembershipError?.details,
+          hint: vaultMembershipError?.hint,
+        });
       }
 
       if (wasNetworkCreated || wasVaultCreated) {
