@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import AuthModal from "../../../../components/auth/AuthModal";
 import { supabase } from "../../../../lib/supabaseClient";
 import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
+import { loadExistingNetwork } from "../../../../lib/mobileVault";
 
 const copy = {
   en: {
@@ -22,6 +23,7 @@ const copy = {
     accepting: "Connecting...",
     success: "You joined the private network.",
     error: "This invite could not be accepted.",
+    expired: "This invite is no longer valid.",
     signIn: "Please log in or create an account before accepting this invite.",
     login: "Log in / Create account",
     goFeed: "Go to feed",
@@ -41,6 +43,7 @@ const copy = {
     accepting: "Conectando...",
     success: "Te uniste a la red privada.",
     error: "No se pudo aceptar esta invitacion.",
+    expired: "Esta invitacion ya no es valida.",
     signIn: "Inicia sesion o crea una cuenta antes de aceptar esta invitacion.",
     login: "Iniciar sesion / Crear cuenta",
     goFeed: "Ir al feed",
@@ -60,6 +63,12 @@ function extractNetworkId(value) {
     row?.network?.id ||
     ""
   );
+}
+
+function getInviteRole(value) {
+  const row = Array.isArray(value) ? value[0] : value;
+  const role = String(row?.target_role || row?.role || "").toLowerCase();
+  return ["owner", "admin", "manager", "contributor", "viewer"].includes(role) ? role : "contributor";
 }
 
 export default function MobileInvitePage() {
@@ -134,8 +143,168 @@ export default function MobileInvitePage() {
     return extractNetworkId(data);
   }
 
+  async function loadInviteDetails(rpcData) {
+    const rpcNetworkId = extractNetworkId(rpcData);
+    const rpcRole = getInviteRole(rpcData);
+    const { data: baseLink, error: baseError } = await supabase
+      .from("sharable_links")
+      .select("network_id, target_network_id")
+      .eq("token", token)
+      .maybeSingle();
+
+    if (baseError) {
+      console.warn("[VozEterna] Invite base lookup failed:", baseError.message);
+    }
+
+    let roleLink = null;
+    const { data: targetRoleLink, error: targetRoleError } = await supabase
+      .from("sharable_links")
+      .select("target_role")
+      .eq("token", token)
+      .maybeSingle();
+
+    if (!targetRoleError && targetRoleLink) {
+      roleLink = targetRoleLink;
+    } else {
+      const { data: fallbackRoleLink, error: fallbackRoleError } = await supabase
+        .from("sharable_links")
+        .select("role")
+        .eq("token", token)
+        .maybeSingle();
+
+      if (!fallbackRoleError && fallbackRoleLink) {
+        roleLink = fallbackRoleLink;
+      } else if (targetRoleError && fallbackRoleError) {
+        console.warn("[VozEterna] Invite role lookup skipped:", targetRoleError.message);
+      }
+    }
+
+    const networkId = rpcNetworkId || extractNetworkId(baseLink);
+    const role = getInviteRole(roleLink || rpcData) || rpcRole;
+
+    let vaultId = "";
+    if (networkId) {
+      const { data: vaultRow, error: vaultError } = await supabase
+        .from("vaults")
+        .select("id")
+        .eq("network_id", networkId)
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (vaultError) {
+        console.warn("[VozEterna] Invite vault lookup failed:", vaultError.message);
+      }
+
+      vaultId = vaultRow?.id || "";
+    }
+
+    console.info("[VozEterna] Invite resolved", {
+      hasToken: Boolean(token),
+      networkId,
+      vaultId,
+      role,
+    });
+
+    return { networkId, vaultId, role };
+  }
+
+  async function ensureNetworkMembership({ networkId, currentUser, role }) {
+    if (!networkId || !currentUser?.id) return;
+
+    const existing = await supabase
+      .from("network_members")
+      .select("network_id")
+      .eq("network_id", networkId)
+      .eq("user_id", currentUser.id)
+      .limit(1)
+      .maybeSingle();
+
+    const values = {
+      role,
+      invited_by: currentUser.id,
+      accepted_at: new Date().toISOString(),
+      relationship_type: relationshipType,
+    };
+
+    const result = existing.data?.network_id
+      ? await supabase
+          .from("network_members")
+          .update(values)
+          .eq("network_id", networkId)
+          .eq("user_id", currentUser.id)
+      : await supabase.from("network_members").insert({
+          network_id: networkId,
+          user_id: currentUser.id,
+          ...values,
+        });
+
+    if (result.error && /relationship_type/i.test(result.error.message || "")) {
+      const fallbackValues = {
+        role,
+        invited_by: currentUser.id,
+        accepted_at: new Date().toISOString(),
+      };
+
+      const fallbackResult = existing.data?.network_id
+        ? await supabase
+            .from("network_members")
+            .update(fallbackValues)
+            .eq("network_id", networkId)
+            .eq("user_id", currentUser.id)
+        : await supabase.from("network_members").insert({
+            network_id: networkId,
+            user_id: currentUser.id,
+            ...fallbackValues,
+          });
+
+      if (fallbackResult.error) throw new Error(fallbackResult.error.message);
+      return;
+    }
+
+    if (result.error) throw new Error(result.error.message);
+  }
+
+  async function ensureVaultMembership({ vaultId, currentUser, role }) {
+    if (!vaultId || !currentUser?.id) return;
+
+    const existing = await supabase
+      .from("vault_memberships")
+      .select("vault_id")
+      .eq("vault_id", vaultId)
+      .eq("user_id", currentUser.id)
+      .limit(1)
+      .maybeSingle();
+
+    if (existing.error) {
+      console.warn("[VozEterna] Vault membership lookup skipped:", existing.error.message);
+      return;
+    }
+
+    const result = existing.data?.vault_id
+      ? await supabase
+          .from("vault_memberships")
+          .update({ role })
+          .eq("vault_id", vaultId)
+          .eq("user_id", currentUser.id)
+      : await supabase.from("vault_memberships").insert({
+          vault_id: vaultId,
+          user_id: currentUser.id,
+          role,
+        });
+
+    if (result.error) {
+      console.warn("[VozEterna] Vault membership write skipped:", result.error.message);
+    }
+  }
+
   async function saveRelationshipMetadata(networkId, currentUser) {
     if (!networkId || !currentUser?.id) return;
+
+    const existingNetwork = await loadExistingNetwork(supabase, networkId);
+    if (!existingNetwork?.id) {
+      throw new Error(t.expired);
+    }
 
     await supabase
       .from("network_members")
@@ -178,6 +347,15 @@ export default function MobileInvitePage() {
       return;
     }
 
+    const networkIdFromLink = await loadInviteNetworkId(null);
+    const existingNetwork = await loadExistingNetwork(supabase, networkIdFromLink);
+
+    if (!networkIdFromLink || !existingNetwork?.id) {
+      setStatus("error");
+      setMessage(t.expired);
+      return;
+    }
+
     const { data, error } = await supabase.rpc("accept_sharable_link", {
       invite_token: token,
     });
@@ -188,11 +366,28 @@ export default function MobileInvitePage() {
       return;
     }
 
-    const networkId = await loadInviteNetworkId(data);
+    const networkId = extractNetworkId(data) || networkIdFromLink;
+    const inviteDetails = await loadInviteDetails(data);
+    const resolvedNetworkId = inviteDetails.networkId || networkId;
 
     try {
-      await saveRelationshipMetadata(networkId, currentUser);
-    } catch {
+      await ensureNetworkMembership({
+        networkId: resolvedNetworkId,
+        currentUser,
+        role: inviteDetails.role,
+      });
+      await ensureVaultMembership({
+        vaultId: inviteDetails.vaultId,
+        currentUser,
+        role: inviteDetails.role,
+      });
+      await saveRelationshipMetadata(resolvedNetworkId, currentUser);
+    } catch (metadataError) {
+      if (metadataError.message === t.expired) {
+        setStatus("error");
+        setMessage(t.expired);
+        return;
+      }
       // Older schemas may not expose relationship_type or activity writes here.
       // Acceptance still succeeds through the existing RPC.
     }

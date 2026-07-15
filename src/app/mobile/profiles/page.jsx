@@ -116,7 +116,28 @@ export default function MobileProfilesPage() {
 
     const vaultMap = new Map();
 
-    [...(ownedVaults || []), ...memberVaults].forEach((vault) => {
+    const { data: networkMembershipRows } = await supabase
+      .from("network_members")
+      .select("network_id")
+      .eq("user_id", user.id)
+      .not("accepted_at", "is", null);
+
+    const networkIds = [
+      ...new Set((networkMembershipRows || []).map((row) => row.network_id).filter(Boolean)),
+    ];
+    let networkVaults = [];
+
+    if (networkIds.length > 0) {
+      const { data: networkVaultRows } = await supabase
+        .from("vaults")
+        .select("id, network_id, title, subject_name, relationship_label, description, created_at")
+        .in("network_id", networkIds)
+        .order("created_at", { ascending: false });
+
+      networkVaults = networkVaultRows || [];
+    }
+
+    [...(ownedVaults || []), ...memberVaults, ...networkVaults].forEach((vault) => {
       if (vault?.id) vaultMap.set(vault.id, vault);
     });
 

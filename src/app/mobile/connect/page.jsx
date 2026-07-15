@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Check, Copy, QrCode, Share2, UsersRound } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "../../../lib/supabaseClient";
-import { ensureNetworkAndVaultByType } from "../../../lib/mobileVault";
+import { ensureNetworkAndVaultByType, isNetworkMember, loadExistingNetwork } from "../../../lib/mobileVault";
 import { getInitialMobileLanguage } from "../../../components/mobile/mobileLanguage";
 
 const copy = {
@@ -90,11 +90,44 @@ export default function MobileConnectPage() {
         return;
       }
 
-      const { networkId } = await ensureNetworkAndVaultByType(
-        supabase,
-        user,
-        selectedNetworkType
-      );
+      const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+      const requestedNetworkId = params.get("networkId") || "";
+      const requestedVaultId = params.get("vaultId") || "";
+      let networkId = "";
+
+      if (requestedVaultId) {
+        const { data: targetVault, error: targetVaultError } = await supabase
+          .from("vaults")
+          .select("id, network_id")
+          .eq("id", requestedVaultId)
+          .maybeSingle();
+
+        if (targetVaultError) {
+          throw new Error(targetVaultError.message);
+        }
+
+        networkId = targetVault?.network_id || "";
+      }
+
+      if (!networkId && requestedNetworkId) {
+        networkId = requestedNetworkId;
+      }
+
+      if (networkId) {
+        const existingNetwork = await loadExistingNetwork(supabase, networkId);
+        const member = await isNetworkMember(supabase, user, networkId);
+
+        if (!existingNetwork?.id || !member) {
+          throw new Error("You do not have access to create an invite for this vault.");
+        }
+      } else {
+        const ensured = await ensureNetworkAndVaultByType(
+          supabase,
+          user,
+          selectedNetworkType
+        );
+        networkId = ensured.networkId;
+      }
 
       const { data, error } = await supabase.rpc("create_sharable_link", {
         target_network_id: networkId,
