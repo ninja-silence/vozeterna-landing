@@ -35,6 +35,9 @@ const copy = {
     primaryCta: "Start Family Vault",
     secondaryCta: "Request Demo",
     partnerCta: "Partner with VozEterna",
+    signIn: "Sign In",
+    inviteSignInPrefix: "Already have an invite?",
+    inviteSignInAction: "Sign in",
     trust: "Private by default - English and Spanish - QR memorial ready",
 
     features: [
@@ -139,6 +142,9 @@ const copy = {
     primaryCta: "Iniciar Boveda Familiar",
     secondaryCta: "Solicitar Demo",
     partnerCta: "Aliarse con VozEterna",
+    signIn: "Iniciar sesión",
+    inviteSignInPrefix: "¿Ya tienes una invitación?",
+    inviteSignInAction: "Inicia sesión",
     trust: "Privado por defecto - Espanol e ingles - Memorial con QR listo",
 
     features: [
@@ -286,6 +292,7 @@ export default function Home() {
 
         <div className="headerRight">
           <Switchers language={language} setLanguage={setLanguage} currency={currency} setCurrency={setCurrency} />
+          <Cta href="/mobile" variant="signin">{t.signIn}</Cta>
           <Cta href={familyForm} variant="gold">{t.start}</Cta>
         </div>
       </header>
@@ -296,10 +303,13 @@ export default function Home() {
           <h1>{t.heroTitle}</h1>
           <p className="lede">{t.heroText}</p>
           <div className="heroActions">
-            <Cta href="/mobile">{t.primaryCta}</Cta>
+            <Cta href={familyForm}>{t.primaryCta}</Cta>
             <Cta href={familyForm} variant="secondary">{t.secondaryCta}</Cta>
             <Cta href={funeralForm} variant="gold">{t.partnerCta}</Cta>
           </div>
+          <p className="inviteSignIn">
+            {t.inviteSignInPrefix} <a href="/mobile">{t.inviteSignInAction}</a>
+          </p>
           <p className="trust">{t.trust}</p>
         </div>
 
