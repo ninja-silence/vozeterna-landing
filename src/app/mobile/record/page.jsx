@@ -14,7 +14,7 @@ import {
   Video,
 } from "lucide-react";
 import { supabase } from "../../../lib/supabaseClient";
-import { saveMobileMemoryToV2 } from "../../../lib/mobileVault";
+import { getVaultAccess, loadAccessibleVaults, saveMobileMemoryToV2 } from "../../../lib/mobileVault";
 import { getInitialMobileLanguage } from "../../../components/mobile/mobileLanguage";
 
 const copy = {
@@ -40,10 +40,12 @@ const copy = {
       "Permission was blocked or unavailable. Please allow microphone/camera access in your browser settings.",
     uploadInstead: "Upload a file instead",
     scriptLabel: "Memory note",
+    vaultLabel: "Save to vault",
     scriptPlaceholder: "Write a few words about this memory...",
     note: "This recorder stays inside the mobile experience.",
     noRecording: "Record something first.",
     signIn: "Please sign in before saving.",
+    chooseVault: "Choose or create a vault before saving.",
     ready: "Recording ready",
     recording: "Recording...",
   },
@@ -69,10 +71,12 @@ const copy = {
       "El permiso fue bloqueado o no está disponible. Permite acceso al micrófono/cámara en tu navegador.",
     uploadInstead: "Subir archivo",
     scriptLabel: "Nota del recuerdo",
+    vaultLabel: "Guardar en boveda",
     scriptPlaceholder: "Escribe unas palabras sobre este recuerdo...",
     note: "Esta grabadora permanece dentro de la experiencia móvil.",
     noRecording: "Primero graba algo.",
     signIn: "Inicia sesión antes de guardar.",
+    chooseVault: "Elige o crea una boveda antes de guardar.",
     ready: "Grabación lista",
     recording: "Grabando...",
   },
@@ -118,6 +122,8 @@ export default function MobileRecordPage() {
   const [recordingKind, setRecordingKind] = useState("voice");
   const [message, setMessage] = useState("");
   const [script, setScript] = useState("");
+  const [vaults, setVaults] = useState([]);
+  const [selectedVaultId, setSelectedVaultId] = useState("");
   const [saving, setSaving] = useState(false);
   const [previewActive, setPreviewActive] = useState(false);
 
@@ -148,6 +154,37 @@ export default function MobileRecordPage() {
       clearInterval(timerRef.current);
       if (recordingUrl) URL.revokeObjectURL(recordingUrl);
     };
+  }, []);
+
+  useEffect(() => {
+    async function loadVaults() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user?.id) {
+        setVaults([]);
+        return;
+      }
+
+      const accessibleVaults = await loadAccessibleVaults(
+        supabase,
+        user,
+        "id, network_id, created_by, title, subject_name, relationship_label, created_at"
+      );
+      const rowsWithAccess = await Promise.all(
+        accessibleVaults.map(async (vault) => ({
+          ...vault,
+          access: await getVaultAccess(supabase, user, vault),
+        }))
+      );
+      const uploadableVaults = rowsWithAccess.filter((vault) => vault.access.canUpload);
+
+      setVaults(uploadableVaults);
+      setSelectedVaultId((current) => current || uploadableVaults[0]?.id || "");
+    }
+
+    loadVaults();
   }, []);
 
   useEffect(() => {
@@ -310,6 +347,12 @@ export default function MobileRecordPage() {
         return;
       }
 
+      if (!selectedVaultId) {
+        setMessage(t.chooseVault);
+        setSaving(false);
+        return;
+      }
+
       const extension = recordingKind === "video" ? "webm" : "webm";
       const fileName = `mobile-${recordingKind}-${Date.now()}.${extension}`;
 
@@ -330,6 +373,7 @@ export default function MobileRecordPage() {
         note: script,
         folder: recordingKind === "video" ? "mobile-videos" : "mobile-recordings",
         forcedType: recordingKind === "video" ? "video" : "audio",
+        targetVaultId: selectedVaultId,
       });
 
       setMessage(t.saved);
@@ -348,6 +392,24 @@ export default function MobileRecordPage() {
       </div>
 
       <section className="mobileRecorderPanel">
+        <label className="mobileRecorderVaultSelect">
+          <span>{t.vaultLabel}</span>
+          <select
+            value={selectedVaultId}
+            onChange={(event) => setSelectedVaultId(event.target.value)}
+          >
+            {vaults.length === 0 ? (
+              <option value="">{t.chooseVault}</option>
+            ) : (
+              vaults.map((vault) => (
+                <option value={vault.id} key={vault.id}>
+                  {vault.subject_name || vault.title}
+                </option>
+              ))
+            )}
+          </select>
+        </label>
+
         <div className="mobileRecorderModeTabs">
           <button
             type="button"

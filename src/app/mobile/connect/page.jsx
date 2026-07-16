@@ -5,9 +5,9 @@ import { Check, Copy, QrCode, Share2, UserPlus, UsersRound } from "lucide-react"
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "../../../lib/supabaseClient";
 import {
-  ensureNetworkAndVaultByType,
   getNetworkAccess,
   getVaultAccess,
+  loadAccessibleVaults,
   loadExistingNetwork,
 } from "../../../lib/mobileVault";
 import { getInitialMobileLanguage } from "../../../components/mobile/mobileLanguage";
@@ -53,6 +53,22 @@ const copy = {
 
 function normalizeInviteRole(role) {
   return role === "viewer" ? "viewer" : "contributor";
+}
+
+async function findFirstManageableNetwork(supabase, user) {
+  const vaults = await loadAccessibleVaults(
+    supabase,
+    user,
+    "id, network_id, created_by, created_at"
+  );
+
+  for (const vault of vaults) {
+    if (!vault.network_id) continue;
+    const access = await getVaultAccess(supabase, user, vault);
+    if (access.canManage) return vault.network_id;
+  }
+
+  return "";
 }
 
 export default function MobileConnectPage() {
@@ -151,12 +167,11 @@ export default function MobileConnectPage() {
           throw new Error(t.inviteDenied);
         }
       } else {
-        const ensured = await ensureNetworkAndVaultByType(
-          supabase,
-          user,
-          selectedNetworkType
-        );
-        networkId = ensured.networkId;
+        networkId = await findFirstManageableNetwork(supabase, user);
+
+        if (!networkId) {
+          throw new Error(t.inviteDenied);
+        }
 
         const access = await getNetworkAccess(supabase, user, networkId);
         if (!access.canManage) {
@@ -235,14 +250,19 @@ export default function MobileConnectPage() {
       return { user, networkId };
     }
 
-    const ensured = await ensureNetworkAndVaultByType(supabase, user, selectedNetworkType);
-    const access = await getNetworkAccess(supabase, user, ensured.networkId);
+    const fallbackNetworkId = await findFirstManageableNetwork(supabase, user);
+
+    if (!fallbackNetworkId) {
+      throw new Error(t.inviteDenied);
+    }
+
+    const access = await getNetworkAccess(supabase, user, fallbackNetworkId);
 
     if (!access.canManage) {
       throw new Error(t.inviteDenied);
     }
 
-    return { user, networkId: ensured.networkId };
+    return { user, networkId: fallbackNetworkId };
   }
 
   async function createAccountInvite() {

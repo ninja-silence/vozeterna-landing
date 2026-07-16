@@ -34,6 +34,7 @@ const copy = {
     fileType: "File",
     signIn: "Please sign in before uploading.",
     noFile: "Choose a file first.",
+    chooseVault: "Choose or create a vault before uploading.",
     privateNote: "Files are private by default and saved inside the selected profile.",
   },
   es: {
@@ -62,6 +63,7 @@ const copy = {
     fileType: "Archivo",
     signIn: "Inicia sesion antes de subir.",
     noFile: "Primero elige un archivo.",
+    chooseVault: "Elige o crea una boveda antes de subir.",
     privateNote: "Los archivos son privados por defecto y se guardan dentro del perfil seleccionado.",
   },
 };
@@ -237,6 +239,13 @@ export default function MobileUploadPage() {
 
       if (!user) {
         setMessage(t.signIn);
+        setSaving(false);
+        updateUploadProgress({ percent: 0, status: "error", totalBytes: file.size || 0 });
+        return;
+      }
+
+      if (!selectedVaultId) {
+        setMessage(t.chooseVault);
         setSaving(false);
         updateUploadProgress({ percent: 0, status: "error", totalBytes: file.size || 0 });
         return;

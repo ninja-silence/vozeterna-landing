@@ -233,19 +233,13 @@ export async function countAccessibleVaults(supabase, user) {
 function networkLabels(networkType = "family") {
   if (networkType === "friend") {
     return {
-      networkName: "My Friend Network",
       networkDescription: "Private friend network created from the mobile app.",
-      vaultTitle: "Friend Memories",
-      vaultDescription: "Private mobile friend vault.",
       relationship: "Friends",
     };
   }
 
   return {
-    networkName: "My Family Network",
     networkDescription: "Private family network created from the mobile app.",
-    vaultTitle: "Family Memories",
-    vaultDescription: "Private mobile family vault.",
     relationship: "Family",
   };
 }
@@ -294,15 +288,7 @@ async function ensureUsableNetworkForUser({
     };
   }
 
-  const fallbackType = networkType === "friend" ? "friend" : "family";
-  const ensured = await ensureNetworkAndVaultByType(supabase, user, fallbackType);
-
-  return {
-    networkId: ensured.networkId,
-    vaultId: ensured.vaultId,
-    networkType: ensured.networkType,
-    usedFallback: true,
-  };
+  throw new Error("You do not have permission to use this vault network.");
 }
 
 export async function ensureNetworkAndVaultByType(supabase, user, networkType = "family") {
@@ -310,124 +296,15 @@ export async function ensureNetworkAndVaultByType(supabase, user, networkType = 
     throw new Error("Please sign in first.");
   }
 
-  const desiredType = networkType === "friend" ? "friend" : "family";
-  const labels = networkLabels(desiredType);
-
-  const membershipsResult = await supabase
-    .from("network_members")
-    .select("network_id")
-    .eq("user_id", user.id)
-    .in("role", MANAGE_ROLES)
-    .not("accepted_at", "is", null);
-
-  const membershipIds = (membershipsResult.data || []).map((item) => item.network_id);
-
-  if (membershipIds.length > 0) {
-    const existingNetwork = await supabase
-      .from("networks")
-      .select("id, type")
-      .in("id", membershipIds)
-      .eq("type", desiredType)
-      .limit(1)
-      .maybeSingle();
-
-    if (existingNetwork.data?.id) {
-      const networkId = existingNetwork.data.id;
-
-      const existingVault = await supabase
-        .from("vaults")
-        .select("id")
-        .eq("network_id", networkId)
-        .order("created_at", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-
-      if (existingVault.data?.id) {
-        return {
-          networkId,
-          vaultId: existingVault.data.id,
-          networkType: desiredType,
-        };
-      }
-
-      const vaultId = crypto.randomUUID();
-
-      const vaultResult = await supabase.from("vaults").insert({
-        id: vaultId,
-        network_id: networkId,
-        created_by: user.id,
-        title: labels.vaultTitle,
-        subject_name: labels.vaultTitle,
-        relationship_label: labels.relationship,
-        description: labels.vaultDescription,
-        visibility: "private",
-        is_loved_one_vault: true,
-      });
-
-      if (vaultResult.error) {
-        throw new Error(vaultResult.error.message);
-      }
-
-      return {
-        networkId,
-        vaultId,
-        networkType: desiredType,
-      };
-    }
-  }
-
-  const networkId = crypto.randomUUID();
-  const vaultId = crypto.randomUUID();
-
-  const networkResult = await supabase.from("networks").insert({
-    id: networkId,
-    created_by: user.id,
-    name: labels.networkName,
-    type: desiredType,
-    description: labels.networkDescription,
-  });
-
-  if (networkResult.error) {
-    throw new Error(networkResult.error.message);
-  }
-
-  const memberResult = await supabase.from("network_members").insert({
-    network_id: networkId,
-    user_id: user.id,
-    role: "owner",
-    invited_by: user.id,
-    accepted_at: new Date().toISOString(),
-  });
-
-  if (memberResult.error) {
-    throw new Error(memberResult.error.message);
-  }
-
-  const vaultResult = await supabase.from("vaults").insert({
-    id: vaultId,
-    network_id: networkId,
-    created_by: user.id,
-    title: labels.vaultTitle,
-    subject_name: labels.vaultTitle,
-    relationship_label: labels.relationship,
-    description: labels.vaultDescription,
-    visibility: "private",
-    is_loved_one_vault: true,
-  });
-
-  if (vaultResult.error) {
-    throw new Error(vaultResult.error.message);
-  }
-
-  return {
-    networkId,
-    vaultId,
-    networkType: desiredType,
-  };
+  throw new Error("Automatic default vault creation is disabled. Create a vault explicitly first.");
 }
 
 export async function ensureDefaultNetworkAndVault(supabase, user) {
-  return ensureNetworkAndVaultByType(supabase, user, "family");
+  if (!user?.id) {
+    throw new Error("Please sign in first.");
+  }
+
+  throw new Error("Automatic default vault creation is disabled. Create a vault explicitly first.");
 }
 
 export async function resolveTargetVault({
@@ -477,13 +354,7 @@ export async function resolveTargetVault({
     }
   }
 
-  const ensured = await ensureNetworkAndVaultByType(supabase, user, networkType);
-
-  return {
-    networkId: ensured.networkId,
-    vaultId: ensured.vaultId,
-    vault: null,
-  };
+  throw new Error("Choose a vault before saving this memory.");
 }
 
 export async function createMobileVault({

@@ -98,8 +98,9 @@ export default function MobileProfilesPage() {
           access: await getVaultAccess(supabase, user, vault),
         }))
       );
+      const uniqueVaults = [...new Map(vaultsWithAccess.map((vault) => [vault.id, vault])).values()];
 
-      setVaults(vaultsWithAccess);
+      setVaults(uniqueVaults);
     } catch (error) {
       console.error("Mobile profiles error:", error.message);
       setVaults([]);
@@ -163,7 +164,7 @@ export default function MobileProfilesPage() {
                 {t.skin}: {skin.label[language]}
               </span>
 
-              <strong>{vault.subject_name || vault.title}</strong>
+              <strong className="mobileVaultEngravedCardTitle">{vault.subject_name || vault.title}</strong>
               <span>{vault.relationship_label || t.familyVault}</span>
               <p>{vault.description || t.privateArchive}</p>
 
