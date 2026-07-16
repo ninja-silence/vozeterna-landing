@@ -218,7 +218,9 @@ export default function MobileProfileDetailPage() {
   const [canUpdatePhoto, setCanUpdatePhoto] = useState(false);
   const [canManageVault, setCanManageVault] = useState(false);
   const [canUploadToVault, setCanUploadToVault] = useState(false);
-  const [unlockState, setUnlockState] = useState("locked");
+  // TODO: Later, read a short-lived `vozeterna-unlocked-vault-${vaultId}` session flag here.
+  // Do not treat that client flag as security; Supabase RLS remains the real access control.
+  const [unlockState, setUnlockState] = useState("unlocked");
   const [passcode, setPasscode] = useState("");
   const [unlockMessage, setUnlockMessage] = useState("");
   const [failedUnlockAttempts, setFailedUnlockAttempts] = useState(0);
