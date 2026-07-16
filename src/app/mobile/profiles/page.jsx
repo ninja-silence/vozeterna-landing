@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Plus, QrCode, UserRound } from "lucide-react";
 import { supabase } from "../../../lib/supabaseClient";
 import { getVaultAccess, loadAccessibleVaults } from "../../../lib/mobileVault";
-import { getVaultSkin, normalizeVaultSkin } from "../../../lib/vaultSkins";
+import { getVaultSkin, getVaultSkinImage, normalizeVaultSkin } from "../../../lib/vaultSkins";
 import { getInitialMobileLanguage } from "../../../components/mobile/mobileLanguage";
 
 const copy = {
@@ -157,7 +157,7 @@ export default function MobileProfilesPage() {
               className={`mobileListCard mobileVaultSkinCard skin-${skinKey}`}
               key={vault.id}
             >
-              <img src={skin.image} alt="" className="mobileVaultSkinCardImage" />
+              <img src={getVaultSkinImage(skinKey)} alt="" className="mobileVaultSkinCardImage" />
               <span className="mobileVaultSkinShade" />
 
               <span className="mobileVaultSkinBadge">

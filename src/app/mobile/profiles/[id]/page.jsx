@@ -23,7 +23,13 @@ import { isMemoryOwner } from "../../../../lib/memoryPermissions";
 import { getVaultAccess } from "../../../../lib/mobileVault";
 import { cleanupUploadedFile } from "../../../../lib/storageCleanup";
 import { normalizeStoragePath, warnInvalidStoragePath } from "../../../../lib/storagePaths";
-import { getVaultSkin, normalizeVaultSkin, VAULT_SKIN_KEYS } from "../../../../lib/vaultSkins";
+import {
+  getVaultSkin,
+  getVaultSkinImage,
+  getVaultSkinVideo,
+  normalizeVaultSkin,
+  VAULT_SKIN_KEYS,
+} from "../../../../lib/vaultSkins";
 import { getInitialMobileLanguage } from "../../../../components/mobile/mobileLanguage";
 import ShareMemoryButton from "../../../../components/social/ShareMemoryButton";
 import MobileMemoryActions from "../../../../components/mobile/MobileMemoryActions";
@@ -57,8 +63,15 @@ const copy = {
     photoSaved: "Vault photo updated.",
     photoOwnerOnly: "Only the vault owner can update this photo.",
     openVault: "Open vault",
+    unlockVault: "Unlock Vault",
+    enterVault: "Enter Vault",
     openingVault: "Opening...",
     vaultOpened: "Vault opened",
+    incorrectUnlock: "Incorrect unlock attempt. Please try again.",
+    lockedOut: "Too many unlock attempts. Please verify your identity to continue.",
+    verifyEmail: "Verify by email",
+    tryLater: "Try again later",
+    demoWrongCode: "Demo wrong code",
     vaultStyle: "Vault style",
     styleSaved: "Vault style updated.",
     styleSaveFailed: "Could not update vault style.",
@@ -123,8 +136,15 @@ const copy = {
     photoSaved: "Foto de la boveda actualizada.",
     photoOwnerOnly: "Solo el dueno de la boveda puede actualizar esta foto.",
     openVault: "Abrir boveda",
+    unlockVault: "Desbloquear boveda",
+    enterVault: "Entrar a la boveda",
     openingVault: "Abriendo...",
     vaultOpened: "Boveda abierta",
+    incorrectUnlock: "Intento de desbloqueo incorrecto. Intentalo de nuevo.",
+    lockedOut: "Demasiados intentos de desbloqueo. Verifica tu identidad para continuar.",
+    verifyEmail: "Verificar por correo",
+    tryLater: "Intentar mas tarde",
+    demoWrongCode: "Demo codigo incorrecto",
     vaultStyle: "Estilo de boveda",
     styleSaved: "Estilo de boveda actualizado.",
     styleSaveFailed: "No se pudo actualizar el estilo de boveda.",
@@ -193,6 +213,9 @@ export default function MobileProfileDetailPage() {
   const [canManageVault, setCanManageVault] = useState(false);
   const [canUploadToVault, setCanUploadToVault] = useState(false);
   const [vaultVisualState, setVaultVisualState] = useState("idle");
+  const [vaultMediaState, setVaultMediaState] = useState("idle");
+  const [unlockMessage, setUnlockMessage] = useState("");
+  const [failedUnlockAttempts, setFailedUnlockAttempts] = useState(0);
   const [skinSaving, setSkinSaving] = useState(false);
   const [skinMessage, setSkinMessage] = useState("");
 
@@ -468,15 +491,78 @@ export default function MobileProfileDetailPage() {
   }
 
   function previewOpenVault() {
+    const openVideo = getVaultSkinVideo(vault?.vault_skin, "opening");
+
     setVaultVisualState("opening");
-    window.setTimeout(() => {
-      setVaultVisualState("success");
-      document.getElementById("vault-contents")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-      window.setTimeout(() => setVaultVisualState("idle"), 900);
-    }, 650);
+    setVaultMediaState("opening");
+    setUnlockMessage("");
+
+    if (openVideo) {
+      return;
+    }
+
+    revealVaultContents();
+  }
+
+  function previewWrongCode() {
+    const nextFailedAttempts = failedUnlockAttempts + 1;
+    const nextState = nextFailedAttempts >= 3 ? "lockedOut" : "wrongCode";
+    const wrongVideo = getVaultSkinVideo(vault?.vault_skin, nextState);
+
+    setFailedUnlockAttempts(nextFailedAttempts);
+    setVaultVisualState(nextState === "lockedOut" ? "locked" : "warning");
+    setVaultMediaState(nextState);
+    setUnlockMessage(nextState === "lockedOut" ? t.lockedOut : t.incorrectUnlock);
+
+    if (wrongVideo) {
+      return;
+    }
+
+    setVaultMediaState("idle");
+  }
+
+  function revealVaultContents() {
+    setVaultMediaState("idle");
+    setUnlockMessage("");
+    setFailedUnlockAttempts(0);
+    setVaultVisualState("success");
+    document.getElementById("vault-contents")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+    window.setTimeout(() => setVaultVisualState("idle"), 900);
+  }
+
+  function resetVaultStage() {
+    setVaultMediaState("idle");
+    if (vaultVisualState !== "locked") {
+      setVaultVisualState("idle");
+    }
+  }
+
+  function handleVaultAnimationEnded() {
+    if (vaultMediaState === "opening") {
+      revealVaultContents();
+      return;
+    }
+
+    resetVaultStage();
+  }
+
+  function handleVaultAnimationError() {
+    if (vaultMediaState === "opening") {
+      revealVaultContents();
+      return;
+    }
+
+    resetVaultStage();
+  }
+
+  function clearSoftLockout() {
+    setFailedUnlockAttempts(0);
+    setUnlockMessage("");
+    setVaultVisualState("idle");
+    setVaultMediaState("idle");
   }
 
   async function updateVaultSkin(nextSkin) {
@@ -730,26 +816,77 @@ export default function MobileProfileDetailPage() {
 
   const skinKey = normalizeVaultSkin(vault.vault_skin);
   const skin = getVaultSkin(skinKey);
+  const vaultImageSrc = getVaultSkinImage(skinKey);
+  const vaultVideoSrc = vaultMediaState === "idle" ? "" : getVaultSkinVideo(skinKey, vaultMediaState);
+  const isVaultVideoPlaying = vaultMediaState !== "idle" && Boolean(vaultVideoSrc);
+  const isSoftLockedOut = failedUnlockAttempts >= 3 || vaultVisualState === "locked";
 
   return (
     <section className="mobileScreenStack">
       <div className={`mobileScreenHero mobileProfileHero mobileVaultDetailHero state-${vaultVisualState}`}>
-        <div className="mobileVaultSkinStage">
-          <img src={skin.image} alt="" className="mobileVaultSkinStageImage" />
+        <div className="mobileVaultSkinStage vaultSkinFrame">
+          {isVaultVideoPlaying && vaultVideoSrc ? (
+            <video
+              key={`${skinKey}-${vaultMediaState}`}
+              src={vaultVideoSrc}
+              className="mobileVaultSkinStageImage vaultSkinMedia vaultSkinVideo"
+              autoPlay
+              muted
+              playsInline
+              preload="metadata"
+              onEnded={handleVaultAnimationEnded}
+              onError={handleVaultAnimationError}
+            />
+          ) : (
+            <img
+              src={vaultImageSrc}
+              alt=""
+              className="mobileVaultSkinStageImage vaultSkinMedia"
+              onError={(event) => {
+                const fallbackSrc = getVaultSkinImage("steel");
+                if (!event.currentTarget.src.endsWith(fallbackSrc)) {
+                  event.currentTarget.src = fallbackSrc;
+                }
+              }}
+            />
+          )}
           <span className="mobileVaultSkinStageShade" />
           <div className="mobileVaultEngravedLabel">
             <span>{skin.label[language]}</span>
             <strong>{vault.subject_name || vault.title}</strong>
           </div>
-          <button type="button" className="mobileVaultOpenButton" onClick={previewOpenVault}>
-            <LockKeyhole size={16} />
-            {vaultVisualState === "opening"
-              ? t.openingVault
-              : vaultVisualState === "success"
-                ? t.vaultOpened
-                : t.openVault}
-          </button>
+          {!isVaultVideoPlaying && !isSoftLockedOut && (
+            <button type="button" className="mobileVaultOpenButton" onClick={previewOpenVault}>
+              <LockKeyhole size={16} />
+              {vaultVisualState === "opening"
+                ? t.openingVault
+                : vaultVisualState === "success"
+                  ? t.vaultOpened
+                  : t.unlockVault}
+            </button>
+          )}
+          {unlockMessage && (
+            <div className="vaultUnlockOverlay">
+              <p className="vaultUnlockMessage">{unlockMessage}</p>
+              {isSoftLockedOut && (
+                <div className="vaultUnlockActions">
+                  <button type="button" onClick={clearSoftLockout}>
+                    {t.verifyEmail}
+                  </button>
+                  <button type="button" onClick={clearSoftLockout}>
+                    {t.tryLater}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
+
+        {!isVaultVideoPlaying && !isSoftLockedOut && (
+          <button type="button" className="mobileMiniAction" onClick={previewWrongCode}>
+            {t.demoWrongCode}
+          </button>
+        )}
 
         <p className="mobileCapsLabel">{t.label}</p>
         <h1>{vault.subject_name || vault.title}</h1>
@@ -790,7 +927,7 @@ export default function MobileProfileDetailPage() {
                   onClick={() => updateVaultSkin(key)}
                   disabled={skinSaving}
                 >
-                  <img src={option.image} alt="" />
+                  <img src={getVaultSkinImage(key)} alt="" />
                   <span>{option.label[language]}</span>
                 </button>
               );
